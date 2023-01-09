@@ -1,0 +1,59 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.16.0]
+        python-version: [3.10]
+
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set up NodeJS
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Setup node modules cache
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-node${{ matrix.node-version }}-build-${{ hashFiles('**/*/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node${{ matrix.node-version }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-node${{ matrix.node-version }}-build-
+          ${{ runner.OS }}-node${{ matrix.node-version }}-
+
+    - name: Install python requirements
+      run: pip install -r requirements.txt
+
+    - name: Install node modules
+      run: npm install
+
+    - name: Build pages
+      run: python generate.py config.json
+
+    - name: Build styles
+      run: npm run sass
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: public
+        path: public/**/*
+
