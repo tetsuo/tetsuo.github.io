@@ -1,0 +1,488 @@
+@import "node_modules/bourbon-neat/core/neat";
+@import "node_modules/normalize-scss/sass/normalize";
+
+@mixin declare-font($font-family, $name, $file) {
+  @font-face {
+    font-family: "#{$font-family}";
+    src: url("#{$file}.eot");
+    src: url("#{$file}.eot?#iefix") format("embedded-opentype"), url("#{$file}.woff") format("woff"), url("#{$file}.ttf") format("truetype"), url("#{$file}.svg##{$file}") format("svg");
+    @if $name == 'italic' {
+        font-style: italic;
+    } @else {
+        font-weight: normal;
+        font-style: normal;
+    }
+  }
+}
+
+@mixin declare-proxima($name) {
+  $font-family: "proxima-nova";
+  @if ($name != 'regular' and $name != 'italic') {
+    $font-family: $font-family + "-" + $name;
+  }
+  $file: "proxima-nova-" + $name;
+  @include declare-font("#{$font-family}", "#{$name}", #{$file});
+}
+
+$proxima-styles: regular semibold italic bold;
+
+@each $style in $proxima-styles {
+  @include declare-proxima("#{$style}");
+}
+
+@include declare-font("code_pro_demoregular", "normal", "Code_Pro_Demo-webfont");
+
+@include normalize();
+
+$gutter-hi: 62px;
+$gutter-low: 20px;
+
+$single-col-grid: (
+  columns: 1,
+  gutter: $gutter-hi,
+);
+
+$single-col-grid-low: (
+  columns: 1,
+  gutter: $gutter-low,
+  media: "(max-width: 768px)",
+);
+
+$single-col-grid-tablet-up: (
+  media: "(min-width: 768px)"
+);
+
+$double-col-grid: (
+    columns: 2,
+    gutter: $gutter-hi
+);
+
+$double-col-no-gutter-grid: (
+    columns: 2,
+    gutter: 0
+);
+
+$single-col-no-gutter-grid-low: (
+  columns: 1,
+  gutter: 0,
+  media: "(max-width: 768px)",
+);
+
+$single-col-centered-width: 72%;
+
+html, body {
+    height: 100%;
+    background-color: #0000FF;
+}
+
+a {
+    text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: code_pro_demoregular;
+    font-weight: normal;
+}
+
+iframe {
+    border: none;
+}
+
+.single-col-grid {
+    @include grid-container;
+
+    .col {
+        overflow: hidden;
+        @include grid-column(1, $single-col-grid);
+
+        .centered {
+            margin: 0 auto;
+            width: $single-col-centered-width;
+        }
+
+        @include grid-media($single-col-grid-low) {
+            @include grid-column(1, $single-col-grid-low);
+            width: calc(100% - #{$gutter-low * 2});
+            .centered {
+                margin: none;
+                width: 100%;
+            }
+        }
+    }
+}
+
+.double-col-grid {
+    @include grid-container;
+
+    .col {
+        overflow: hidden;
+        @include grid-column(1, $double-col-grid);
+
+        .centered {
+            margin: 0 auto;
+            width: $single-col-centered-width;
+        }
+
+        @include grid-media($single-col-grid-low) {
+            @include grid-column(1, $single-col-grid-low);
+            width: calc(100% - #{$gutter-low * 2});
+
+        }
+    }
+}
+
+.double-col-no-gutter-grid {
+    @include grid-container;
+
+    .col {
+        overflow: hidden;
+        @include grid-column(1, $double-col-no-gutter-grid);
+
+        @include grid-media($single-col-no-gutter-grid-low) {
+            @include grid-column(1, $single-col-no-gutter-grid-low);
+            width: 100%;
+
+        }
+    }
+}
+
+.content {
+    padding: $gutter-hi 0 10px 0;
+    display: inline-block;
+    width: 100%;
+    background-color: #fff;
+}
+
+.entry {
+    color: #0000ff;
+    margin-bottom: 62px!important;
+
+    .discussion {
+        margin-top: 42px;
+        padding-top: 0px;
+    }
+
+    a {
+        color: #0000ff;
+        border-bottom: 2px solid #0000ff;
+    }
+
+    a:hover {
+        border-bottom-color: orange;
+    }
+
+    .info {
+        font-style: normal;
+        font-weight: normal;
+        text-transform: uppercase;
+        letter-spacing: normal;
+        line-height: 1.4em;
+        font-family: proxima-nova-bold;
+        font-size: 14px;
+        margin: 0 0 42px 0;
+        @include grid-media($single-col-grid-tablet-up) {
+            font-size: 18px;
+            margin: 0 0 30px 0;
+        }
+    }
+
+    h1 {
+        font-size: 36px;
+        margin-bottom: 30px;
+        @include grid-media($single-col-grid-tablet-up) {
+            font-size: 48px;
+        }
+        font-style: normal;
+        font-weight: normal;
+        text-transform: normal;
+        letter-spacing: -0.1;
+        line-height: 1.4em;
+        font-family: code_pro_demoregular;
+        a {
+            border-bottom: 5px solid #0000ff;
+            box-shadow: inset 0 -5px 0 #ddd;
+        }
+        a:hover {
+            border-bottom: 5px solid orange;
+        }
+    }
+
+    .body {
+        *+* {
+            margin: 1.25em 0 0 0;
+        }
+
+        p, ul li {
+            color: #111;
+            font-size: 1.16em;
+            @include grid-media($single-col-grid-tablet-up) {
+                font-size: 1.34em;
+            }
+            font-style: normal;
+            font-weight: normal;
+            text-transform: normal;
+            letter-spacing: normal;
+            line-height: 1.54em;
+            padding: 2px 0px 4px 0px;
+            font-family: proxima-nova;
+
+            strong {
+                font-family: proxima-nova-semibold;
+                font-weight: normal;
+            }
+        }
+
+        ul, ul li {
+            margin: 2px 0 0 0;
+        }
+
+        ul li ul {
+            font-size: initial;
+        }
+
+        code {
+            font-family: Menlo,Monaco,Consolas,"Courier New",Courier,monospace;
+            padding: 1px 4px 1px 4px;
+            font-size: .87em;
+            background-color: #f4f4f4;
+            color: #000;
+        }
+
+        pre {
+            // margin-top: 32px;
+            margin-bottom: 36px;
+        }
+
+        pre code {
+            color: #000;
+            border: none;
+            border-radius: 0px;
+            white-space: pre;
+            background-color: #f4f4f4;
+            display: block;
+            margin: 0;
+            padding: 1.5em;
+            overflow-x: scroll;
+            line-height: 1.4em;
+            font-family: Menlo,Monaco,Consolas,"Courier New",Courier,monospace;
+            font-size: 0.9em;
+            @include grid-media($single-col-grid-tablet-up) {
+                font-size: 1.078em;
+            }
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            line-height: 1.25em;
+        }
+
+        h2 {
+            font-family: code_pro_demoregular;
+            @include grid-media($single-col-grid-tablet-up) {
+                font-size: 2em;
+            }
+        }
+
+        h3 {
+            font-size: 1.5em;
+        }
+
+        h4 {
+            font-size: 1.15em;
+        }
+
+        h5 {
+            font-size: 1.15em;
+        }
+
+        h6 {
+            font-size: 1.15em;
+        }
+
+        blockquote {
+            padding: 2px 20px 2px 20px;
+            margin-left: 0px;
+            margin-right: 0;
+            background-color: #ffe7ff;
+            p {
+                color: blueviolet;
+            }
+        }
+
+        table {
+            font-size: 1.2em;
+            width: 100%;
+            font-family: 'proxima-nova';
+            color: #111;
+            border: 2px solid #ddd;
+            border-right: none;
+            padding: 18px 20px;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-bottom: 40px;
+            thead {
+                background-color: #eee;
+                font-family: 'proxima-nova-semibold';
+                tr th {
+                    font-size: .9em;
+                    color: #111;
+                    padding: 12px 20px;
+                    border-right: 2px solid #ddd;
+                }
+            }
+            tbody tr {
+                border-top: 2px solid #ddd;
+                td {
+                    padding: 14px 20px;
+                    border-right: 2px solid #ddd;
+                }
+            }
+        }
+    }
+}
+
+.entry.pagination {
+    a {
+        font-family: proxima-nova-semibold;
+        font-size: 1.42em;
+        text-align: right;
+        margin-right: 20px;
+    }
+}
+
+.above-body {
+    width: $single-col-centered-width;
+    margin: 0 auto;
+    @include grid-media($single-col-grid-low) {
+        width: 100%;
+    }
+    font-family: code_pro_demoregular;
+    padding-top: 42px;
+    line-height: 2em;
+    margin-bottom: .5em;
+
+    a {
+        color: #ddd;
+        font-size: 1.33rem;
+        border-bottom: 5px solid #0000ff;
+    }
+    a:hover {
+        color: #0000ff;
+        border-bottom: 5px solid #ddd;
+    }
+}
+
+.tags {
+    .above-body {
+        line-height: 2em;
+        margin-bottom: 20px;
+
+        .home {
+            margin-bottom: 20px;
+        }
+    }
+    .entry {
+        margin-bottom: 42px!important;
+    }
+    padding-bottom: 42px!important;
+}
+
+.footer {
+    margin-top: 0;
+    padding: 62px 0px;
+    min-height: 380px;
+    background-color: #0000ff;
+    color: #fff;
+
+    a {
+        color: #fff;
+        border-bottom: 2px solid #fff;
+    }
+
+    a:hover {
+        border-bottom-color: orange;
+    }
+
+    .about {
+        font-family: proxima-nova;
+        color: #fff;
+        font-size: 1em;
+        line-height: 1.26em;
+
+        @include grid-media($single-col-grid-tablet-up) {
+            font-size: 1.5em;
+        }
+
+        b {
+            font-family: proxima-nova-semibold;
+            font-weight: normal;
+        }
+    }
+}
+
+.header {
+    height: $gutter-hi;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    background-color: transparent;
+    width: 100%;
+
+    .menu {
+        text-align: right;
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: inline-block;
+
+            li {
+                display: inline-block;
+                zoom: 1;
+                vertical-align: middle;
+                padding: 0;
+                margin: 0;
+
+                a {
+                    color: #0000ff;
+                    font-size: 1.8rem;
+                    padding: .5em 1em;
+                    display: inline-block;
+                }
+
+                a:hover {
+                    background-color: #0000ff;
+                    color: #fff;
+                }
+
+            }
+        }
+    }
+}
+
+.home {
+    .content {
+        padding-top: 88px!important;
+        padding-bottom: 20px!important;
+    }
+    .header {
+        background-color: #c8c8c8;
+    }
+
+    .menu {
+        display: none;
+        @include grid-media($single-col-grid-tablet-up) {
+            display: block;
+        }
+
+        ul > li > a {
+            color: #fff;
+            &:hover {
+                background-color: #fff;
+                color: #0000ff;
+            }
+        }
+    }
+}
