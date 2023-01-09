@@ -119,7 +119,7 @@ jobs:
       run: YES=1 ./sync-public-bucket .
 
     - name: Clean artifacts
-      run: rm -fr priv
+      run: rm -fr priv public_bucket_policy.json
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
