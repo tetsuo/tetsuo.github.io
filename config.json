@@ -1,0 +1,24 @@
+{
+  "debug": false,
+  "locale": "en_US",
+  "entriesPerPage": 8,
+  "templatePath": "templates",
+  "siteName": "ogunz",
+  "title": "ogu.nz",
+  "domain": "ogu.nz",
+  "description": "",
+  "twitterId": "xxy998",
+  "email": "ogunduz@gmail.com",
+  "analyticsId": "UA-1238030-3",
+  "showComments": true,
+  "links": [
+    {
+      "url": "https://github.com/onur1",
+      "icon": "icon-github-circled"
+    },
+    {
+      "url": "https://twitter.com/xxy998",
+      "icon": "icon-twitter"
+    }
+  ]
+}
