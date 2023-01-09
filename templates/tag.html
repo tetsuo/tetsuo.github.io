@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="single-col-grid content tags">
+		<div class="col">
+			<div class="above-body">
+				<div class="home"><a href="/">home</a></div>
+				<a href="/{{_tag}}.html">{{ 'Posts tagged with ' + _tag }}</a>
+			</div>
+		</div>
+		<div class="col">
+			{% for entry in entries %}
+			<div class="centered entry" id="e-{{ entry['slug'] }}">
+				<h1><a href="/{{ entry['slug'] }}.html">{{ escape(entry['title']) }}</a></h1>
+				<div class="info">{{ locale.format_date(entry['published'], full_format=True, shorter=True) }}{% if entry['tags'] %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": tag, "escaped_tag": escape(tag)} for tag in sorted(entry['tags'])]) }}{% end %}</div>
+			</div>
+			{% end %}
+		</div>
+	</div>
+{% end %}
+
+{% block title %}{{ _tag }} &mdash; {{ settings['title'] }}{% end %}
+{% block head_alternate %}
+<link rel="alternate" href="/{{ _tag }}.xml" type="application/atom+xml" title="{{ _tag }} - {{ settings['title'] }}"/>
+{% end %}

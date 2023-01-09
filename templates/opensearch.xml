@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+    <ShortName>{{ settings['title'] }}</ShortName>
+    <Description>Search {{ settings['title'] }}</Description>
+    <Url type="text/html" template="https://www.google.com/search?domains={{ settings['domain'] }}&amp;sitesearch={{ settings['domain'] }}&amp;q={searchTerms}"/>
+    <Image type="image/png">https://{{ settings['domain'] }}/favicon.ico</Image>
+    <SyndicationRight>open</SyndicationRight>
+    <InputEncoding>UTF-8</InputEncoding>
+    <OutputEncoding>UTF-8</OutputEncoding>
+</OpenSearchDescription>
