@@ -24,6 +24,7 @@ def read_markdown(file):
         "body_html": md,
         "tags": entry['tags'].split(','),
         "published": datetime.datetime.fromisoformat(entry['published']),
+        "updated": datetime.datetime.fromisoformat(entry['updated']),
     })
 
     return entry
