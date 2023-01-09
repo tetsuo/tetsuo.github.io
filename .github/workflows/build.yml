@@ -116,7 +116,7 @@ jobs:
 
     - name: Sync public S3 bucket # https://github.com/terraform-providers/terraform-provider-aws/issues/13393
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: YES=1 ../sync-public-bucket .
+      run: YES=1 ./sync-public-bucket .
 
     - name: Clean artifacts
       run: rm -fr priv
