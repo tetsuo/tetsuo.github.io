@@ -4,3 +4,6 @@ public/*.xml
 public/*.json
 .vscode
 terraform/.terraform
+public_bucket_policy.json
+priv
+tmp
