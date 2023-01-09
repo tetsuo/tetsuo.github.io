@@ -1,0 +1,7 @@
+public/assets/styles.css
+public/*.html
+public/*.xml
+public/*.json
+public/assets/Code_Pro*
+public/assets/proxima*
+.vscode
