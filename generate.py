@@ -20,7 +20,7 @@ def read_markdown(file):
     entry = md.metadata
 
     entry.update({
-        "slug": os.path.splitext(file)[0].lower(),
+        "slug": os.path.splitext(os.path.basename(file))[0].lower(),
         "body_html": md,
         "tags": entry['tags'].split(','),
         "published": datetime.datetime.fromisoformat(entry['published']),
@@ -130,6 +130,7 @@ def main(args=None):
         "debug": config['debug'],
         "locale": locale.get(config['locale']),
         "entries_per_page": config['entriesPerPage'],
+        "articles_path": config['articlesPath'],
         "settings": {
             "site_name": config['siteName'],
             "domain": config['domain'],
@@ -143,7 +144,8 @@ def main(args=None):
         },
     }
 
-    entries = [read_markdown(file) for file in glob.glob("*.md")]
+    entries = [read_markdown(file)
+               for file in glob.glob(config['articles_path'])]
     entries.sort(key=lambda e: e['published'], reverse=True)
 
     write_entries(entries, config, template_loader)

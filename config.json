@@ -3,6 +3,7 @@
   "locale": "en_US",
   "entriesPerPage": 8,
   "templatePath": "templates",
+  "articlesPath": "articles/*.md",
   "siteName": "ogunz",
   "title": "ogu.nz",
   "domain": "ogu.nz",
