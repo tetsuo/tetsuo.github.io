@@ -100,6 +100,20 @@ def write_entries(entries, config, template_loader):
         with open("public/%s.html" % entry['slug'], "wb") as f:
             f.write(b)
 
+        json_entries = [
+            {
+                "title": entry['title'],
+                "body": entry['body'],
+                "published": entry['published'].isoformat(),
+                "updated": entry['updated'].isoformat(),
+                "tags": entry['tags'],
+                "link": "https://" + config['settings']['domain'] + "/" + entry['slug'] + ".html",
+            }
+            for entry in args['entries']]
+
+        with open("public/%s.json" % entry['slug'], "w") as f:
+            json.dump({"entries": json_entries}, f)
+
 
 def write_opensearch_xml(config, template_loader):
     t = template_loader.load("opensearch.xml")
