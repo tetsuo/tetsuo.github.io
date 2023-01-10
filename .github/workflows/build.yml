@@ -30,9 +30,9 @@ jobs:
         fetch-depth: 0
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: 0.14.11
+        terraform_version: 1.2.3
         terraform_wrapper: false # https://github.com/hashicorp/setup-terraform/issues/20
 
     - name: Set up NodeJS
