@@ -86,6 +86,17 @@ def write_tags(entries, config, template_loader):
             f.write(b)
 
 
+def to_json_entry(entry, config):
+    return {
+        "title": entry['title'],
+        "body": entry['body'],
+        "published": entry['published'].isoformat(),
+        "updated": entry['updated'].isoformat(),
+        "tags": entry['tags'],
+        "link": "https://" + config['settings']['domain'] + "/" + entry['slug'] + ".html",
+    }
+
+
 def write_entries(entries, config, template_loader):
     t = template_loader.load("entry.html")
 
@@ -100,16 +111,8 @@ def write_entries(entries, config, template_loader):
         with open("public/%s.html" % entry['slug'], "wb") as f:
             f.write(b)
 
-        json_entries = [
-            {
-                "title": entry['title'],
-                "body": entry['body'],
-                "published": entry['published'].isoformat(),
-                "updated": entry['updated'].isoformat(),
-                "tags": entry['tags'],
-                "link": "https://" + config['settings']['domain'] + "/" + entry['slug'] + ".html",
-            }
-            for entry in args['entries']]
+        json_entries = [to_json_entry(entry, config)
+                        for entry in args['entries']]
 
         with open("public/%s.json" % entry['slug'], "w") as f:
             json.dump({"entries": json_entries}, f)
