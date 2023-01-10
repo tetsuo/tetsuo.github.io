@@ -12,16 +12,16 @@ def read_markdown(file):
         body = f.read()
         f.close()
 
-    md = markdown(
+    html = markdown(
         body,
         extras=["fenced-code-blocks", "tables", "metadata"]
     )
 
-    entry = md.metadata
+    entry = html.metadata
 
     entry.update({
         "slug": os.path.splitext(os.path.basename(file))[0].lower(),
-        "body_html": md,
+        "body": html,
         "tags": entry['tags'].split(','),
         "published": datetime.datetime.fromisoformat(entry['published']),
         "updated": datetime.datetime.fromisoformat(entry['updated']),

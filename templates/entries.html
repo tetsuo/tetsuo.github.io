@@ -23,7 +23,7 @@
 				{% if entry['tags'] %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": tag, "escaped_tag": escape(tag)} for tag in sorted(entry['tags'])]) }}{% end %}
 			</div>
 
-			<div class="body">{{ entry['body_html'] }}</div>
+			<div class="body">{{ entry['body'] }}</div>
 
 			{% if settings['comments'] %}
 			<div class="discussion">
