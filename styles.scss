@@ -472,11 +472,6 @@ iframe {
     }
 
     .menu {
-        display: none;
-        @include grid-media($single-col-grid-tablet-up) {
-            display: block;
-        }
-
         ul > li > a {
             color: #fff;
             &:hover {
