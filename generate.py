@@ -195,6 +195,19 @@ class Generator:
         with open("public/opensearch.xml", "wb") as f:
             f.write(b)
 
+        t = self.template_loader.load("sitemap.xml")
+
+        sitemap_entries: list[str] = []
+        sitemap_entries.extend([str(i+2) for i in list(range(pages_len-1))])
+        sitemap_entries.extend(list(entries_by_tag.keys()))
+        sitemap_entries.extend([e.slug for e in self.entries])
+
+        b = t.generate(**{"settings": self.settings,
+                       "entries": sitemap_entries})
+
+        with open("public/sitemap.xml", "wb") as f:
+            f.write(b)
+
 
 def main(args=None):
     if args is None:
