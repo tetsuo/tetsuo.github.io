@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 {% set date_format = "%Y-%m-%dT%H:%M:%SZ" %}
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en">
-  <title type="text">{{ _tag }} — {{ settings.title }}</title>
   <updated>{{ max(e.updated for e in entries).strftime(date_format) }}</updated>
   {% if _tag %}
+  <title type="text">{{ _tag }} — {{ settings.title }}</title>
   <id>https://{{ settings.domain }}/{{ _tag }}.xml</id>
   <link rel="alternate" href="https://{{ settings.domain }}/{{ _tag }}.html" title="{{ _tag }} — {{ settings.title }}" type="text/html"/>
   <link rel="self" href="https://{{ settings.domain }}/{{ _tag }}.xml" title="{{ _tag }} — {{ settings.title }}" type="application/atom+xml"/>
   {% else %}
+  <title type="text">{{ settings.title }}</title>
   <id>https://{{ settings.domain }}/feed.xml</id>
   <link rel="alternate" href="https://{{ settings.domain }}" title="{{ settings.title }}" type="text/html"/>
   <link rel="self" href="https://{{ settings.domain }}/feed.xml" title="{{ settings.title }}" type="application/atom+xml"/>
