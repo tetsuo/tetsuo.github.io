@@ -1,40 +1,39 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ settings["title"] }}{% end %}</title>
+  <title>{% block title %}{{ settings.title }}{% end %}</title>
   <link rel="shortcut icon" href="/favicon.ico" type="image/png"/>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
   <meta name="robots" content="index,follow" />
   <meta name="googlebot" content="index,follow" />
   {% block head_alternate %}
-  <link rel="alternate" href="/feed.xml" type="application/atom+xml" title="{{ settings['title'] }}"/>
+  <link rel="alternate" href="/feed.xml" type="application/atom+xml" title="{{ settings.title }}"/>
   {% end %}
-  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="{{ settings['domain'] }} Search"/>
+  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="{{ settings.domain }} Search"/>
   {% block head_extra %}
-  <meta name="title" content="{{ settings['title'] }}" />
-  <meta name="description" content="{{ settings['description'] }}" />
+  <meta name="title" content="{{ settings.title }}" />
+  <meta name="description" content="{{ settings.description }}" />
   {% end %}
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:site" content="{{ settings['author'] }}" />
-  <meta name="twitter:creator" content="{{ settings['author'] }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@{{ settings.author }}" />
+  <meta name="twitter:creator" content="@{{ settings.author }}" />
   <meta property="og:type" content="website" />
   <meta
     property="og:title"
-    content="{{ settings['title'] }}"
+    content="{{ settings.title }}"
   />
   <meta
     property="og:description"
-    content="{{ settings['description'] }}"
+    content="{{ settings.description }}"
   />
   <!-- TODO <meta
     property="og:image"
     content="https://somebigimage.png"
   /> -->
-  <meta property="og:site_name" content="{{ settings['site_name'] }}" />
-  <meta property="author" content="{{ settings['author'] }}" />
+  <meta property="og:site_name" content="{{ settings.site_name }}" />
+  <meta property="author" content="{{ settings.author }}" />
   <meta property="keywords" content="" />
   <link href="/assets/tango.css" type="text/css" rel="stylesheet">
   <link href="/assets/fontello/css/fontello.css" type="text/css" rel="stylesheet">
@@ -43,10 +42,10 @@
     {
       "@context": "https://schema.org",
       "@type": "Person",
-      "name": "{{ settings['domain'] }}",
-      "email": "{{ settings['email'] }}",
-      "url": "https://{{ settings['domain'] }}",
-      "sameAs": ["https://twitter.com/{{ settings['author'] }}"]
+      "name": "{{ settings.domain }}",
+      "email": "{{ settings.email }}",
+      "url": "https://{{ settings.domain }}",
+      "sameAs": ["https://twitter.com/{{ settings.author }}"]
     }
   </script>
 </head>
@@ -55,7 +54,7 @@
   <div class="header">
     <div class="menu">
       <ul>
-    		{% for link in settings['links'] %}
+    		{% for link in settings.links %}
         <li><a href="{{ link['url'] }}" target="_blank"><i class="icon {{ link['icon'] }}"></i></a></li>
         {% end %}
       </ul>
@@ -67,7 +66,7 @@
   <div class="footer double-col-grid">
     <div class="col about">
       <p>I am a freelance software engineer based in the Netherlands.</p>
-      <p>Inquire to <a href="mailto:{{ settings['email'] }}">{{ settings['email'] }}</a>.</p>
+      <p>Inquire to <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>.</p>
       <p>2023 &mdash; Rotterdam</p>
     </div>
   </div>
@@ -78,7 +77,7 @@
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', '{{ settings["ga_id"] }}', 'auto');
+  ga('create', '{{ settings.ga_id }}', 'auto');
   ga('send', 'pageview');
 </script>
 {% end %}

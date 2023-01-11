@@ -2,7 +2,7 @@
 
 {% extends "entries.html" %}
 
-{% block title %}{{ escape(entries[0]['title']) }} &mdash; {{ settings['title'] }}{% end %}
+{% block title %}{% if len(entries) > 0 %}{{ escape(entries[0].title) }} — {{ settings.title }}{% end %}{% end %}
 
 {% block above_body %}
 <div class="single-col-grid">
@@ -17,14 +17,16 @@
 {% block above_content %}{% end %}
 {% block below_content %}{% end %}
 
+{% if len(entries) > 0 %}
 {% block head_extra %}
-<meta name="title" content="{{ escape(entries[0]['title']) }} - {{ settings['title'] }}" />
-<meta name="description" content="{{ escape(entries[0]['title']) }}" />
+<meta name="title" content="{{ escape(entries[0].title) }} — {{ settings.title }}" />
+<meta name="description" content="{{ escape(entries[0].title) }}" />
+{% end %}
 {% end %}
 
 {% block bottom %}
 	{% if len(entries) > 0 %}
-		{% if  settings['comments'] %}
+		{% if  settings.comments %}
 			{% if debug %}
 			<script type="text/javascript">
 				var disqus_developer = true;

@@ -1,5 +1,9 @@
-from tornado import template, locale
+from dataclasses import dataclass
 from markdown2 import markdown
+from tornado import template, locale
+from tornado.locale import Locale
+from tornado.template import Loader, Template
+from typing import Any
 import os
 import json
 import glob
@@ -7,124 +11,178 @@ import sys
 import datetime
 
 
-def read_markdown(file):
-    with open(file, "r") as f:
-        body = f.read()
+@dataclass
+class Entry:
+    title: str
+    slug: str
+    body: str
+    tags: list[str]
+    published: datetime.datetime
+    updated: datetime.datetime
+    link: str
+
+    def to_json(self, include_body=True):
+        value = {
+            "slug": self.slug,
+            "title": self.title,
+            "published": self.published.isoformat(),
+            "updated": self.updated.isoformat(),
+            "tags": self.tags,
+            "link": self.link,
+        }
+
+        if include_body:
+            value["body"] = self.body
+
+        return value
+
+
+def entry_from_markdown(filename: str, domain_name: str) -> Entry:
+    with open(filename, "r") as f:
+        data = f.read()
         f.close()
 
-    html = markdown(
-        body,
+    body = markdown(
+        data,
         extras=["fenced-code-blocks", "tables", "metadata"]
     )
 
-    entry = html.metadata
+    slug = os.path.splitext(os.path.basename(filename))[0].lower()
 
-    entry.update({
-        "slug": os.path.splitext(os.path.basename(file))[0].lower(),
-        "body": html,
-        "tags": entry['tags'].split(','),
-        "published": datetime.datetime.fromisoformat(entry['published']),
-        "updated": datetime.datetime.fromisoformat(entry['updated']),
-    })
+    return Entry(
+        slug=slug,
+        body=body,
+        tags=body.metadata['tags'].split(','),
+        title=body.metadata['title'],
+        published=datetime.datetime.fromisoformat(body.metadata['published']),
+        updated=datetime.datetime.fromisoformat(body.metadata['updated']),
+        link="https://" + domain_name + "/" + slug + ".html",
+    )
 
-    return entry
+
+@dataclass
+class Settings:
+    site_name: str
+    title: str
+    description: str
+    domain: str
+    author: str
+    email: str
+    ga_id: str
+    comments: str
+    links: list[str]
 
 
-def write_pages(entries, config, template_loader):
-    t = template_loader.load("entries.html")
+@dataclass
+class Generator:
+    debug: bool
+    locale: Locale
+    entries_per_page: int
+    template_loader: Loader
+    entries: list[Entry]
+    settings: Settings
 
-    pages = []
-
-    for i, entry in enumerate(entries):
-        if i % config['entries_per_page'] == 0:
-            pages.append([])
-        pages[len(pages) - 1].append(entry)
-
-    pages_len = len(pages)
-
-    for i, page in enumerate(pages):
-        page_num = i + 1
+    def _generate(
+        self,
+        t: Template,
+        entries: list[Entry],
+        name: str,
+        extra_args: dict[str, Any] = {},
+        include_json_body: bool = False
+    ):
         args = {
-            "entries": page,
-            "more": page_num != pages_len,
-            "page": page_num,
+            "entries": entries,
+            "settings": self.settings,
+            "debug": self.debug,
+            "locale": self.locale,
         }
-        args.update(config)
+        args.update(extra_args)
 
         b = t.generate(**args)
 
-        with open("public/%d.html" % page_num, "wb") as f:
+        with open("public/%s.html" % name, "wb") as f:
             f.write(b)
 
-        if i == 0:
-            with open("public/index.html", "wb") as f:
+        json_obj = {"entries": [
+            entry.to_json(include_body=include_json_body) for entry in entries
+        ]}
+
+        with open("public/%s.json" % name, "w") as f:
+            json.dump(json_obj, f)
+
+    def run(self) -> None:
+        t = self.template_loader.load("entry.html")
+
+        for entry in self.entries:
+            self._generate(t, [entry], entry.slug, include_json_body=True)
+
+        pages: list[list[Entry]] = []
+
+        for i, entry in enumerate(self.entries):
+            if i % self.entries_per_page == 0:
+                pages.append([])
+            pages[len(pages) - 1].append(entry)
+
+        pages_len = len(pages)
+
+        t = self.template_loader.load("entries.html")
+
+        for i, page in enumerate(pages):
+            page_num = i + 1
+            self._generate(t, page, str(page_num), extra_args={
+                           "more": page_num != pages_len, "page": page_num})
+
+        index_entries = pages[0] if pages_len > 0 else []
+
+        self._generate(
+            t, index_entries, "index",
+            extra_args={
+                "more": pages_len > 1,
+                "page": 1
+            }
+        )
+
+        entries_by_tag: dict[str, list[Entry]] = {}
+
+        for entry in self.entries:
+            for tag in entry.tags:
+                if tag not in entries_by_tag:
+                    entries_by_tag[tag] = []
+                entries_by_tag[tag].append(entry)
+
+        t = self.template_loader.load("tag.html")
+
+        for tag in entries_by_tag:
+            self._generate(
+                t, entries_by_tag[tag], tag,
+                extra_args={"_tag": tag}
+            )
+
+        t = self.template_loader.load("atom.xml")
+
+        b = t.generate(**{
+            "entries": index_entries,
+            "settings": self.settings,
+            "_tag": None
+        })
+        with open("public/feed.xml", "wb") as f:
+            f.write(b)
+
+        for tag in entries_by_tag:
+            b = t.generate(**{
+                "entries": entries_by_tag[tag],
+                "settings": self.settings,
+                "_tag": tag
+            })
+            with open("public/%s.xml" % tag, "wb") as f:
                 f.write(b)
 
+        t = self.template_loader.load("opensearch.xml")
 
-def write_tags(entries, config, template_loader):
-    t = template_loader.load("tag.html")
+        b = t.generate(**{"settings": self.settings})
 
-    tags = {}
-
-    for entry in entries:
-        for tag in entry['tags']:
-            if tag not in tags:
-                tags[tag] = []
-            tags[tag].append(entry)
-
-    for tag in tags:
-        tag_entries = tags[tag]
-        args = {
-            "entries": tag_entries,
-            "_tag": tag,
-        }
-        args.update(config)
-
-        b = t.generate(**args)
-
-        with open("public/%s.html" % tag, "wb") as f:
+        with open("public/opensearch.xml", "wb") as f:
             f.write(b)
-
-
-def to_json_entry(entry, config):
-    return {
-        "title": entry['title'],
-        "body": entry['body'],
-        "published": entry['published'].isoformat(),
-        "updated": entry['updated'].isoformat(),
-        "tags": entry['tags'],
-        "link": "https://" + config['settings']['domain'] + "/" + entry['slug'] + ".html",
-    }
-
-
-def write_entries(entries, config, template_loader):
-    t = template_loader.load("entry.html")
-
-    for entry in entries:
-        args = {
-            "entries": [entry],
-        }
-        args.update(config)
-
-        b = t.generate(**args)
-
-        with open("public/%s.html" % entry['slug'], "wb") as f:
-            f.write(b)
-
-        json_entries = [to_json_entry(entry, config)
-                        for entry in args['entries']]
-
-        with open("public/%s.json" % entry['slug'], "w") as f:
-            json.dump({"entries": json_entries}, f)
-
-
-def write_opensearch_xml(config, template_loader):
-    t = template_loader.load("opensearch.xml")
-
-    b = t.generate(**config)
-
-    with open("public/opensearch.xml", "wb") as f:
-        f.write(b)
 
 
 def main(args=None):
@@ -139,36 +197,32 @@ def main(args=None):
         config_file = args[0]
 
     with open(config_file) as f:
-        config = json.load(f)
+        c = json.load(f)
 
-    template_loader = template.Loader(config['templatePath'], autoescape=None)
+    entries = [
+        entry_from_markdown(f, c['domain'])
+        for f in glob.glob(c['articlesPath'])
+    ]
+    entries.sort(key=lambda e: e.published, reverse=True)
 
-    config = {
-        "debug": config['debug'],
-        "locale": locale.get(config['locale']),
-        "entries_per_page": config['entriesPerPage'],
-        "articles_path": config['articlesPath'],
-        "settings": {
-            "site_name": config['siteName'],
-            "domain": config['domain'],
-            "title": config['title'],
-            "description": config['description'],
-            "author": config['twitterId'],
-            "email": config['email'],
-            "ga_id": config['analyticsId'],
-            "comments": config['showComments'],
-            "links": config['links']
-        },
-    }
-
-    entries = [read_markdown(file)
-               for file in glob.glob(config['articles_path'])]
-    entries.sort(key=lambda e: e['published'], reverse=True)
-
-    write_entries(entries, config, template_loader)
-    write_pages(entries, config, template_loader)
-    write_tags(entries, config, template_loader)
-    write_opensearch_xml(config, template_loader)
+    Generator(
+        debug=c['debug'],
+        locale=locale.get(c['locale']),
+        entries_per_page=c['entriesPerPage'],
+        entries=entries,
+        template_loader=template.Loader(c['templatePath'], autoescape=None),
+        settings=Settings(
+            site_name=c['siteName'],
+            domain=c['domain'],
+            title=c['title'],
+            description=c['description'],
+            author=c['twitterId'],
+            email=c['email'],
+            ga_id=c['analyticsId'],
+            comments=c['showComments'],
+            links=c['links'],
+        )
+    ).run()
 
 
 if __name__ == "__main__":

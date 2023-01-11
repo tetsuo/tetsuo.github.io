@@ -1,4 +1,4 @@
-{% block title %}blog{{ '/'+str(page) if page!=1 else '' }} &mdash; {{ settings['title'] }}{% end %}
+{% block title %}{{ str(page)+' — ' if page!=1 else '' }}{{ settings.title }}{% end %}
 
 {% block extra_class %}home{% end %}
 
@@ -12,20 +12,20 @@
 
 	<div class="col">
 		{% for entry in entries %}
-		<div class="centered entry" id="e-{{ entry['slug'] }}">
+		<div class="centered entry" id="e-{{ entry.slug }}">
 
 			<div class="title">
-				<h1><a href="/{{ entry['slug'] }}.html">{{ escape(entry['title']) }}</a></h1>
+				<h1><a href="/{{ entry.slug }}.html">{{ escape(entry.title) }}</a></h1>
 			</div>
 
 			<div class="info">
-				{{ locale.format_date(entry['published'], full_format=True, shorter=True) }}
-				{% if entry['tags'] %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": tag, "escaped_tag": escape(tag)} for tag in sorted(entry['tags'])]) }}{% end %}
+				{{ locale.format_date(entry.published, full_format=True, shorter=True) }}
+				{% if entry.tags %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": tag, "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}{% end %}
 			</div>
 
-			<div class="body">{{ entry['body'] }}</div>
+			<div class="body">{{ entry.body }}</div>
 
-			{% if settings['comments'] %}
+			{% if settings.comments %}
 			<div class="discussion">
 				<div id="disqus_thread"></div>
 			</div>
@@ -38,7 +38,7 @@
     {% if page > 1 or more %}
       <div class="centered entry pagination">
         {% if page > 1 %}
-          <a href="/{{ page-1 }}.html">← Newer</a>
+          <a href="/{{ (page-1)+'.html' if page!=2 else '' }}">← Newer</a>
           {% end %}
           {% if more %}
           <a href="/{{ page+1 }}.html">Older →</a>

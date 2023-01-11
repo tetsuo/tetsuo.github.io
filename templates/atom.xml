@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+{% set date_format = "%Y-%m-%dT%H:%M:%SZ" %}
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en">
+  <title type="text">{{ _tag }} — {{ settings.title }}</title>
+  <updated>{{ max(e.updated for e in entries).strftime(date_format) }}</updated>
+  {% if _tag %}
+  <id>https://{{ settings.domain }}/{{ _tag }}.xml</id>
+  <link rel="alternate" href="https://{{ settings.domain }}/{{ _tag }}.html" title="{{ _tag }} — {{ settings.title }}" type="text/html"/>
+  <link rel="self" href="https://{{ settings.domain }}/{{ _tag }}.xml" title="{{ _tag }} — {{ settings.title }}" type="application/atom+xml"/>
+  {% else %}
+  <id>https://{{ settings.domain }}/feed.xml</id>
+  <link rel="alternate" href="https://{{ settings.domain }}" title="{{ settings.title }}" type="text/html"/>
+  <link rel="self" href="https://{{ settings.domain }}/feed.xml" title="{{ settings.title }}" type="application/atom+xml"/>
+  {% end %}
+  {% for entry in entries %}
+    <entry>
+      <id>tag:{{ settings.domain }},{{ entry.published.strftime("%Y-%m-%d") }}:/{{ entry.slug }}</id>
+      <link href="{{ entry.link }}" rel="alternate" type="text/html"/>
+      <title type="text">{{ escape(entry.title) }}</title>
+      <updated>{{ entry.updated.strftime(date_format) }}</updated>
+      <published>{{ entry.published.strftime(date_format) }}</published>
+      <author><name>{{ settings.author }}</name></author>
+      <content type="html">{{ escape(entry.body) }}</content>
+      {% for tag in entry.tags %}
+      <category term="{{ escape(tag) }}"></category>
+      {% end %}
+    </entry>
+  {% end %}
+</feed>
