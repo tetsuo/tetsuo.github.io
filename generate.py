@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from markdown2 import markdown
 from tornado import template, locale
 from tornado.locale import Locale
@@ -16,6 +16,7 @@ class Entry:
     title: str
     slug: str
     body: str
+    body_external: str
     tags: list[str]
     published: datetime.datetime
     updated: datetime.datetime
@@ -32,7 +33,7 @@ class Entry:
         }
 
         if include_body:
-            value["body"] = self.body
+            value["body"] = self.body_external
 
         return value
 
@@ -47,11 +48,19 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         extras=["fenced-code-blocks", "tables", "metadata"]
     )
 
+    # highlightjs-lang disables pygments which is needed for
+    # preserving spaces in <code> blocks for atom feeds
+    body_external = markdown(
+        data,
+        extras=["fenced-code-blocks", "tables", "metadata", "highlightjs-lang"]
+    )
+
     slug = os.path.splitext(os.path.basename(filename))[0].lower()
 
     return Entry(
         slug=slug,
         body=body,
+        body_external=body_external,
         tags=body.metadata['tags'].split(','),
         title=body.metadata['title'],
         published=datetime.datetime.fromisoformat(body.metadata['published']),
@@ -161,19 +170,21 @@ class Generator:
         t = self.template_loader.load("atom.xml")
 
         b = t.generate(**{
-            "entries": index_entries,
+            "entries": [replace(e, body=e.body_external) for e in index_entries],
             "settings": self.settings,
             "_tag": None
         })
+
         with open("public/feed.xml", "wb") as f:
             f.write(b)
 
         for tag in entries_by_tag:
             b = t.generate(**{
-                "entries": entries_by_tag[tag],
+                "entries": [replace(e, body=e.body_external) for e in entries_by_tag[tag]],
                 "settings": self.settings,
                 "_tag": tag
             })
+
             with open("public/%s.xml" % tag, "wb") as f:
                 f.write(b)
 
