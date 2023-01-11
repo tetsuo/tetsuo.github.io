@@ -20,7 +20,10 @@
       <title type="text">{{ escape(entry.title) }}</title>
       <updated>{{ entry.updated.strftime(date_format) }}</updated>
       <published>{{ entry.published.strftime(date_format) }}</published>
-      <author><name>{{ settings.author }}</name></author>
+      <author>
+        <name>{{ settings.author }}</name>
+        <uri>https://twitter.com/{{ settings.author }}</uri>
+      </author>
       <content type="html">{{ escape(entry.body) }}</content>
       {% for tag in entry.tags %}
       <category term="{{ escape(tag) }}"></category>
