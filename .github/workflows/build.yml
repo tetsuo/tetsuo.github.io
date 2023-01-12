@@ -76,9 +76,14 @@ jobs:
     - name: Build favicons
       run: |
         mkdir -p tmp
-        convert -size 2049X2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \
-          -fill '#0000ff' -draw 'circle 1024,1024 1024,3' \
-          -colorspace sRGB tmp/circle_sRGB.png
+        convert -size 2049x2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \
+          -fill '#fff' -stroke '#0000ff' -strokewidth 300 -draw 'circle 1024,1024 1024,153' \
+          -fill 'black' -stroke '#1ba9e4' -strokewidth 290 -draw 'circle 1024,1024 760,760' \
+          -alpha set -background none \
+          -wave 100x1900 \
+          -colorspace sRGB \
+          -distort SRT 8 \
+          tmp/circle_sRGB.png
         ./generate-favicons.js tmp/circle_sRGB.png
 
     - name: Build pages
