@@ -13,6 +13,7 @@
   <link rel="alternate" href="https://{{ settings.domain }}" title="{{ settings.title }}" type="text/html"/>
   <link rel="self" href="https://{{ settings.domain }}/feed.xml" title="{{ settings.title }}" type="application/atom+xml"/>
   {% end %}
+  <icon>https://{{ settings.domain }}/favicon-48x48.png</icon>
   {% for entry in entries %}
     <entry>
       <id>tag:{{ settings.domain }},{{ entry.published.strftime("%Y-%m-%d") }}:/{{ entry.slug }}</id>
