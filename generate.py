@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from dataclasses import dataclass, replace
 from markdown2 import markdown
