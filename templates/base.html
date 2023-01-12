@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ settings.title }}{% end %}</title>
-  <link rel="shortcut icon" href="/favicon.ico" type="image/png"/>
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
   <meta name="robots" content="index,follow" />
   <meta name="googlebot" content="index,follow" />
@@ -16,6 +16,7 @@
   <meta name="title" content="{{ settings.title }}" />
   <meta name="description" content="{{ settings.description }}" />
   {% end %}
+  {% include "favicons.html" %}
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="{{ settings.author }}" />
   <meta name="twitter:creator" content="{{ settings.author }}" />
