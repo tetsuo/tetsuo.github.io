@@ -1,9 +1,12 @@
-public/assets/styles.css
-public/*.html
-public/*.xml
-public/*.json
 .vscode
 terraform/.terraform
 public_bucket_policy.json
 priv
 tmp
+scripts
+public/*
+!public/assets/tango.css
+!public/assets/fontello
+!public/robots.txt
+templates/manifest.webmanifest
+templates/favicons.html
