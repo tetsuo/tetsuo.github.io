@@ -210,6 +210,12 @@ class Generator:
         with open("public/sitemap.xml", "wb") as f:
             f.write(b)
 
+        t = self.template_loader.load("manifest.webmanifest")
+
+        b = t.generate(**{"settings": self.settings})
+
+        with open("public/manifest.webmanifest", "wb") as f:
+            f.write(b)
 
         with open("public/robots.txt", "w") as f:
             f.write("User-agent: *\nAllow: /\n")
