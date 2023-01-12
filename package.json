@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "bourbon-neat": "^4.0.0",
+    "favicons": "7.0.2",
     "node-sass": "^8.0.0",
     "normalize-scss": "^7.0.1"
   }
