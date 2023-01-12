@@ -49,5 +49,13 @@
 
 	</div>
 </div>
+{% end %}
 
+{% block head_pagination %}
+{% if page > 1 %}
+<link rel="prev" href="https://{{ settings.domain }}/{{ page - 1 }}.html" />
+{% end %}
+{% if more %}
+<link rel="next" href="https://{{ settings.domain }}/{{ page + 1 }}.html" />
+{% end %}
 {% end %}
