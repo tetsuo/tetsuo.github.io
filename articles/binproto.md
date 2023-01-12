@@ -145,7 +145,7 @@ Each connection creates a channel: a channel is identified by a channel ID and a
 
 With that being said, authentication is out of scope, so the client ID will not be too relevant for this tutorial. We'll use the channel type however to specify a common language between the client and the server, namely the BLEACH protocol.
 
-##### The BLEACH protocol
+#### The BLEACH protocol
 
 Most protocols start with a handshake to exchange some initial information to set things up on the connected side, such as version, identity and capabilities. For the sake of simplicity, we'll do none of these things.
 
