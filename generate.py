@@ -211,6 +211,10 @@ class Generator:
             f.write(b)
 
 
+        with open("public/robots.txt", "w") as f:
+            f.write("User-agent: *\nAllow: /\n")
+
+
 def main(args=None):
     if args is None:
         args = sys.argv
