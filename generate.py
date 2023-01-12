@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from dataclasses import dataclass, replace
 from markdown2 import markdown
 from tornado import template, locale
