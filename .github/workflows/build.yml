@@ -73,6 +73,14 @@ jobs:
     - name: Install node modules
       run: npm install
 
+    - name: Build favicons
+      run: |
+        mkdir -p tmp
+        convert -size 2049x2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \                                       git/master ●
+          -fill '#0000ff' -draw 'circle 1024,1024 1024,3' \
+          -colorspace sRGB tmp/circle_sRGB.png
+        ./generate-favicons tmp/circle_sRGB.png
+
     - name: Build pages
       run: python generate.py config.json
 
