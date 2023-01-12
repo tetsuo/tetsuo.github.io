@@ -76,6 +76,9 @@ jobs:
     - name: Build favicons
       run: |
         cat /etc/ImageMagick-6/policy.xml
+        sudo sed -i '/\/policymap/i\<policy domain\=\"coder\" rights\=\"read\|write\" pattern\=\"\{GIF\,JPEG\,PNG\,WEBP\}\"\/\>' /etc/ImageMagick-6/policy.xml
+        sudo sed -i '/\/policymap/i\<policy domain\=\"delegate\" rights\=\"read\|write\" pattern\=\"\{GIF\,JPEG\,PNG\,WEBP\}\"\/\>' /etc/ImageMagick-6/policy.xml
+        sudo sed -i '/\/policymap/i\<policy domain\=\"filter\" rights\=\"read\|write\" pattern\=\"\{GIF\,JPEG\,PNG\,WEBP\}\"\/\>' /etc/ImageMagick-6/policy.xml
         mkdir -p tmp
         convert -size 2049X2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \                                       git/master ●
           -fill '#0000ff' -draw 'circle 1024,1024 1024,3' \
