@@ -77,7 +77,7 @@ jobs:
       run: |
         sudo apt install imagemagick
         mkdir -p tmp
-        convert -size 2049x2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \                                       git/master ●
+        convert -size 2049X2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \                                       git/master ●
           -fill '#0000ff' -draw 'circle 1024,1024 1024,3' \
           -colorspace sRGB tmp/circle_sRGB.png
         ./generate-favicons tmp/circle_sRGB.png
