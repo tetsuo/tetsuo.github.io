@@ -34,7 +34,7 @@
     content="https://somebigimage.png"
   /> -->
   <meta property="og:site_name" content="{{ settings.site_name }}" />
-  <meta property="author" content="{{ settings.author }}" />
+  <meta property="author" content="{{ settings.author_name }}" />
   <meta property="keywords" content="" />
   <link href="/assets/tango.css" type="text/css" rel="stylesheet">
   <link href="/assets/fontello/css/fontello.css" type="text/css" rel="stylesheet">
@@ -68,7 +68,7 @@
     <div class="col about">
       <p>I am a freelance software engineer based in the Netherlands.</p>
       <p>Inquire to <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>.</p>
-      <p>2023 &mdash; Rotterdam</p>
+      <p>2023 &mdash; {{ settings.author_name }}</p>
     </div>
   </div>
 

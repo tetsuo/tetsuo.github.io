@@ -78,6 +78,7 @@ class Settings:
     description: str
     domain: str
     author: str
+    author_name: str
     email: str
     ga_id: str
     comments: str
@@ -253,6 +254,7 @@ def main(args=None):
             title=c['title'],
             description=c['description'],
             author='@'+c['twitterId'],
+            author_name=c['authorName'],
             email=c['email'],
             ga_id=c['analyticsId'],
             comments=c['showComments'],

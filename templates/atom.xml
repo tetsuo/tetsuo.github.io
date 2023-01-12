@@ -22,7 +22,7 @@
       <updated>{{ entry.updated.strftime(date_format) }}</updated>
       <published>{{ entry.published.strftime(date_format) }}</published>
       <author>
-        <name>{{ settings.author }}</name>
+        <name>{{ settings.author_name }}</name>
         <uri>https://twitter.com/{{ settings.author }}</uri>
       </author>
       <content type="html">{{ escape(entry.body) }}</content>
