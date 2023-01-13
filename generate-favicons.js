@@ -26,7 +26,7 @@ const config = {
   scope: "/",
   start_url: "/",
   pixel_art: false,
-  manifestMaskable: false,
+  manifestMaskable: true,
   icons: {
     android: true,
     appleIcon: true,
