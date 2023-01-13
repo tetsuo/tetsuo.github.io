@@ -1,3 +1,4 @@
 markdown2==2.4.6
 Pygments==2.14.0
 tornado==6.2
+beautifulsoup4==4.11.1

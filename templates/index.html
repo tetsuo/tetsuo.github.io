@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="single-col-grid content index">
+		<div class="col">
+			{% for entry in entries %}
+				<div class="centered entry" id="e-{{ entry.slug }}">
+					<h1><a href="/{{ entry.slug }}.html">{{ escape(entry.title) }}</a></h1>
+					<div class="info">{{ locale.format_date(entry.published, full_format=True, shorter=True) }}{% if entry.tags %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": tag, "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}{% end %}</div>
+					<div class="body">{{ entry.subtitle }}</div>
+				</div>
+			{% end %}
+			{% if page > 1 or more %}
+			<div class="centered entry pagination">
+				{% if page > 1 %}
+					<a href="/{{ (page-1)+'.html' if page!=2 else '' }}">← Newer</a>
+					{% end %}
+					{% if more %}
+					<a href="/{{ page+1 }}.html">Older →</a>
+				{% end %}
+			</div>
+		{% end %}
+		</div>
+	</div>
+{% end %}
+
+{% block title %}{{ str(page)+' — ' if page!=1 else '' }}{{ settings.title }}{% end %}
+
+{% include "pagination.html" %}

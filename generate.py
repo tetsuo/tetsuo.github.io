@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from bs4 import BeautifulSoup
 from dataclasses import dataclass, replace
 from markdown2 import markdown
 from tornado import template, locale
@@ -16,6 +17,7 @@ import datetime
 @dataclass
 class Entry:
     title: str
+    subtitle: str
     slug: str
     body: str
     body_external: str
@@ -28,6 +30,7 @@ class Entry:
         value = {
             "slug": self.slug,
             "title": self.title,
+            "subtitle": self.subtitle,
             "published": self.published.isoformat(),
             "updated": self.updated.isoformat(),
             "tags": self.tags,
@@ -59,9 +62,20 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     slug = os.path.splitext(os.path.basename(filename))[0].lower()
 
+    soup = BeautifulSoup(body_external, features="html.parser")
+
+    subtitle = ""
+    try:
+        bq = next(soup.children)
+        if bq.name == "blockquote":
+            subtitle = '<p>'+bq.get_text().strip()+'</p><p><a href="#">Read more</a></p>'
+    except:
+        pass
+
     return Entry(
         slug=slug,
         body=body,
+        subtitle=subtitle,
         body_external=body_external,
         tags=body.metadata['tags'].split(','),
         title=body.metadata['title'],
@@ -94,6 +108,13 @@ class Generator:
     entries: list[Entry]
     settings: Settings
 
+    def _get_template_args(self):
+        return {
+            "settings": self.settings,
+            "debug": self.debug,
+            "locale": self.locale,
+        }
+
     def _generate(
         self,
         t: Template,
@@ -102,12 +123,8 @@ class Generator:
         extra_args: dict[str, Any] = {},
         include_json_body: bool = False
     ):
-        args = {
-            "entries": entries,
-            "settings": self.settings,
-            "debug": self.debug,
-            "locale": self.locale,
-        }
+        args = {"entries": entries}
+        args.update(self._get_template_args())
         args.update(extra_args)
 
         b = t.generate(**args)
@@ -137,7 +154,7 @@ class Generator:
 
         pages_len = len(pages)
 
-        t = self.template_loader.load("entries.html")
+        t = self.template_loader.load("index.html")  # or "entries.html"
 
         for i, page in enumerate(pages):
             page_num = i + 1

@@ -382,10 +382,40 @@ iframe {
             margin-bottom: 20px;
         }
     }
+}
+
+.tags, .index {
     .entry {
         margin-bottom: 42px!important;
     }
     padding-bottom: 42px!important;
+}
+
+.index {
+    h1 {
+        font-size: 42px;
+        margin-bottom: 18px;
+    }
+    .info {
+        margin-bottom: 14px;
+    }
+    .body {
+            p {
+                font-size: 1.25em;
+            }
+            p:nth-child(1) {
+                margin-top: 0;
+                margin-bottom: 10px;
+            }
+            p:nth-child(2) {
+                margin-top: 0;
+                padding-top: 0;
+                margin-bottom: 48px;
+            }
+    }
+    .pagination {
+        margin-top: 60px!important;
+    }
 }
 
 .footer {
