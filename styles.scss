@@ -469,10 +469,9 @@ iframe {
     overflow: hidden;
     position: absolute;
     top: 0px;
-    background-color: transparent;
     width: 100%;
 
-    .menu {
+    .social {
         text-align: right;
 
         ul {
@@ -511,10 +510,10 @@ iframe {
         padding-bottom: 20px!important;
     }
     .header {
-        background-color: #c8c8c8;
+        background-color: #0000ff;
     }
 
-    .menu {
+    .social {
         ul > li > a {
             color: #fff;
             &:hover {
