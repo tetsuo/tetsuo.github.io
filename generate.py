@@ -3,6 +3,7 @@
 from bs4 import BeautifulSoup
 from dataclasses import dataclass, replace
 from markdown2 import markdown
+from wand.image import Image
 from tornado import template, locale
 from tornado.locale import Locale
 from tornado.template import Loader, Template
@@ -21,6 +22,7 @@ class Entry:
     slug: str
     body: str
     body_external: str
+    images: list[dict[str, Any]]
     tags: list[str]
     published: datetime.datetime
     updated: datetime.datetime
@@ -31,6 +33,7 @@ class Entry:
             "slug": self.slug,
             "title": self.title,
             "subtitle": self.subtitle,
+            "images": self.images,
             "published": self.published.isoformat(),
             "updated": self.updated.isoformat(),
             "tags": self.tags,
@@ -73,11 +76,31 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     except:
         pass
 
+    imgs = soup.find_all("img")
+    images: list[dict[str, Any]] = []
+    for img in imgs:
+        if "nomediarss" in img.get("class", "").split():
+            continue
+        with Image(filename='public/images' + img['src']) as f:
+            width = f.width
+            height = f.height
+            mimetype = f.mimetype
+            filesize = f.length_of_bytes
+        images.append({
+            "url": img["src"],
+            "title": img.get("title", img.get("alt", "")),
+            "width": width,
+            "height": height,
+            "mimetype": mimetype,
+            "filesize": filesize
+        })
+
     return Entry(
         slug=slug,
         body=body,
         subtitle=subtitle,
         body_external=body_external,
+        images=images,
         tags=body.metadata['tags'].split(','),
         title=body.metadata['title'],
         published=datetime.datetime.fromisoformat(body.metadata['published']),

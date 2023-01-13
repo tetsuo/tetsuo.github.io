@@ -29,6 +29,9 @@
       {% for tag in entry.tags %}
       <category term="{{ escape(tag) }}"></category>
       {% end %}
+      {% for image in entry.images %}
+      <media:content url="https://{{ settings.domain }}/images{{ escape(image["url"]) }}" fileSize="{{ image['filesize'] }}" type="{{ image['mimetype'] }}" width="{{ image["width"] }}" height="{{ image["height"] }}" medium="image"></media:content>
+      {% end %}
     </entry>
   {% end %}
 </feed>
