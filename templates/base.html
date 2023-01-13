@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,9 +54,9 @@
 
 <body class="{% block extra_class %}{% end %}">
   <div class="header">
-    <div class="menu">
+    <div class="social">
       <ul>
-    		{% for link in settings.links %}
+        {% for link in settings.links %}
         <li><a href="{{ link['url'] }}" target="_blank"><i class="icon {{ link['icon'] }}"></i></a></li>
         {% end %}
       </ul>
