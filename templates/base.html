@@ -63,7 +63,7 @@
     <div class="social">
       <ul>
         {% for link in settings.links %}
-        <li><a href="{{ link['url'] }}" target="_blank"><i class="icon {{ link['icon'] }}"></i></a></li>
+        <li><a aria-label="{{ link['label'] }}" href="{{ link['url'] }}" target="_blank"><i class="icon {{ link['icon'] }}"></i></a></li>
         {% end %}
       </ul>
     </div>

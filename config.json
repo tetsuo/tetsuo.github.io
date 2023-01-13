@@ -16,11 +16,13 @@
   "links": [
     {
       "url": "https://github.com/onur1",
-      "icon": "icon-github-circled"
+      "icon": "icon-github-circled",
+      "label": "GitHub"
     },
     {
       "url": "https://twitter.com/xxy998",
-      "icon": "icon-twitter"
+      "icon": "icon-twitter",
+      "label": "Twitter"
     }
   ]
 }
