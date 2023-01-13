@@ -5,6 +5,7 @@ priv
 tmp
 scripts
 public/*
+!public/images
 !public/assets/tango.css
 !public/assets/fontello
 templates/manifest.webmanifest
