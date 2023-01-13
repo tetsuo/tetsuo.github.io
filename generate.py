@@ -68,7 +68,8 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     try:
         bq = next(soup.children)
         if bq.name == "blockquote":
-            subtitle = '<p>'+bq.get_text().strip()+'</p><p><a href="#">Read more</a></p>'
+            subtitle = '<p>'+bq.get_text().strip()+'</p><p><a href="/' + \
+                slug + '.html">Read more</a></p>'
     except:
         pass
 
