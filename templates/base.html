@@ -65,11 +65,18 @@
 
   {% block content %}{% end %}
 
-  <div class="footer double-col-grid">
+  <div class="footer single-col-grid">
     <div class="col about">
-      <p>I am a freelance software engineer based in the Netherlands.</p>
-      <p>Inquire to <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>.</p>
-      <p>2023 &mdash; {{ settings.author_name }}</p>
+      <table>
+        <tr>
+          <td>
+            <p>2023 &mdash; <a href="mailto:{{ settings.email }}">{{ settings.author_name }}</a></p>
+          </td>
+          <td>
+            <p><a href="/">Index</a></p>
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 

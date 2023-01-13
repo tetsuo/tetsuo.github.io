@@ -421,9 +421,22 @@ iframe {
 .footer {
     margin-top: 0;
     padding: 62px 0px;
-    min-height: 380px;
+    min-height: 350px;
     background-color: #0000ff;
     color: #fff;
+
+    table {
+        width: 100%;
+        a {
+            margin-right: 20px;
+        }
+        td {
+            vertical-align: top;
+        }
+        td:nth-child(2) {
+            text-align: right;
+        }
+    }
 
     a {
         color: #fff;
@@ -437,7 +450,7 @@ iframe {
     .about {
         font-family: proxima-nova;
         color: #fff;
-        font-size: 1em;
+        font-size: 1.2em;
         line-height: 1.26em;
 
         @include grid-media($single-col-grid-tablet-up) {
