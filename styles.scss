@@ -329,6 +329,12 @@ iframe {
                     color: #111;
                     padding: 12px 20px;
                     border-right: 2px solid #ddd;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                tr th:hover {
+                    overflow: visible;
+                    height: auto;
                 }
             }
             tbody tr {
@@ -336,6 +342,12 @@ iframe {
                 td {
                     padding: 14px 20px;
                     border-right: 2px solid #ddd;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                td:hover {
+                    overflow: visible;
+                    height: auto;
                 }
             }
         }
