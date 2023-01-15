@@ -16,9 +16,12 @@
 {% block head_pagination %}{% end %}
 
 {% if len(entries) > 0 %}
-{% block head_extra %}
-<meta name="title" content="{{ escape(entries[0].title) }} — {{ settings.title }}" />
-<meta name="description" content="{{ escape(entries[0].title) }}" />
+{% block head_image %}
+<meta property="og:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
+<meta property="og:image:alt" content="{{ entries[0].short_description }}" />
+<meta name="twitter:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
+<meta name="twitter:image:alt" content="{{ entries[0].short_description }}" />
+{% end %}
 {% end %}
 {% end %}
 
