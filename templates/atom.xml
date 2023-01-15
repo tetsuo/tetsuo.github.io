@@ -18,7 +18,7 @@
     <entry>
       <id>tag:{{ settings.domain }},{{ entry.published.strftime("%Y-%m-%d") }}:/{{ entry.slug }}</id>
       <link href="{{ entry.link }}" rel="alternate" type="text/html"/>
-      <title type="text">{{ escape(entry.title) }}</title>
+      <title type="text">{{ entry.title }}</title>
       <updated>{{ entry.updated.strftime(date_format) }}</updated>
       <published>{{ entry.published.strftime(date_format) }}</published>
       <author>
@@ -31,7 +31,7 @@
       {% end %}
       <media:description type="html">{{ entry.description }}</media:description>
       {% for image in entry.images %}
-      <media:content url="https://{{ settings.domain }}/images{{ escape(image["url"]) }}" fileSize="{{ image['filesize'] }}" type="{{ image['mimetype'] }}" width="{{ image["width"] }}" height="{{ image["height"] }}" medium="image"></media:content>
+      <media:content url="https://{{ settings.domain }}/images{{ image["url"] }}" fileSize="{{ image['filesize'] }}" type="{{ image['mimetype'] }}" width="{{ image["width"] }}" height="{{ image["height"] }}" medium="image"></media:content>
       {% end %}
     </entry>
   {% end %}
