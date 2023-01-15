@@ -23,11 +23,15 @@
   <link crossorigin rel="preload" as="font" href="/assets/proxima-nova-regular.woff">
   <link crossorigin rel="preload" as="font" href="/assets/proxima-nova-semibold.woff">
   <link crossorigin rel="preload" as="font" href="/assets/proxima-nova-italic.woff">
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-  <meta name="robots" content="index,follow" />
-  <meta name="googlebot" content="index,follow" />
+
+  {% block head_pagination %}{% end %}
+
   {% block head_alternate %}
   <link rel="alternate" href="/feed.xml" type="application/atom+xml" title="{{ settings.title }}"/>
+  {% end %}
+
+  {% block head_type %}
+  <meta property="og:type" content="website" />
   {% end %}
 
   {% block head_image %}
@@ -41,34 +45,28 @@
   <meta property="og:image:height" content="529" />
   <meta property="og:image:type" content="image/png" />
 
+  {% block head_description %}
   <meta name="title" content="{{ settings.title }}" />
   <meta name="description" content="{{ settings.description }}" />
+  <meta property="og:title" content="{{ settings.title }}" />
+  <meta property="og:description" content="{{ settings.description }}" />
+  <meta name="twitter:title" content="{{ settings.title }}">
+  <meta name="twitter:description" content="{{ settings.description }}">
+  {% end %}
+
+  {% block head_keywords %}
+  <meta property="keywords" content="{{ ','.join([escape(keyword) for keyword in keywords]) }}" />
   {% end %}
 
   {% block head_canonical %}
   <meta property="og:url" content="https://{{ settings.domain }}">
   <link rel="canonical" href="https://{{ settings.domain }}">
   {% end %}
+
+  {% block head_article %}{% end %}
+
   {% include "favicons.html" %}
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="{{ settings.author }}" />
-  <meta name="twitter:creator" content="{{ settings.author }}" />
-  <meta property="og:type" content="website" />
-  <meta
-    property="og:title"
-    content="{{ settings.title }}"
-  />
-  <meta
-    property="og:description"
-    content="{{ settings.description }}"
-  />
-  <!-- TODO <meta
-    property="og:image"
-    content="https://somebigimage.png"
-  /> -->
-  <meta property="og:site_name" content="{{ settings.site_name }}" />
-  <meta property="author" content="{{ settings.author_name }}" />
-  <meta property="keywords" content="" />
+
   <link href="/assets/tango.css" type="text/css" rel="stylesheet">
   <link href="/assets/fontello/css/fontello.css" type="text/css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" media="all" href="/assets/styles.css" />

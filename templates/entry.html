@@ -16,6 +16,29 @@
 {% block head_pagination %}{% end %}
 
 {% if len(entries) > 0 %}
+
+{% block title %}{{ entries[0].title }} — {{ settings.title }}{% end %}
+{% block head_description %}
+{% set title = escape(entries[0].title) %}
+<meta name="title" content="{{ title }}" />
+<meta name="description" content="{{ entries[0].description }}" />
+<meta property="og:title" content="{{ title }}" />
+<meta property="og:description" content="{{ entries[0].description }}" />
+<meta name="twitter:title" content="{{ title }}">
+<meta name="twitter:description" content="{{ entries[0].description }}">
+{% end %}
+{% block head_keywords %}
+<meta property="keywords" content="{{ ','.join([escape(tag) for tag in sorted(entries[0].tags)]) }}" />
+{% end %}
+{% block head_article %}
+{% set date_format = "%Y-%m-%dT%H:%M:%SZ" %}
+<meta property="article:author" content="{{ settings.author_name }}">
+<meta property="article:publisher" content="https://{{ settings.domain }}">
+<meta property="article:modified_time" content="{{ entries[0].updated.strftime(date_format) }}">
+<meta property="article:section" content="Programming">
+<meta property="article:published_time" content="{{ entries[0].updated.strftime(date_format) }}">
+<meta property="article:tag" content="{{ ','.join([escape(tag) for tag in sorted(entries[0].tags)]) }}">
+{% end %}
 {% block head_image %}
 <meta property="og:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
 <meta property="og:image:alt" content="{{ entries[0].short_description }}" />
@@ -27,6 +50,10 @@
 <link rel="canonical" href="{{ entries[0].link }}">
 {% end %}
 
+{% end %}
+
+{% block head_type %}
+<meta property="og:type" content="article">
 {% end %}
 
 {% block bottom %}

@@ -21,10 +21,11 @@ import datetime
 @dataclass
 class Entry:
     title: str
-    subtitle: str
+    description: str
+    short_description: str
     slug: str
     body: str
-    body_external: str
+    body_feed: str
     images: list[dict[str, Any]]
     tags: list[str]
     published: datetime.datetime
@@ -35,7 +36,7 @@ class Entry:
         value = {
             "slug": self.slug,
             "title": self.title,
-            "subtitle": self.subtitle,
+            "description": self.description,
             "images": self.images,
             "published": self.published.isoformat(),
             "updated": self.updated.isoformat(),
@@ -44,7 +45,7 @@ class Entry:
         }
 
         if include_body:
-            value["body"] = self.body_external
+            value["body"] = self.body_feed
 
         return value
 
@@ -61,21 +62,20 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     # highlightjs-lang disables pygments which is needed for
     # preserving spaces in <code> blocks for atom feeds
-    body_external = markdown(
+    body_feed = markdown(
         data,
         extras=["fenced-code-blocks", "tables", "metadata", "highlightjs-lang"]
     )
 
     slug = os.path.splitext(os.path.basename(filename))[0].lower()
 
-    soup = BeautifulSoup(body_external, features="html.parser")
+    soup = BeautifulSoup(body_feed, features="html.parser")
 
-    subtitle = ""
+    description = ""
     try:
-        bq = next(soup.children)
-        if bq.name == "blockquote":
-            subtitle = '<p>'+bq.get_text().strip()+'</p><p><a href="/' + \
-                slug + '.html">Read more</a></p>'
+        first_child = next(soup.children)
+        if first_child.name == "blockquote":
+            description = first_child.get_text().strip()
     except:
         pass
 
@@ -101,8 +101,9 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     return Entry(
         slug=slug,
         body=body,
-        subtitle=subtitle,
-        body_external=body_external,
+        body_feed=body_feed,
+        description=description,
+        short_description=body.metadata['description'],
         images=images,
         tags=body.metadata['tags'].split(','),
         title=body.metadata['title'],
@@ -168,10 +169,13 @@ class Generator:
             json.dump(json_obj, f)
 
     def run(self) -> None:
-        t = self.template_loader.load("entry.html")
+        entries_by_tag: dict[str, list[Entry]] = {}
 
         for entry in self.entries:
-            self._generate(t, [entry], entry.slug, include_json_body=True)
+            for tag in entry.tags:
+                if tag not in entries_by_tag:
+                    entries_by_tag[tag] = []
+                entries_by_tag[tag].append(entry)
 
         pages: list[list[Entry]] = []
 
@@ -182,43 +186,55 @@ class Generator:
 
         pages_len = len(pages)
 
-        t = self.template_loader.load("index.html")  # or "entries.html"
+        index_entries = pages[0] if pages_len > 0 else []
+
+        sitemap_entries: list[str] = []
+        sitemap_entries.extend([str(i+2) for i in list(range(pages_len-1))])
+        sitemap_entries.extend(list(entries_by_tag.keys()))
+        sitemap_entries.extend([e.slug for e in self.entries])
+
+        keywords = sorted(list(entries_by_tag.keys()),
+                          key=lambda key: len(entries_by_tag[key]))[:20]
+
+        t = self.template_loader.load("entry.html")
+
+        for entry in self.entries:
+            self._generate(t, [entry], entry.slug, include_json_body=True)
+
+        t = self.template_loader.load("index.html")
 
         for i, page in enumerate(pages):
             page_num = i + 1
             self._generate(t, page, str(page_num), extra_args={
-                           "more": page_num != pages_len, "page": page_num})
-
-        index_entries = pages[0] if pages_len > 0 else []
+                           "more": page_num != pages_len,
+                           "page": page_num,
+                           "keywords": keywords
+                           })
 
         self._generate(
             t, index_entries, "index",
             extra_args={
                 "more": pages_len > 1,
-                "page": 1
+                "page": 1,
+                "keywords": keywords
             }
         )
-
-        entries_by_tag: dict[str, list[Entry]] = {}
-
-        for entry in self.entries:
-            for tag in entry.tags:
-                if tag not in entries_by_tag:
-                    entries_by_tag[tag] = []
-                entries_by_tag[tag].append(entry)
 
         t = self.template_loader.load("tag.html")
 
         for tag in entries_by_tag:
             self._generate(
                 t, entries_by_tag[tag], tag,
-                extra_args={"_tag": tag}
+                extra_args={
+                    "_tag": tag,
+                    "keywords": [tag] + [x for x in keywords if x != tag]
+                }
             )
 
         t = self.template_loader.load("atom.xml")
 
         b = t.generate(**{
-            "entries": [replace(e, body=e.body_external) for e in index_entries],
+            "entries": [replace(e, body=e.body_feed) for e in index_entries],
             "settings": self.settings,
             "_tag": None
         })
@@ -228,7 +244,7 @@ class Generator:
 
         for tag in entries_by_tag:
             b = t.generate(**{
-                "entries": [replace(e, body=e.body_external) for e in entries_by_tag[tag]],
+                "entries": [replace(e, body=e.body_feed) for e in entries_by_tag[tag]],
                 "settings": self.settings,
                 "_tag": tag
             })
@@ -244,11 +260,6 @@ class Generator:
             f.write(b)
 
         t = self.template_loader.load("sitemap.xml")
-
-        sitemap_entries: list[str] = []
-        sitemap_entries.extend([str(i+2) for i in list(range(pages_len-1))])
-        sitemap_entries.extend(list(entries_by_tag.keys()))
-        sitemap_entries.extend([e.slug for e in self.entries])
 
         b = t.generate(**{"settings": self.settings,
                        "entries": sitemap_entries})

@@ -29,7 +29,7 @@
       {% for tag in entry.tags %}
       <category term="{{ escape(tag) }}"></category>
       {% end %}
-      <media:description type="html">{{ escape(entry.subtitle) }}</media:description>
+      <media:description type="html">{{ entry.description }}</media:description>
       {% for image in entry.images %}
       <media:content url="https://{{ settings.domain }}/images{{ escape(image["url"]) }}" fileSize="{{ image['filesize'] }}" type="{{ image['mimetype'] }}" width="{{ image["width"] }}" height="{{ image["height"] }}" medium="image"></media:content>
       {% end %}

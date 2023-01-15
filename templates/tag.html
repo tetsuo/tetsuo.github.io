@@ -30,3 +30,13 @@
 <link rel="canonical" href="https://{{ settings.domain }}/{{ _tag }}.html">
 {% end %}
 
+{% block head_description %}
+{% set title = _tag %}
+{% set description = "Posts tagged with " + _tag + " on " + settings.domain %}
+<meta name="title" content="{{ title }}" />
+<meta name="description" content="{{ description }}" />
+<meta property="og:title" content="{{ title }}" />
+<meta property="og:description" content="{{ description }}" />
+<meta name="twitter:title" content="{{ title }}">
+<meta name="twitter:description" content="{{ description }}">
+{% end %}
