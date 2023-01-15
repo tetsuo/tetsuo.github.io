@@ -4,7 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ settings.title }}{% end %}</title>
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+  <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta property="author" content="{{ settings.author_name }}" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
+  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="{{ settings.domain }} Search"/>
+  <link rel="me" href="https://twitter.com/{{ settings.author }}">
+  <meta property="og:site_name" content="{{ settings.site_name }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="{{ settings.author }}" />
+  <meta name="twitter:creator" content="{{ settings.author }}" />
+  <meta name="twitter:widgets:new-embed-design" content="on">
+  <meta name="application-name" content="{{ settings.domain }}">
+
   <link crossorigin rel="preload" as="font" href="/assets/fontello/font/fontello.woff2?99604938">
   <link crossorigin rel="preload" as="font" href="/assets/Code_Pro_Demo-webfont.woff">
   <link crossorigin rel="preload" as="font" href="/assets/proxima-nova-bold.woff">
