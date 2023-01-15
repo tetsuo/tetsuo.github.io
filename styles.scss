@@ -438,19 +438,51 @@ iframe {
     color: #fff;
 
     table {
+        font-family: proxima-nova;
+        color: #fff;
+        font-size: 1.15em;
+        line-height: 1.2em;
+
+        b {
+            font-family: proxima-nova-semibold;
+            font-weight: normal;
+        }
+        @include grid-media($single-col-grid-tablet-up) {
+            font-size: 1.42em;
+        }
         width: 100%;
         td {
             vertical-align: top;
         }
+        td:nth-child(1) {
+            span {
+                display: inline-block;
+                margin-right: 5px;
+            }
+            @include grid-media($single-col-grid-tablet-up) {
+                display: block;
+                margin-right: 0;
+            }
+        }
         td:nth-child(2) {
             text-align: right;
             ul {
+                margin: 0;
+                padding: 0;
                 list-style-type: none;
                 li {
+                    margin: 0;
+                    padding: 0;
                     display: inline-block;
                 }
-                li:nth-child(1) {
-                    margin-right: 40px;
+                li:nth-child(2) {
+                    margin-left: 20px;
+                }
+
+                @include grid-media($single-col-grid-tablet-up) {
+                    li:nth-child(2) {
+                        margin-left: 40px;
+                    }
                 }
             }
         }
@@ -463,22 +495,6 @@ iframe {
 
     a:hover {
         border-bottom-color: orange;
-    }
-
-    .about {
-        font-family: proxima-nova;
-        color: #fff;
-        font-size: 1.2em;
-        line-height: 1.26em;
-
-        @include grid-media($single-col-grid-tablet-up) {
-            font-size: 1.5em;
-        }
-
-        b {
-            font-family: proxima-nova-semibold;
-            font-weight: normal;
-        }
     }
 }
 
