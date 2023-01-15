@@ -69,28 +69,26 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     slug = os.path.splitext(os.path.basename(filename))[0].lower()
 
-    soup_feed = BeautifulSoup(body_feed, features="html.parser")
-    soup_pygments = BeautifulSoup(body, features="html.parser")
+    soup_body_feed = BeautifulSoup(body_feed, features="html.parser")
+    soup_body = BeautifulSoup(body, features="html.parser")
 
-    description = ""
-    try:
-        first_child = next(soup_feed.children)
-        if first_child.name == "blockquote":
-            description = first_child.get_text().strip()
-    except:
-        pass
+    first_child = next(soup_body.children)
+    if first_child.name != "blockquote":
+        raise Exception("must start with a blockquote: %s" % filename)
 
-    imgs_feed = soup_feed.find_all("img")
-    imgs_pygments = soup_pygments.find_all("img")
+    description = first_child.get_text().strip()
 
-    for img in imgs_pygments:
+    imgs_body_feed = soup_body_feed.find_all("img")
+    imgs_body = soup_body.find_all("img")
+
+    for img in imgs_body:
         if "nomediarss" in img.get("class", "").split():
             continue
         img_filename = os.path.basename(img['src'])
         img['src'] = '/images/' + img_filename
 
     images: list[dict[str, Any]] = []
-    for img in imgs_feed:
+    for img in imgs_body_feed:
         if "nomediarss" in img.get("class", "").split():
             continue
         img_filename = os.path.basename(img['src'])
@@ -111,8 +109,8 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     return Entry(
         slug=slug,
-        body=str(soup_pygments),
-        body_feed=str(soup_feed),
+        body=str(soup_body),
+        body_feed=str(soup_body_feed),
         description=description,
         short_description=body.metadata['description'],
         images=images,
