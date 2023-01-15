@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="single-col-grid content tags">
+		<div class="col">
+			<div class="above-body">
+				<div class="home"><a href="/">Home</a></div>
+			</div>
+		</div>
+		<div class="col">
+			<div class="centered entry" id="about">
+				<h1>About</h1>
+        <div class="body">
+  				<p>Hello, and welcome to my personal journal!</p>
+          <p>This blog contains a collection of articles for technical professionals in the fields of cloud application development and UI/UX.</p>
+          <p>Unless otherwise stated, the code you'll find on this website is in the public domain.</p>
+          <p>For questions and comments, please <a href="mailto:ogunduz@gmail.com">send me an email</a> or connect with me on <a href="https://www.linkedin.com/in/onurgunduz">LinkedIn</a>.</p>
+        </div>
+			</div>
+		</div>
+	</div>
+{% end %}
+
+{% block title %}About — {{ settings.title }}{% end %}
+
+{% block head_description %}
+{% set title = "About " + settings.domain %}
+{% set description = settings.description %}
+<meta name="title" content="{{ title }}" />
+<meta name="description" content="{{ description }}" />
+<meta property="og:title" content="{{ title }}" />
+<meta property="og:description" content="{{ description }}" />
+<meta name="twitter:title" content="{{ title }}">
+<meta name="twitter:description" content="{{ description }}">
+{% end %}

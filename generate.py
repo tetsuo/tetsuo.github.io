@@ -262,6 +262,13 @@ class Generator:
         with open("public/robots.txt", "w") as f:
             f.write("User-agent: *\nAllow: /\n")
 
+        t = self.template_loader.load("about.html")
+
+        b = t.generate(**dict({"keywords": keywords},
+                       **self._get_template_args()))
+
+        with open("public/about.html", "wb") as f:
+            f.write(b)
 
 def main(args=None):
     if args is None:

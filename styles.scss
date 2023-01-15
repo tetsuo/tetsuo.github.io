@@ -444,6 +444,15 @@ iframe {
         }
         td:nth-child(2) {
             text-align: right;
+            ul {
+                list-style-type: none;
+                li {
+                    display: inline-block;
+                }
+                li:nth-child(1) {
+                    margin-right: 40px;
+                }
+            }
         }
     }
 
