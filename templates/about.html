@@ -33,3 +33,16 @@
 <meta name="twitter:title" content="{{ title }}">
 <meta name="twitter:description" content="{{ description }}">
 {% end %}
+
+{% block head_extras %}
+<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "AboutPage",
+		url: 'https://{{ settings.domain }}',
+		name: "{{ settings.author_name }}'s website",
+		description: "The personal website of {{ settings.author_name }}",
+		mainEntity: {"@id": "https://{{ settings.domain }}/about.html"},
+	}
+</script>
+{% end %}
