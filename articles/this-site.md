@@ -1,5 +1,6 @@
 ---
 title: This site
+description: Visit my new statically generated website
 tags: python
 published: 2023-01-01T16:20:00
 updated: 2023-01-01T16:20:00

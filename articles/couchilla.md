@@ -1,5 +1,6 @@
 ---
 title: couchilla
+description: Bundler for packing CouchDB design documents
 tags: javascript,couch,database
 published: 2023-01-02T14:55:00
 updated: 2023-01-02T14:55:00
