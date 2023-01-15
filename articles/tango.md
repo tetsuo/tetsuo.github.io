@@ -1,7 +1,7 @@
 ---
 title: tango
 description: Textual syntax for Mango selector expressions in the style of C
-tags: javascript,couch,language
+tags: javascript,couchdb,language
 published: 2023-01-02T16:20:00
 updated: 2023-01-02T16:20:00
 ---
