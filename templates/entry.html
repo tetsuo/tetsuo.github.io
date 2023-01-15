@@ -42,7 +42,7 @@
 {% block head_image %}
 <meta property="og:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
 <meta property="og:image:alt" content="{{ entries[0].short_description }}" />
-<meta name="twitter:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
+<meta name="twitter:image:src" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
 <meta name="twitter:image:alt" content="{{ entries[0].short_description }}" />
 {% end %}
 {% block head_canonical %}
