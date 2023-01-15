@@ -53,7 +53,7 @@ Parsing this expression outputs an AST which conforms to the declarative JSON qu
 }
 ```
 
-[In my previous post](https://ogu.nz/couchilla.html), I mentioned about [couchilla](https://github.com/onur1/couchilla) which you can use to bundle design documents for creating MapReduce views on your database. The `/db/_find` API is another way of doing this and results in faster queries in most cases.
+[In my previous post](./couchilla.md), I mentioned about [couchilla](https://github.com/onur1/couchilla) which you can use to bundle design documents for creating MapReduce views on your database. The `/db/_find` API is another way of doing this and results in faster queries in most cases.
 
 You can give it a try if you have Docker and NodeJS installed.
 
