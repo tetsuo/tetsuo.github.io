@@ -36,7 +36,7 @@
 <meta property="article:publisher" content="https://{{ settings.domain }}">
 <meta property="article:modified_time" content="{{ entries[0].updated.strftime(date_format) }}">
 <meta property="article:section" content="Programming">
-<meta property="article:published_time" content="{{ entries[0].updated.strftime(date_format) }}">
+<meta property="article:published_time" content="{{ entries[0].published.strftime(date_format) }}">
 <meta property="article:tag" content="{{ ','.join([escape(tag) for tag in sorted(entries[0].tags)]) }}">
 {% end %}
 {% block head_image %}
