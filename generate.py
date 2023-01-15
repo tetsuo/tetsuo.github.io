@@ -69,28 +69,39 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     slug = os.path.splitext(os.path.basename(filename))[0].lower()
 
-    soup = BeautifulSoup(body_feed, features="html.parser")
+    soup_feed = BeautifulSoup(body_feed, features="html.parser")
+    soup_pygments = BeautifulSoup(body, features="html.parser")
 
     description = ""
     try:
-        first_child = next(soup.children)
+        first_child = next(soup_feed.children)
         if first_child.name == "blockquote":
             description = first_child.get_text().strip()
     except:
         pass
 
-    imgs = soup.find_all("img")
-    images: list[dict[str, Any]] = []
-    for img in imgs:
+    imgs_feed = soup_feed.find_all("img")
+    imgs_pygments = soup_pygments.find_all("img")
+
+    for img in imgs_pygments:
         if "nomediarss" in img.get("class", "").split():
             continue
-        with Image(filename='public/images' + img['src']) as f:
+        img_filename = os.path.basename(img['src'])
+        img['src'] = '/images/' + img_filename
+
+    images: list[dict[str, Any]] = []
+    for img in imgs_feed:
+        if "nomediarss" in img.get("class", "").split():
+            continue
+        img_filename = os.path.basename(img['src'])
+        img['src'] = "https://" + domain_name + "/images/" + img_filename
+        with Image(filename="public/images/" + img_filename) as f:
             width = f.width
             height = f.height
             mimetype = f.mimetype
             filesize = f.length_of_bytes
         images.append({
-            "url": img["src"],
+            "filename": img_filename,
             "title": img.get("title", img.get("alt", "")),
             "width": width,
             "height": height,
@@ -100,8 +111,8 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     return Entry(
         slug=slug,
-        body=body,
-        body_feed=body_feed,
+        body=str(soup_pygments),
+        body_feed=str(soup_feed),
         description=description,
         short_description=body.metadata['description'],
         images=images,

@@ -31,7 +31,7 @@
       {% end %}
       <media:description type="html">{{ entry.description }}</media:description>
       {% for image in entry.images %}
-      <media:content url="https://{{ settings.domain }}/images{{ image["url"] }}" fileSize="{{ image['filesize'] }}" type="{{ image['mimetype'] }}" width="{{ image["width"] }}" height="{{ image["height"] }}" medium="image"></media:content>
+      <media:content url="https://{{ settings.domain }}/images/{{ image['filename'] }}" fileSize="{{ image['filesize'] }}" type="{{ image['mimetype'] }}" width="{{ image["width"] }}" height="{{ image["height"] }}" medium="image"></media:content>
       {% end %}
     </entry>
   {% end %}
