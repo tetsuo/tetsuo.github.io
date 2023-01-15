@@ -19,7 +19,7 @@ const config = {
   version: "1.0",
   lang: "en-US",
   background: "#fff",
-  theme_color: "#0000ff",
+  theme_color: "#fff", // #0000ff
   appleStatusBarStyle: "default",
   display: "standalone", // "fullscreen", "standalone", "minimal-ui" or "browser"
   orientation: "any", // "any", "natural", "portrait" or "landscape"
