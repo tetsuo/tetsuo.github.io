@@ -4,7 +4,7 @@
 	<div class="single-col-grid content tags">
 		<div class="col">
 			<div class="above-body">
-				<div class="home"><a href="/">home</a></div>
+				<div class="home"><a href="/">Home</a></div>
 				<a href="/{{_tag}}.html">{{ 'Posts tagged with ' + _tag }}</a>
 			</div>
 		</div>
@@ -20,6 +20,7 @@
 {% end %}
 
 {% block title %}{{ _tag }} — {{ settings.title }}{% end %}
+
 {% block head_alternate %}
 <link rel="alternate" href="/{{ _tag }}.xml" type="application/atom+xml" title="{{ _tag }} — {{ settings.title }}"/>
 {% end %}

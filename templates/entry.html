@@ -1,13 +1,12 @@
-{% block extra_class %}{% end %}
+
+{% block body_class %}{% end %}
 
 {% extends "entries.html" %}
-
-{% block title %}{% if len(entries) > 0 %}{{ escape(entries[0].title) }} — {{ settings.title }}{% end %}{% end %}
 
 {% block above_body %}
     <div class="col">
         <div class="above-body">
-            <a href="/">home</a>
+            <a href="/">Home</a>
         </div>
     </div>
 {% end %}
