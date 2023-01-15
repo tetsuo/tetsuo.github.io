@@ -35,3 +35,24 @@
 <meta property="og:url" content="https://{{ settings.domain }}{{ '/' + str(page) + '.html' if page!=1 else '' }}">
 <link rel="canonical" href="https://{{ settings.domain }}{{ '/' + str(page) + '.html' if page!=1 else '' }}">
 {% end %}
+
+{% block head_extras %}
+<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "Blog",
+		"url": "https://{{ settings.domain }}",
+		"name": "{{ settings.title }}",
+		"description": "{{ settings.description }}",
+		"author": [
+			{
+				"@type": "Person",
+				"name": "{{ settings.author_name }}",
+				"email": "{{ settings.email }}",
+				"url": "https://{{ settings.domain }}",
+				"sameAs": ["https://twitter.com/{{ settings.author }}"]
+			}
+		]
+	}
+</script>
+{% end %}
