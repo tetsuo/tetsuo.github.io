@@ -44,7 +44,11 @@
   <meta name="title" content="{{ settings.title }}" />
   <meta name="description" content="{{ settings.description }}" />
   {% end %}
-  {% block head_pagination %}{% end %}
+
+  {% block head_canonical %}
+  <meta property="og:url" content="https://{{ settings.domain }}">
+  <link rel="canonical" href="https://{{ settings.domain }}">
+  {% end %}
   {% include "favicons.html" %}
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="{{ settings.author }}" />
