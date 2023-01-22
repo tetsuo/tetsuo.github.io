@@ -11,6 +11,7 @@ from tornado import template, locale
 from tornado.locale import Locale
 from tornado.template import Loader, Template
 from typing import Any
+from urllib.parse import urlparse
 import os
 import json
 import glob
@@ -31,6 +32,8 @@ class Entry:
     published: datetime.datetime
     updated: datetime.datetime
     link: str
+
+    metadata: list[list[str]]
 
     def to_json(self, include_body=True):
         value = {
@@ -82,16 +85,50 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     imgs_body = soup_body.find_all("img")
 
     for img in imgs_body:
-        if "nomediarss" in img.get("class", "").split():
+        img_filename = os.path.basename(img.get('src'))
+        dirname = os.path.dirname(img.get('src'))
+        if '.' == dirname and img.parent.name == "a" and img.parent.parent.name == "p":
+            anchor_url = urlparse(img.parent.get('href'))
+
+            if anchor_url.hostname == domain_name:
+                url_parts = anchor_url.path[1:].split('/')
+                if len(url_parts) != 2:
+                    continue
+                url_type = url_parts[0]
+                url_filename = os.path.splitext(url_parts[1])
+                if url_filename[1] != ".html":
+                    continue
+                url_id = url_filename[0]
+
+                iframe_tag = soup_body.new_tag("iframe")
+                iframe_tag.attrs['id'] = url_id + "-iframe"
+                iframe_tag.attrs['name'] = url_id
+                iframe_tag.attrs['frameborder'] = "0"
+                iframe_tag.attrs['title'] = img.get('alt')
+                iframe_tag.attrs['src'] = anchor_url.path
+
+                div_tag = soup_body.new_tag("div")
+                div_tag.attrs['id'] = url_id
+                if 'w' in url_type:
+                    div_tag.attrs['data-routable'] = ""
+                if 'r' in url_type:
+                    div_tag.attrs['data-resizable'] = ""
+                    div_tag.attrs['class'] = "resizeable-widget"
+
+                div_tag.append(iframe_tag)
+
+                img.parent.parent.replaceWith(div_tag)
+
             continue
-        img_filename = os.path.basename(img['src'])
+
         img['src'] = '/images/' + img_filename
 
     images: list[dict[str, Any]] = []
     for img in imgs_body_feed:
-        if "nomediarss" in img.get("class", "").split():
-            continue
         img_filename = os.path.basename(img['src'])
+        dirname = os.path.dirname(img.get('src'))
+        if '.' == dirname:
+            continue
         img['src'] = "https://" + domain_name + "/images/" + img_filename
         with Image(filename="public/images/" + img_filename) as f:
             width = f.width
@@ -121,11 +158,35 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         else:
             a['target'] = "_blank"
 
+    div_containers_body = soup_body.find_all("div", recursive=False)
+
+    def get_div_container_metadata(el):
+        if el.get('id') is None:
+            return []
+
+        metadata: list[str] = [el.get('id')]
+
+        if el.get('data-resizable') is not None:
+            metadata.append("resize")
+        if el.get('data-routable') is not None:
+            metadata.append("route")
+
+        return metadata
+
+    mm = list(map(get_div_container_metadata, div_containers_body))
+
+    for div in div_containers_body:
+        if div.get('data-resizable') is not None:
+            resize_tag = soup_body.new_tag("div")
+            resize_tag.attrs['class'] = 'resize-handle'
+            div.insert_after(resize_tag)
+
     return Entry(
         slug=slug,
         body=str(soup_body),
         body_feed=str(soup_body_feed),
         description=description,
+        metadata=mm,
         short_description=body.metadata['description'],
         images=images,
         tags=body.metadata['tags'].split(','),
@@ -222,7 +283,23 @@ class Generator:
         t = self.template_loader.load("entry.html")
 
         for entry in self.entries:
-            self._generate(t, [entry], entry.slug, include_json_body=True)
+            resizable_ids: list[str] = []
+            router_ids: list[str] = []
+
+            for mm in entry.metadata:
+                if len(mm) < 1:
+                    continue
+                sid = mm[0]
+                if mm.count('resize') > 0:
+                    resizable_ids.append(sid)
+                if mm.count('route') > 0:
+                    router_ids.append(sid+"-iframe")
+
+            self._generate(t, [entry], entry.slug, include_json_body=True,
+                           extra_args={
+                "resizable_ids": resizable_ids,
+                "router_ids": router_ids,
+            })
 
         t = self.template_loader.load("index.html")
 

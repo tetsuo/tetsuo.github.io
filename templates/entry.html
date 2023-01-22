@@ -61,6 +61,9 @@
 		"dateModified": "{{ entries[0].updated.strftime(date_format) }}"
 	}
 </script>
+{% if len(resizable_ids) > 0 %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.17/interact.min.js" integrity="sha512-XcVj3UAxYb1bcxemjAU6ncOu6lhnuRz98icTuL+jrJE+2SCWFMZFc+5FaFsNikLKujDfL71c4LK5OBz1lsAKag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% end %}
 {% end %}
 {% block head_image %}
 <meta property="og:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
@@ -81,6 +84,104 @@
 
 {% block bottom %}
 	{% if len(entries) > 0 %}
+		{% if len(resizable_ids) > 0 %}
+		<script>
+		const interactResizeOpts = {
+			edges: { left: false, right: false, bottom: true, top: false },
+			listeners: {
+				move (event) {
+					var target = event.target
+					var x = (parseFloat(target.getAttribute('data-x')) || 0)
+					var y = (parseFloat(target.getAttribute('data-y')) || 0)
+
+					target.style.width = '100%'
+					target.style.height = event.rect.height + 'px'
+
+					// x += event.deltaRect.left
+					y += event.deltaRect.top
+
+					target.style.transform = 'translate(' + x + 'px,' + y + 'px)'
+
+					target.setAttribute('data-x', x)
+					target.setAttribute('data-y', y)
+				}
+			},
+			modifiers: [
+				// keep the edges inside the parent
+				interact.modifiers.restrictEdges({
+					outer: 'parent'
+				}),
+
+				// minimum size
+				interact.modifiers.restrictSize({
+					min: { width: 100, height: 50 }
+				})
+			],
+			margin: 30,
+			inertia: true
+		}
+		</script>
+		{% end %}
+
+		{% for id in resizable_ids %}
+		<script>
+			interact("{{ '#' + id }}").resizable(interactResizeOpts)
+			{% if id+"-iframe" in router_ids %}
+				.on('resizestart', () => {
+					document.getElementById("{{ id + "-iframe" }}").style.pointerEvents = 'none'
+				})
+				.on('resizeend', () => {
+					document.getElementById("{{ id + "-iframe" }}").style.pointerEvents = 'initial'
+				})
+			{% end %}
+		</script>
+		{% end %}
+
+		{% if len(router_ids) > 0 %}
+		<script>
+			let hasInitialRoute = false
+
+			if (window.location.hash !== "") {
+				hasInitialRoute = true
+			}
+
+			function getHashchangeEventHandler(elementId) {
+				return () => document.getElementById(elementId).contentWindow.postMessage('hashchange:top:' + window.location.hash)
+			}
+
+			function getMessageEventHandler(elementId) {
+				return e => {
+					const parts = e.data.split(':')
+					if (parts.length < 3) {
+						throw new Error("received invalid message: " + e)
+					}
+					const [name, origin, hash] = parts
+					switch (name) {
+						case 'hashchange': {
+							if (origin === 'top') {
+								return
+							}
+							if (hasInitialRoute) {
+								document.getElementById(elementId).contentWindow.postMessage('hashchange:top:' + window.location.hash)
+								hasInitialRoute = false
+								return
+							}
+							if (hash !== window.location.hash) {
+								history.replaceState(undefined, undefined, hash)
+							}
+						}
+					}
+				}
+			}
+		</script>
+		{% for id in router_ids %}
+		<script>
+			window.addEventListener('hashchange', getHashchangeEventHandler("{{ id }}"))
+			window.addEventListener('message', getMessageEventHandler("{{ id }}"))
+		</script>
+		{% end %}
+		{% end %}
+
 		{% if  settings.comments %}
 			{% if debug %}
 			<script type="text/javascript">
