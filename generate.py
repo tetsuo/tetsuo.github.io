@@ -75,11 +75,11 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     soup_body_feed = BeautifulSoup(body_feed, features="html.parser")
     soup_body = BeautifulSoup(body, features="html.parser")
 
-    first_child = next(soup_body.children)
-    if first_child.name != "blockquote":
-        raise Exception("must start with a blockquote: %s" % filename)
+    description = body.metadata['description']
 
-    description = first_child.get_text().strip()
+    first_child = next(soup_body.children)
+    if first_child.name == "blockquote":
+        description = first_child.get_text().strip()
 
     imgs_body_feed = soup_body_feed.find_all("img")
     imgs_body = soup_body.find_all("img")
