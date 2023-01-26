@@ -1,20 +1,20 @@
 ---
 title: flixbox
-description: Movie trailers and typed functional programming in TypeScript using fpts
-tags: typescript, fp
+description: Movie trailers and typed functional programming in TypeScript
+tags: typescript,fp
 published: 2023-01-25T12:41:00
 updated: 2023-01-25T12:41:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
 
-> [flixbox](https://www.github.com/onur1/flixbox) implements a server and a GUI application for interacting with [the TMDb API](https://developers.themoviedb.org/3) using typed functional programming library [fp-ts](https://gcanti.github.io/fp-ts/) in TypeScript.
+> [flixbox](https://www.github.com/onur1/flixbox) implements a server and a GUI application for interacting with the [TMDb](https://www.themoviedb.org/) API using typed functional programming library [fp-ts](https://gcanti.github.io/fp-ts/).
 
 ## Background
 
 [fp-ts](https://gcanti.github.io/fp-ts/) is a library by [Giulio Canti](https://twitter.com/giuliocanti) that brings the power of [typeclasses](https://en.wikipedia.org/wiki/Type_class) and the [higher kinded types](https://en.wikipedia.org/wiki/Kind_(type_theory)) from functional programming languages (such as [Haskell](https://www.haskell.org/) and [PureScript](https://www.purescript.org/)) into the world of [TypeScript](https://www.typescriptlang.org/).
 
-If you are new to FP, I highly recommend you to watch the first 9 minutes of Philip Wadler's [Propositions as Types](https://www.youtube.com/watch?v=IOiZatlZtGU) talk, so you can get an idea about the earliest work that made this type of programming possible. If you are the adventurous type, you can continue watching the rest of the talk&mdash; don't let the title scare you! But, you most likely won't need to learn how β-reduction works or the other cool stuff in formal logic, in order to program a washing machine display. Trust me, for washing machine displays, you only need to know about [the difference between product and sum types](https://dev.to/gcanti/functional-design-algebraic-data-types-36kf).
+If you are new to FP, I highly recommend you to watch the first 9 minutes of Philip Wadler's [Propositions as Types](https://www.youtube.com/watch?v=IOiZatlZtGU) talk, so you can get an idea about the earliest work that made this type of programming possible. If you are the adventurous type, you can continue watching the rest of the talk&mdash; don't let the title scare you! But, you most likely won't need to learn how β-reduction works or the other cool stuff in formal logic in order to program a washing machine display. Trust me, for washing machine displays, you only need to know about [the difference between product and sum types](https://dev.to/gcanti/functional-design-algebraic-data-types-36kf).
 
 When I first started learning FP in JS, I was having trouble reading [Hindley Milney](https://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system) type signatures and the projects like [Fantasy Land](https://github.com/fantasyland/fantasy-land) and [Sanctuary](https://sanctuary.js.org/) haven't really helped much due to the heavy Haskell jargon in their documentation. (It seems some Haskellers are having the same syndrome, [but in the opposite direction](https://www.reddit.com/r/typescript/comments/ond5d8/struggling_to_read_typescript_signatures_convert/)).
 
@@ -68,7 +68,7 @@ Responds with a [`SearchResultSet`](./src/tmdb/model/SearchResultSet.ts) object.
 
 ## Type-safe composable HTTP middlewares
 
-The [server side](https://github.com/onur1/flixbox/tree/0.0.6/src/server) API is implemented using [hyper-ts](https://github.com/DenisFrezzato/hyper-ts), the fp-ts porting of [Hyper](https://hyper.wickstrom.tech/). This is an experimental middleware architecture which enforces strict ordering of middleware compositions using static type-checking. I don't know what is _experimental_ with it, but the tagline says so.
+The [server side](https://github.com/onur1/flixbox/tree/0.0.6/src/server) API is implemented using [hyper-ts](https://github.com/DenisFrezzato/hyper-ts), the fp-ts porting of [Hyper](https://hyper.wickstrom.tech/). This is an experimental middleware architecture which enforces strict ordering of middleware compositions using static type-checking.
 
 Under the hood, hyper-ts runs [Express](https://expressjs.com/) server, but you can integrate it with any HTTP server you like. You can even use a parser combinator library like [parser-ts](https://github.com/gcanti/parser-ts) to bridge it with the NodeJS Stream API to create your own text protocol.
 
@@ -123,11 +123,11 @@ pipe(
 
 Here, the function we passed into `apSecond` only executes if the preceding `GET` middleware succeeds, and the function we passed into `orElse` only executes if the preceding `get` call fails.
 
-The main pipeline will short-circuit with an [`AppError`](https://github.com/onur1/flixbox/blob/0.0.5/src/server/Error.ts) if any of the inner pipelines fails for some reason, and exit without writing a response.
+The main pipeline will short-circuit with an [`AppError`](https://github.com/onur1/flixbox/blob/0.0.6/src/server/Error.ts) if any of the inner pipelines fails for some reason, and exit without writing a response.
 
 Let's see the `GET` (essentially `method`) middleware which is the initial middleware used in the example above.
 
-[`middleware/Method.ts`](https://github.com/onur1/flixbox/blob/0.0.5/src/server/middleware/Method.ts)
+[`middleware/Method.ts`](https://github.com/onur1/flixbox/blob/0.0.6/src/server/middleware/Method.ts)
 
 ```typescript
 import { right, left } from 'fp-ts/lib/Either'
@@ -156,11 +156,11 @@ Like `method`, all middlewares in the main pipeline return an `AppError`:
 * `put` returns a `ServerError` when an entry couldn't be saved.
 * `movie` fails with `ProviderError` that encapsulates the TMDb API errors.
 
-If I pipe the result of this middleware pipeline into another `orElse` call and compose it with an error handler middleware as the final thing, then I can handle the `AppError` it throws very conveniently, and eventually send the appropriate error message (with sensitive information redacted) or log important errors. The [`destroy`](https://github.com/onur1/flixbox/blob/0.0.5/src/server/middleware/Error.ts) middleware just does that.
+If I pipe the result of this middleware pipeline into another `orElse` call and compose it with an error handler middleware as the final thing, then I can handle the `AppError` it throws very conveniently, and eventually send the appropriate error message (with sensitive information redacted) or log important errors. The [`destroy`](https://github.com/onur1/flixbox/blob/0.0.6/src/server/middleware/Error.ts) middleware just does that.
 
 ## Logging
 
-While we're at it&mdash; the logging functionality is based on the [logging-ts](https://github.com/gcanti/logging-ts/) module which is adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging). This is a very light-weight logging solution for creating composable loggers. I [wired it up](https://github.com/onur1/flixbox/blob/0.0.6/src/logging/TaskEither.ts) with hyper-ts over a [`TaskEither`](https://gcanti.github.io/fp-ts/modules/TaskEither.ts.html) instance, but I don't see any reason why the Middleware itself couldn't be used to implement the [`Console`](https://github.com/onur1/flixbox/blob/0.0.5/src/logging/Console.ts).
+While we're at it&mdash; the logging functionality is based on the [logging-ts](https://github.com/gcanti/logging-ts/) module which is adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging). This is a very light-weight logging solution for creating composable loggers. I [wired it up](https://github.com/onur1/flixbox/blob/0.0.6/src/logging/TaskEither.ts) with hyper-ts over a [`TaskEither`](https://gcanti.github.io/fp-ts/modules/TaskEither.ts.html) instance, but I don't see any reason why the Middleware itself couldn't be used to implement the [`Console`](https://github.com/onur1/flixbox/blob/0.0.6/src/logging/Console.ts).
 
 ## Runtime type system
 
@@ -181,7 +181,7 @@ The reason is that other libraries are full of design mistakes which cause [type
 
 ## Optics and immutable state updates
 
-[monocle-ts](https://www.optics.dev/Monocle/) is a partial porting of [Monocle](https://www.optics.dev/Monocle/) from Scala. It is used in the client application for reading and transforming the application state.
+[monocle-ts](https://www.github.com/gcanti/monocle-ts) is a partial porting of [Monocle](https://www.optics.dev/Monocle/) from Scala. It is used in the client application for reading and transforming the application state.
 
 This library provides support for [composable optics](https://medium.com/@gcanti/introduction-to-optics-lenses-and-prisms-3230e73bfcfe) that are used for reading and writing immutable data. Simply told, you can create such an optic structure (perhaps a [Lens](https://gcanti.github.io/monocle-ts/modules/Lens.ts.html) composition) to zoom into a deeply nested object for transforming or reading a value inside it without touching the original value.
 
@@ -270,7 +270,7 @@ Basically, you provide an initial state to it, a [pure function](https://en.wiki
 
 The Flixbox UI defines the following `Msg` type. These are the only side-effects that can occur while you are browsing the app.
 
-`src/app/Msg.ts`
+[`src/app/Msg.ts`](https://github.com/onur1/flixbox/tree/0.0.6/src/app/Msg.ts)
 
 ```typescript
 type Msg =
@@ -285,7 +285,7 @@ type Msg =
   | SetMovie
 ```
 
-When you dispatch one of these messages (for example when a link is clicked and `Navigate` is triggered), the `update` function is called with a particular type of message and the current application state as input.
+When you dispatch one of these messages (for example when a link is clicked and `Navigate` is triggered), the [update function](https://github.com/onur1/flixbox/blob/0.0.6/src/app/Effect.ts#L64) is called with a particular type of message and the current application state as input.
 
 ```typescript
 declare function update<S, A>(msg: A, state: S): [S, A]
@@ -295,10 +295,6 @@ As you see, `update` takes a `msg` which has type `A` as its first parameter, an
 
 ## Conclusion
 
-You can obviously tell how safe and scalable this architecture is, but it is hard to sell fp-ts, even to your  colleagues. If you are concerned about paying bills, you should really not mention any word even remotely related to FP in your workplace. There is a 50/50 chance that it will get you fired.
+[PureScript and Haskell](https://gcanti.github.io/fp-ts/guides/purescript.html) are very elegant and concise programming languages. fp-ts is only emulating them and it has to deal with all the nitty gritty details to make this work with TypeScript types, while keeping the API up to date to not fall behind the developments within TypeScript, or the greater JavaScript ecosystem.
 
-FP has a steep learning curve for beginners and it is full of misconceptions waiting to happen that can trip them up. If you're currently working with TypeScript in your project and lucky to be surrounded by people who are open to new ideas (and not very concerned about paying bills), I believe, fp-ts could be your remedy to get your team acquainted with this type of programming.
-
-When you compare the same fp-ts code to its [PureScript or Haskell](https://gcanti.github.io/fp-ts/guides/purescript.html) equivalents, you see that the PureScript or the Elm versions are much shorter, concise and _natural_. fp-ts is only emulating those languages and it has to deal with the nitty gritty details of this emulation to make it work with TypeScript types while keeping the API up to date to not fall behind the developments within TypeScript, or the greater JavaScript ecosystem.
-
-So, working with fp-ts may feel like working in a construction zone, with coils of cables lying around everywhere and the loud [V8](https://v8.dev/) engine sound in the background; but once you get the hang of it, those cables or the noise doesn't bother you too much, because everything works flawlessly and nobody has to wear helmets in this worksite .
+So, working with fp-ts may feel like working in a construction zone sometimes, with coils of cables lying around everywhere and the loud [V8](https://v8.dev/) engine sound in the background; but once you get the hang of it, those cables or the noise doesn't bother you too much, because everything works flawlessly and nobody has to wear helmets in this worksite .
