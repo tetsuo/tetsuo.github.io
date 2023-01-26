@@ -213,7 +213,7 @@ const getNextState = (id: number) =>
     _.id<S>(),
     _.findFirst(n => n.id === id),
     _.prop('done'),
-    _.modify(done => (done = !done))
+    _.modify(done => !done)
   )
 
 const nextState = getNextState(42)(baseState)
