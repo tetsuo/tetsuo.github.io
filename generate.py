@@ -77,9 +77,11 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     description = body.metadata['description']
 
-    first_child = next(soup_body.children)
-    if first_child.name == "blockquote":
-        description = first_child.get_text().strip()
+    first_blockquote = soup_body.find("blockquote", recursive=False)
+    if first_blockquote.name == "blockquote":
+        description = first_blockquote.get_text().strip()
+    else:
+        raise RuntimeError("must have a blockquote")
 
     imgs_body_feed = soup_body_feed.find_all("img")
     imgs_body = soup_body.find_all("img")
@@ -447,7 +449,7 @@ def create_cover_image(title: str, desc: str, outfile: str):
             ctx.fill_color = "#fff"
             ctx.font_size = 50
             mutable_message = word_wrap(img, ctx, desc, 880, 300)
-            ctx.text(40, 240, mutable_message + ".")
+            ctx.text(40, 240, mutable_message)  # + "."
             ctx.fill_color = "#0000ff"
             ctx.circle((68, 450), (68, 476))
             ctx.fill_color = "#fff"
