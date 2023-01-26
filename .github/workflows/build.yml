@@ -131,8 +131,8 @@ jobs:
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
       run: |
         YES=1 ./sync-public-bucket .
-        DISTRIBUTION_ID=$(aws cloudfront list-distributions | jq -r --arg NAME "$DOMAIN_NAME" '(.DistributionList.Items[] | select(.Aliases.Items[0] == $NAME)).Id')
-        aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*"
+        # DISTRIBUTION_ID=$(aws cloudfront list-distributions | jq -r --arg NAME "$DOMAIN_NAME" '(.DistributionList.Items[] | select(.Aliases.Items[0] == $NAME)).Id')
+        # aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*"
 
     - name: Clean artifacts
       run: rm -fr priv public_bucket_policy.json
