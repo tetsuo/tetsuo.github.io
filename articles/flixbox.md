@@ -8,7 +8,7 @@ updated: 2023-01-25T12:41:00
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
 
-> [flixbox](https://www.github.com/onur1/flixbox) implements a server and a GUI application for interacting with the [TMDb](https://www.themoviedb.org/) API using typed functional programming library [fp-ts](https://gcanti.github.io/fp-ts/).
+> [flixbox](https://www.github.com/onur1/flixbox) implements a client/server application for interacting with the [TMDb](https://www.themoviedb.org/) API using typed functional programming library [fp-ts](https://gcanti.github.io/fp-ts/).
 
 ## Background
 
@@ -16,7 +16,7 @@ updated: 2023-01-25T12:41:00
 
 If you are new to FP, I highly recommend you to watch the first 9 minutes of Philip Wadler's [Propositions as Types](https://www.youtube.com/watch?v=IOiZatlZtGU) talk, so you can get an idea about the earliest work that made this type of programming possible. If you are the adventurous type, you can continue watching the rest of the talk&mdash; don't let the title scare you! But, you most likely won't need to learn how β-reduction works or the other cool stuff in formal logic in order to program a washing machine display. Trust me, for washing machine displays, you only need to know about [the difference between product and sum types](https://dev.to/gcanti/functional-design-algebraic-data-types-36kf).
 
-When I first started learning FP in JS, I was having trouble reading [Hindley Milney](https://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system) type signatures and the projects like [Fantasy Land](https://github.com/fantasyland/fantasy-land) and [Sanctuary](https://sanctuary.js.org/) haven't really helped much due to the heavy Haskell jargon in their documentation. (It seems some Haskellers are having the same syndrome, [but in the opposite direction](https://www.reddit.com/r/typescript/comments/ond5d8/struggling_to_read_typescript_signatures_convert/)).
+When I first started learning FP in JS, I was having trouble reading [Hindley Milney](https://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system) type signatures and the projects like [Fantasy Land](https://github.com/fantasyland/fantasy-land) and [Sanctuary](https://sanctuary.js.org/) haven't really helped much due to the heavy Haskell jargon in their documentation. (It seems some Haskellers are having the same syndrome, [but in the opposite direction](https://www.reddit.com/r/typescript/comments/ond5d8/struggling_to_read_typescript_signatures_convert/).)
 
 So, I resorted to [fp-ts](https://github.com/gcanti/fp-ts) for deciphering typeclasses in TypeScript. I was lucky in the meantime that Giulio Canti was bombarding GitHub with a new addition to his toolstack every other day, and the community consisted of only a couple of newbies like myself. _Experts_ had not have arrived yet!
 
@@ -266,9 +266,9 @@ There is an entire literature about [Functional Reactive Programming](https://en
 
 If you have previously worked with Redux, [Elm is very similar](https://redux.js.org/understanding/history-and-design/prior-art). The terms, Message and the Update function in Elm are analogous to Action and Reducer in Redux.
 
-Basically, you provide an initial state to it, a [pure function](https://en.wikipedia.org/wiki/Pure_function) for drawing visual elements (based on the current state), and finally another pure function which is responsible for transforming the application state when something happens.
+Basically, you provide an initial state to it, a [pure](https://en.wikipedia.org/wiki/Pure_function) _view_ function for drawing visual elements (based on the current state), and a pure _update_ function which becomes responsible for transforming the application state when something happens.
 
-The Flixbox UI defines the following `Msg` type. These are the only side-effects that can occur while you are browsing the app.
+The Flixbox UI defines the following messages. These are the only side-effects that can occur while you are browsing the app.
 
 [`src/app/Msg.ts`](https://github.com/onur1/flixbox/tree/0.0.6/src/app/Msg.ts)
 
@@ -285,13 +285,15 @@ type Msg =
   | SetMovie
 ```
 
-When you dispatch one of these messages (for example when a link is clicked and `Navigate` is triggered), the [update function](https://github.com/onur1/flixbox/blob/0.0.6/src/app/Effect.ts#L64) is called with a particular type of message and the current application state as input.
+When you dispatch one of these actions from your views (for example when a link is clicked and `Navigate` is triggered), the [update function](https://github.com/onur1/flixbox/blob/0.0.6/src/app/Effect.ts#L64) is called with a particular type of message and the current application state as input.
 
 ```typescript
 declare function update<S, A>(msg: A, state: S): [S, A]
 ```
 
-As you see, `update` takes a `msg` which has type `A` as its first parameter, and a `state` with type `S` as the second, returning both a new state and an action to run in the next loop. This pattern, as simple as it may seem, is actually a very powerful way to model state changes in UIs, to test and debug them.
+As you see, `update` takes a `msg` which has type `A` as its first parameter, and a `state` with type `S` as the second, returning both a new state and an action to run in the next loop.
+
+You send the new state to [subscribers](https://package.elm-lang.org/packages/elm/core/latest/Platform-Sub) (such as the `view` function), and continue to process new actions until there is [nothing else to do](https://package.elm-lang.org/packages/elm/core/latest/Platform-Cmd). This pattern, as simple as it may seem, when compared to the traditional MVC, is actually a very powerful way to model state changes in UIs, to test and [debug](https://en.wikipedia.org/wiki/Time_travel_debugging) them.
 
 ## Conclusion
 
