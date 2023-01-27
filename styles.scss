@@ -360,8 +360,8 @@ iframe {
         .resizeable-widget {
             box-sizing: border-box;
             width: 100%;
-            height: 340px;
-            min-height: 340px;
+            height: 407px;
+            min-height: 344px;
             padding: 12px 0px;
             padding-bottom: 0;
             border-top: 3px solid orange;
@@ -372,6 +372,7 @@ iframe {
                 height: 100%;
             }
         }
+
         .resize-handle {
             height: 5px;
             width: 50px;
