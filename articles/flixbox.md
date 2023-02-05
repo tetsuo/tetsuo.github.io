@@ -48,7 +48,7 @@ When something goes wrong, flixbox will respond with the appropriate HTTP status
 GET /results?search_query=QUERY
 ```
 
-Responds with a [`SearchResultSet`](./src/tmdb/model/SearchResultSet.ts) object.
+Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model/SearchResultSet.ts) object.
 
 ### Retrieving a movie
 
@@ -56,7 +56,7 @@ Responds with a [`SearchResultSet`](./src/tmdb/model/SearchResultSet.ts) object.
 GET /movie/ID
 ```
 
-Responds with a [`Movie`](./src/tmdb/model/Movie.ts) object.
+Responds with a [`Movie`](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model/Movie.ts) object.
 
 ### Get popular movies
 
@@ -64,17 +64,17 @@ Responds with a [`Movie`](./src/tmdb/model/Movie.ts) object.
 GET /popular
 ```
 
-Responds with a [`SearchResultSet`](./src/tmdb/model/SearchResultSet.ts) object.
+Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model/SearchResultSet.ts) object.
 
 ## Type-safe composable HTTP middlewares
 
-The [server side](https://github.com/onur1/flixbox/tree/0.0.6/src/server) API is implemented using [hyper-ts](https://github.com/DenisFrezzato/hyper-ts), the fp-ts porting of [Hyper](https://hyper.wickstrom.tech/). This is an experimental middleware architecture which enforces strict ordering of middleware compositions using static type-checking.
+The [server side](https://github.com/onur1/flixbox/tree/0.0.7/src/server) API is implemented using [hyper-ts](https://github.com/DenisFrezzato/hyper-ts), the fp-ts porting of [Hyper](https://hyper.wickstrom.tech/). This is an experimental middleware architecture which enforces strict ordering of middleware compositions using static type-checking.
 
 Under the hood, hyper-ts runs [Express](https://expressjs.com/) server, but you can integrate it with any HTTP server you like. You can even use a parser combinator library like [parser-ts](https://github.com/gcanti/parser-ts) to bridge it with the NodeJS Stream API to create your own text protocol.
 
 Hyper is modeled as a [State monad](https://paulgray.net/the-state-monad/)&mdash; it's the combination of [Reader](https://dev.to/gcanti/getting-started-with-fp-ts-reader-1ie5) and [Writer](https://levelup.gitconnected.com/reader-writer-and-state-monad-with-fp-ts-6d7149cc9b85) monads, the kind of [monads](https://dev.to/gcanti/getting-started-with-fp-ts-monad-6k) which allow you to read and write a value in a safe way as their names suggest. In this case, it reads information about the incoming request and writes a response through the Express API.
 
-The main principle is that it doesn't immediately mutate the connection (by writing headers or etc.), but it gives you a list of actions to run in strictly correct order (otherwise your code wouldn't have compiled in the first place) when the middleware has finished processing a request. This concept is also really helpful [while testing](https://github.com/onur1/flixbox/blob/0.0.6/__tests__/server.ts) your applications.
+The main principle is that it doesn't immediately mutate the connection (by writing headers or etc.), but it gives you a list of actions to run in strictly correct order (otherwise your code wouldn't have compiled in the first place) when the middleware has finished processing a request. This concept is also really helpful [while testing](https://github.com/onur1/flixbox/blob/0.0.7/__tests__/server.ts) your applications.
 
 In the example below, you can see the entire pipeline for handling requests to the `/movie/ID` endpoint, it proxies requests to TMDb with caching support.
 
@@ -85,7 +85,7 @@ When [`/movie/3423`](https://onurgunduz.com/flixbox/movie/3423) is called on the
   * Otherwise it calls the TMDb API to retrieve it and saves the result into the cache, returning the newly cached value.
 * Responds with a JSON object if the data retrieval succeeded in one way or another.
 
-[`server/Flixbox.ts`](https://github.com/onur1/flixbox/blob/0.0.6/src/server/Flixbox.ts#L87)
+[`server/Flixbox.ts`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/Flixbox.ts#L87)
 
 ```typescript
 pipe(
@@ -123,11 +123,11 @@ pipe(
 
 Here, the function we passed into `apSecond` only executes if the preceding `GET` middleware succeeds, and the function we passed into `orElse` only executes if the preceding `get` call fails.
 
-The main pipeline will short-circuit with an [`AppError`](https://github.com/onur1/flixbox/blob/0.0.6/src/server/Error.ts) if any of the inner pipelines fails for some reason, and exit without writing a response.
+The main pipeline will short-circuit with an [`AppError`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/Error.ts) if any of the inner pipelines fails for some reason, and exit without writing a response.
 
 Let's see the `GET` (essentially `method`) middleware which is the initial middleware used in the example above.
 
-[`middleware/Method.ts`](https://github.com/onur1/flixbox/blob/0.0.6/src/server/middleware/Method.ts)
+[`middleware/Method.ts`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/middleware/Method.ts)
 
 ```typescript
 import { right, left } from 'fp-ts/lib/Either'
@@ -156,11 +156,11 @@ Like `method`, all middlewares in the main pipeline return an `AppError`:
 * `put` returns a `ServerError` when an entry couldn't be saved.
 * `movie` fails with `ProviderError` that encapsulates the TMDb API errors.
 
-If I pipe the result of this middleware pipeline into another `orElse` call and compose it with an error handler middleware as the final thing, then I can handle the `AppError` it throws very conveniently, and eventually send the appropriate error message (with sensitive information redacted) or log important errors. The [`destroy`](https://github.com/onur1/flixbox/blob/0.0.6/src/server/middleware/Error.ts) middleware just does that.
+If I pipe the result of this middleware pipeline into another `orElse` call and compose it with an error handler middleware as the final thing, then I can handle the `AppError` it throws very conveniently, and eventually send the appropriate error message (with sensitive information redacted) or log important errors. The [`destroy`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/middleware/Error.ts) middleware just does that.
 
 ## Logging
 
-While we're at it&mdash; the logging functionality is based on the [logging-ts](https://github.com/gcanti/logging-ts/) module which is adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging). This is a very light-weight logging solution for creating composable loggers. I [wired it up](https://github.com/onur1/flixbox/blob/0.0.6/src/logging/TaskEither.ts) with hyper-ts over a [`TaskEither`](https://gcanti.github.io/fp-ts/modules/TaskEither.ts.html) instance, but I don't see any reason why the Middleware itself couldn't be used to implement the [`Console`](https://github.com/onur1/flixbox/blob/0.0.6/src/logging/Console.ts).
+While we're at it&mdash; the logging functionality is based on the [logging-ts](https://github.com/gcanti/logging-ts/) module which is adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging). This is a very light-weight logging solution for creating composable loggers. I [wired it up](https://github.com/onur1/flixbox/blob/0.0.7/src/logging/TaskEither.ts) with hyper-ts over a [`TaskEither`](https://gcanti.github.io/fp-ts/modules/TaskEither.ts.html) instance, but I don't see any reason why the Middleware itself couldn't be used to implement the [`Console`](https://github.com/onur1/flixbox/blob/0.0.7/src/logging/Console.ts).
 
 ## Runtime type system
 
@@ -168,12 +168,12 @@ If I had to choose only one thing from the fp-ts toolstack, that would be [io-ts
 
 To name a few use cases,
 
-- [The client application state](https://github.com/onur1/flixbox/blob/0.0.6/src/app/Model.ts) is defined with it.
-- [TMDb data model](https://github.com/onur1/flixbox/tree/0.0.6/src/tmdb/model) is defined with it, too.
-- It is used for [reporting validation errors](https://github.com/onur1/flixbox/blob/0.0.6/src/server/Error.ts#L17).
-- Routers use it for [matching queries](https://github.com/onur1/flixbox/blob/0.0.6/src/app/Router.ts#L5).
-- React components use it with [prop-types-ts](https://github.com/gcanti/prop-types-ts/) for [validating received props](https://github.com/onur1/flixbox/blob/0.0.6/src/app/components/Layout.tsx#L77).
-- [Environment variables](https://github.com/onur1/flixbox/blob/0.0.6/src/server/index.ts#L72) are validated with it.
+- [The client application state](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Model.ts) is defined with it.
+- [TMDb data model](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model) is defined with it, too.
+- It is used for [reporting validation errors](https://github.com/onur1/flixbox/blob/0.0.7/src/server/Error.ts#L17).
+- Routers use it for [matching queries](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Router.ts#L5).
+- React components use it with [prop-types-ts](https://github.com/gcanti/prop-types-ts/) for [validating received props](https://github.com/onur1/flixbox/blob/0.0.7/src/app/components/Layout.tsx#L77).
+- [Environment variables](https://github.com/onur1/flixbox/blob/0.0.7/src/server/index.ts#L72) are validated with it.
 
 Everybody writes type validation libraries, but there must be a reason why the ones written by Giulio Canti (previously [tcomb](https://github.com/gcanti/tcomb) as well) became so popular and widely adopted in the JS community.
 
@@ -250,7 +250,7 @@ If you have ever stumbled upon the programming language book shelf in a library,
 
 In the first 9 or 10 chapters, they explain the fundamentals. It starts with some background and motivation, then it first teaches you data types, then operators, how to write expressions in this language, control structures like for loops, then you learn functions and it shows you some examples of how to implement a linked list or something. Between chapters 10 and 13 there is some nonsense, and finally there is Chapter 14: Concurrency.
 
-This is actually the chapter that most people skip, also the most fun part of the book, since every language deals with concurrency in a different way. Some of them deal with it simply with mutexes, some use the actor model, atomic pointers, eventlets, greenlets, observable streams, goroutines... The list goes on.
+This is actually the chapter that most people skip, also the most fun part of the book, since every language deals with concurrency in a different way. Some of them deal with it simply with mutexes, some use the actor model, atomic pointers, event emitters, greenlets, observable streams, gochannels... The list goes on.
 
 The irony is that many of these languages that provide _first-class_ support for concurrency are not even widely used in reactive domains where concurrency needs to be tackled the most, such as graphical user interface development.
 
@@ -270,7 +270,7 @@ Basically, you provide an initial state to it, a [pure](https://en.wikipedia.org
 
 The Flixbox UI defines the following messages. These are the only side-effects that can occur while you are browsing the app.
 
-[`src/app/Msg.ts`](https://github.com/onur1/flixbox/tree/0.0.6/src/app/Msg.ts)
+[`src/app/Msg.ts`](https://github.com/onur1/flixbox/tree/0.0.7/src/app/Msg.ts)
 
 ```typescript
 type Msg =
@@ -285,7 +285,7 @@ type Msg =
   | SetMovie
 ```
 
-When you dispatch one of these actions from your views (for example when a link is clicked and `Navigate` is triggered), the [update function](https://github.com/onur1/flixbox/blob/0.0.6/src/app/Effect.ts#L64) is called with a particular type of message and the current application state as input.
+When you dispatch one of these actions from your views (for example when a link is clicked and `Navigate` is triggered), the [update function](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Effect.ts#L64) is called with a particular type of message and the current application state as input.
 
 ```typescript
 declare function update<S, A>(msg: A, state: S): [S, A]
