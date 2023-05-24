@@ -1,5 +1,6 @@
 ---
 title: Length-prefix message framing in Go
+cover_title: binproto
 description: Support for binary-based request response protocols in Golang
 tags: golang,networking
 published: 2023-01-07T21:25:00
