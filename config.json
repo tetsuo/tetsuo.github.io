@@ -8,11 +8,11 @@
   "title": "Onur Gündüz",
   "authorName": "Onur Gündüz",
   "domain": "ogu.nz",
-  "description": "Onur Gündüz's website",
+  "description": "A blog on programming and design",
   "twitterId": "xxy998",
   "email": "ogunduz@gmail.com",
   "analyticsId": "UA-1238030-3",
-  "showComments": true,
+  "showComments": false,
   "buildImages": true,
   "links": [
     {
