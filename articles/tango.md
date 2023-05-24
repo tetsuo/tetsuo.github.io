@@ -1,6 +1,6 @@
 ---
 title: Parsing logical expressions with the Shunting yard algorithm
-cover_title: test
+cover_title: tango
 description: Parsing logical expressions with the Shunting yard algorithm
 tags: javascript,couchdb,language
 published: 2023-01-02T16:20:00
