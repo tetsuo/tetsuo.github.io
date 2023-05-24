@@ -341,12 +341,12 @@ def go_e(k):
 
 initial_pos = (0,0)
 
-# go E 3; go N 4;
+# go E 3; go N 4; go E 3;
 program = compose(compose(go_e(3), go_n(4)), go_e(3))
 
 print(program(initial_pos))
 # Output:
-# (3,4)
+# (6,4)
 ```
 
 # λ-calculus
