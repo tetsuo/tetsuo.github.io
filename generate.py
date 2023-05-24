@@ -22,6 +22,7 @@ import datetime
 @dataclass
 class Entry:
     title: str
+    cover_title: str
     description: str
     short_description: str
     slug: str
@@ -183,6 +184,10 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
             resize_tag.attrs['class'] = 'resize-handle'
             div.insert_after(resize_tag)
 
+    cover_title = body.metadata['title']
+    if 'cover_title' in body.metadata:
+        cover_title = body.metadata['cover_title']
+
     return Entry(
         slug=slug,
         body=str(soup_body),
@@ -193,6 +198,7 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         images=images,
         tags=body.metadata['tags'].split(','),
         title=body.metadata['title'],
+        cover_title=cover_title,
         published=datetime.datetime.fromisoformat(body.metadata['published']),
         updated=datetime.datetime.fromisoformat(body.metadata['updated']),
         link="https://" + domain_name + "/" + slug + ".html",
@@ -389,7 +395,7 @@ class Generator:
 
         if self.settings.images:
             for entry in self.entries:
-                create_cover_image(entry.title, entry.short_description,
+                create_cover_image(entry.cover_title, entry.short_description,
                                    "public/" + entry.slug + ".png")
 
             create_cover_image(
