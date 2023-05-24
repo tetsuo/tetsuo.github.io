@@ -62,14 +62,16 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     body = markdown(
         data,
-        extras=["fenced-code-blocks", "tables", "metadata"]
+        extras=["footnotes",
+                "fenced-code-blocks", "tables", "metadata"]
     )
 
     # highlightjs-lang disables pygments which is needed for
     # preserving spaces in <code> blocks for atom feeds
     body_feed = markdown(
         data,
-        extras=["fenced-code-blocks", "tables", "metadata", "highlightjs-lang"]
+        extras=["footnotes", "fenced-code-blocks",
+                "tables", "metadata", "highlightjs-lang",]
     )
 
     slug = os.path.splitext(os.path.basename(filename))[0].lower()
