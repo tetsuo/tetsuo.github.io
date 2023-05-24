@@ -164,7 +164,7 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     for a in anchors_body:
         if a['href'].startswith("./") and a['href'].endswith(".md"):
             a['href'] = "/" + a['href'][2:-3] + ".html"
-        else:
+        elif not a['href'].startswith("#"):
             a['target'] = "_blank"
 
     div_containers_body = soup_body.find_all("div", recursive=False)
