@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div class="single-col-grid content tags">
+	<div class="single-col-grid content index">
 		<div class="col">
-			<div class="above-body">
-				<div class="home"><a href="/">Home</a></div>
-				<a href="/{{_tag}}.html">{{ 'Posts tagged with ' + _tag }}</a>
+			<div class="centered tag-title">
+				Posts tagged with <a href="/{{_tag}}.html"><b>{{ _tag }}</b></a>
 			</div>
 		</div>
 		<div class="col">
 			{% for entry in entries %}
 			<div class="centered entry" id="e-{{ entry.slug }}">
-				<h1><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
-				<div class="info">{{ locale.format_date(entry.published, full_format=True, shorter=True) }}{% if entry.tags %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}{% end %}</div>
+				<div class="preview-frame">
+					<h1><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
+					<div class="info">{{ locale.format_date(entry.published, full_format=True, shorter=True) }}{% if entry.tags %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}{% end %}</div>
+				</div>
 			</div>
 			{% end %}
 		</div>

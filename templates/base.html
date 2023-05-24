@@ -75,24 +75,13 @@
 
 <body class="{% block body_class %}{% end %}">
   <div class="main">
-    <div class="header">
-      <div class="social">
-        <ul>
-          {% for link in settings.links %}
-          <li><a aria-label="{{ link['label'] }}" href="{{ link['url'] }}" target="_blank"><i class="icon {{ link['icon'] }}"></i></a></li>
-          {% end %}
-        </ul>
-      </div>
-    </div>
 
-    {% block content %}{% end %}
-
-    <div class="footer single-col-grid">
+    <div class="header single-col-grid">
       <div class="col about">
-        <table>
+        <table class="centered">
           <tr>
             <td>
-              <span>2023</span><span>&mdash;</span><span>{{ settings.author_name }}</span>
+              <span class="author"><a href="/">{{ settings.author_name }}</a></span>
             </td>
             <td>
               <ul>
@@ -104,6 +93,7 @@
         </table>
       </div>
     </div>
+    {% block content %}{% end %}
   </div>
 
 {% if not debug %}
