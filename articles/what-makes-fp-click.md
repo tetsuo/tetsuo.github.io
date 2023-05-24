@@ -7,7 +7,7 @@ published: 2023-05-22T12:41:00
 updated: 2023-05-22T12:41:00
 ---
 
-> Things to know about FP before jumping on the lambda train or trying to learn what a Monad is.
+> Things to know about FP before jumping on the lambda train.
 
 This post is the first of a series, which I think may be useful for those learning functional programming.
 
@@ -136,7 +136,7 @@ const fib = n => n <= 1 ? n : fib(n-1) + fib(n-2)
 
 > There are two ways of looking at a function: as an algorithm which will produce a value given an argument, or as a set of ordered argument-value pairs. The first view is "dynamic" or **operational**, in that it sees a function as a sequence of operations in time. The second view is "static" or **denotational**: the function is regarded as a fixed set of associations between arguments and the corresponding values. &mdash; Simon L. Peyton Jones [^spj-book]
 
-Not exactly. Explicit or not, it wouldn't have made any sense for the C compiler (or the JavaScript interpreter) if there were no statements to begin with. Simply because a C program is a sequence of commands separated by the **;** symbol&mdash; that's what a C program means.
+Not exactly. Explicit or not, it wouldn't have made any sense for the C compiler (nor the JavaScript interpreter) if there were no statements to begin with. Simply because a C program is a sequence of commands separated by the **;** symbol&mdash; that's what a C program means.
 
 But for Haskell it makes perfect sense. Why? What does a Haskell program _mean_ then?
 
