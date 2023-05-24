@@ -490,7 +490,7 @@ Now get ready for the impact. This is the schematic representation (namely, a [c
 
 It turns out we've been modeling our language semantics with a **Category** from the very beginning.
 
-A [Category](https://en.wikipedia.org/wiki/Category_(mathematics)) is like a [Set](https://en.wikipedia.org/wiki/Set_(mathematics)) (in [Set theory](https://en.wikipedia.org/wiki/Set_theory)) except that it focuses not on objects (as elements) but on the relations or **morphisms between objects**; _how things relate_ to each other.
+A [Category](https://en.wikipedia.org/wiki/Category_(mathematics)) is like a Set except that it focuses not on objects (as elements) but on the relations or **morphisms between objects**; _how things relate_ to each other.
 
 What's more, "[Type theory](https://en.wikipedia.org/wiki/Type_theory) and a [certain kind of category theory](https://en.wikipedia.org/wiki/Cartesian_closed_category) are closely related. By a syntax-semantics duality one may view type theory as a formal syntactic language or _calculus_ for category theory, and conversely one may think of category theory as providing _semantics_ for type theory." [^ncat-category-theory]
 
@@ -500,7 +500,7 @@ A _type_ by itself doesn't mean anything in programming. It only starts to make 
 if A ⊢ B and B ⊢ C then A ⊢ C
 ```
 
-> "The doctrine of _computational trinitarianism_ holds that computation manifests itself in three forms: **proofs of propositions**, **programs of a type**, and **mappings between structures**. These three aspects give rise to three sects of worship: **Logic**, which gives primacy to proofs and propositions; **Languages**, which gives primacy to programs and types; **Categories**, which gives primacy to mappings and structures. The central dogma of computational trinitarianism holds that Logic, Languages, and Categories are but three manifestations of one divine notion of computation. There is no preferred route to enlightenment: each aspect provides insights that comprise the experience of computation in our lives. Computational trinitarianism entails that any concept arising in one aspect should have meaning from the perspective of the other two.  If you arrive at an insight that has importance for logic, languages, and categories, then you may feel sure that you have elucidated an essential concept of computation&mdash;you have made an enduring scientific discovery." &mdash; Robert Harper, ["The Holy Trinity"](https://existentialtype.wordpress.com/2011/03/27/the-holy-trinity/)  [^curry-howard]
+> "The doctrine of _computational trinitarianism_ holds that computation manifests itself in three forms: **proofs of propositions**, **programs of a type**, and **mappings between structures**. These three aspects give rise to three sects of worship: **Logic**, which gives primacy to proofs and propositions; **Languages**, which gives primacy to programs and types; **Categories**, which gives primacy to mappings and structures. The central dogma of computational trinitarianism holds that Logic, Languages, and Categories are but three manifestations of one divine notion of computation. There is no preferred route to enlightenment: each aspect provides insights that comprise the experience of computation in our lives. Computational trinitarianism entails that any concept arising in one aspect should have meaning from the perspective of the other two.  If you arrive at an insight that has importance for logic, languages, and categories, then you may feel sure that you have elucidated an essential concept of computation&mdash;you have made an enduring scientific discovery." &mdash; [Robert Harper, The Holy Trinity.](https://existentialtype.wordpress.com/2011/03/27/the-holy-trinity/)  [^curry-howard]
 
 And what does this all mean for [the humble programmer](https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html)?
 
@@ -508,7 +508,7 @@ It means a **gold mine of abstractions** waiting to be excavated.
 
 [^haskell-denotation]: Haskell wiki: [Denotational semantics](https://en.wikibooks.org/wiki/Haskell/Denotational_semantics)
 [^spj-book]: Simon L. Peyton Jones, [The Implementation of Functional Programming Languages](https://www.microsoft.com/en-us/research/wp-content/uploads/1987/01/slpj-book-1987-small.pdf)
-[^plato-lambda-calculus]: [Stanford Encyclopedia of Philosophy - The Lambda Calculus](https://plato.stanford.edu/entries/lambda-calculus/)
+[^plato-lambda-calculus]: Stanford Encyclopedia of Philosophy: [The Lambda Calculus](https://plato.stanford.edu/entries/lambda-calculus/)
 [^lightweight-hkt]: Libraries like [fp-ts](https://www.github.com/gcanti/fp-ts) emulate HKTs, which TypeScript doesn't support natively. See: [Lightweight higher-kinded polymorphism](https://www.cl.cam.ac.uk/~jdy22/papers/lightweight-higher-kinded-polymorphism.pdf)
 [^typed-lambda]: See: [Typed lambda calculus](https://en.wikipedia.org/wiki/Typed_lambda_calculus)
 [^numerals-base]: This is [implemented](https://hackage.haskell.org/package/numerals-base-0.3/docs/Text-Numeral-Exp.html) in Haskell as part of the [numerals](https://hackage.haskell.org/package/numerals-base) package
