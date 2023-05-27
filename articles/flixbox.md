@@ -9,7 +9,7 @@ updated: 2023-01-25T12:41:00
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
 
-> [flixbox](https://www.github.com/onur1/flixbox) demonstrates a full stack client/server web application for interacting with the [TheMovieDB](https://www.themoviedb.org/) API using typed functional programming library [fp-ts](https://gcanti.github.io/fp-ts/) and its friends.
+> [**flixbox**](https://www.github.com/onur1/flixbox) demonstrates a full stack client/server web application for interacting with the [TheMovieDB](https://www.themoviedb.org/) API using typed functional programming library [fp-ts](https://gcanti.github.io/fp-ts/) and its friends.
 
 [fp-ts](https://gcanti.github.io/fp-ts/) is a library by [Giulio Canti](https://twitter.com/giuliocanti) that brings the power of [typeclasses](https://en.wikipedia.org/wiki/Type_class) and the [higher kinded types](https://en.wikipedia.org/wiki/Kind_(type_theory)) from functional programming languages (such as [Haskell](https://www.haskell.org/) and [PureScript](https://www.purescript.org/)) into the world of [TypeScript](https://www.typescriptlang.org/).
 
@@ -57,7 +57,7 @@ Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/
 
 # HTTP middleware architecture
 
-The [server](https://github.com/onur1/flixbox/tree/0.0.7/src/server) API is implemented using [hyper-ts](https://github.com/DenisFrezzato/hyper-ts): the fp-ts porting of [Hyper](https://hyper.wickstrom.tech/). This is an experimental middleware architecture which enforces strict ordering of middleware compositions using static type-checking.
+> The [server](https://github.com/onur1/flixbox/tree/0.0.7/src/server) API is implemented using [hyper-ts](https://github.com/DenisFrezzato/hyper-ts): the fp-ts porting of [Hyper](https://hyper.wickstrom.tech/). This is an experimental middleware architecture which enforces _strict ordering_ of middleware compositions using static type-checking.
 
 Under the hood, hyper-ts runs [Express](https://expressjs.com/) server, but you can integrate it with any HTTP server you like.
 
@@ -149,11 +149,15 @@ If I pipe the result of this middleware pipeline into another `orElse` call and 
 
 # Logging
 
-While we're at it, the logging functionality is based on the [logging-ts](https://github.com/gcanti/logging-ts/) module which is adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging). This is a very light-weight logging solution for creating composable loggers. I [wired it up](https://github.com/onur1/flixbox/blob/0.0.7/src/logging/TaskEither.ts) with hyper-ts over a [`TaskEither`](https://gcanti.github.io/fp-ts/modules/TaskEither.ts.html) instance, but I don't see any reason why the Middleware itself couldn't be used to implement the [`Console`](https://github.com/onur1/flixbox/blob/0.0.7/src/logging/Console.ts).
+> While we're at it, the logging functionality is based on the [logging-ts](https://github.com/gcanti/logging-ts/) module which is adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging).
+
+This is a very light-weight logging solution for creating composable loggers. I [wired it up](https://github.com/onur1/flixbox/blob/0.0.7/src/logging/TaskEither.ts) with hyper-ts over a [`TaskEither`](https://gcanti.github.io/fp-ts/modules/TaskEither.ts.html) instance, but I don't see any reason why the Middleware itself couldn't be used to implement the [`Console`](https://github.com/onur1/flixbox/blob/0.0.7/src/logging/Console.ts).
 
 # Runtime type system
 
-If I had to choose only one thing from the fp-ts toolstack, that would be [io-ts](https://github.com/gcanti/io-ts/). Both the server and the client use this library extensively for type validation.
+> If I had to choose only one thing from the fp-ts toolstack, that would be [io-ts](https://github.com/gcanti/io-ts/).
+
+Both the server and the client use this library extensively for type validation.
 
 To name a few use cases,
 
@@ -170,7 +174,7 @@ The reason is that other libraries are full of design mistakes which cause [type
 
 # Optics and immutable state updates
 
-[monocle-ts](https://www.github.com/gcanti/monocle-ts) is a partial porting of [Monocle](https://www.optics.dev/Monocle/) from Scala. It is used in the client application for reading and transforming the application state.
+> [monocle-ts](https://www.github.com/gcanti/monocle-ts) is a partial porting of [Monocle](https://www.optics.dev/Monocle/) from Scala. It is used in the client application for reading and transforming the application state.
 
 This library provides support for [composable optics](https://medium.com/@gcanti/introduction-to-optics-lenses-and-prisms-3230e73bfcfe) that are used for reading and writing immutable data. Simply told, you can create such an optic structure (perhaps a [Lens](https://gcanti.github.io/monocle-ts/modules/Lens.ts.html) composition) to zoom into a deeply nested object for transforming or reading a value inside it without touching the original value.
 
@@ -212,7 +216,7 @@ const nextState = getNextState(42)(baseState)
 
 On this page, the URL in the address bar is synced with the flixbox window. You can actually [visit the current page with an initial route](./flixbox.html#/movie/545611).
 
-Both the client and the server use [fp-ts-routing](https://github.com/gcanti/fp-ts-routing) for parsing request routes. It is a cross-platform library and stacks with io-ts very nicely.
+> Both the client and the server use [fp-ts-routing](https://github.com/gcanti/fp-ts-routing) for parsing request routes. It is a cross-platform library and stacks with io-ts very nicely.
 
 ```typescript
 import * as t from 'io-ts'
@@ -233,23 +237,11 @@ const SearchQuery = t.interface({
 const results = lit('results').then(query(SearchQuery))
 ```
 
-# Concurrency
+# Enter Elm
 
-Almost every general purpose language deals with concurrency in a different way. Some, simply with mutexes, some use the actor model, atomic pointers, event emitters, greenlets, observable streams, go channels...
+> [Elm](https://elm-lang.org/) is a programming language designed specifically for programming GUIs. [elm-ts](https://github.com/gcanti/elm-ts) is the fp-ts adaptation of it built on top of [RxJS](https://rxjs.dev/).
 
-If you ever stumbled across the programming language book shelf in a library, you might have noticed many of these books are explaining the same thing, just in a different syntax. This is until the last chapter: Concurrency.
-
-This is actually the chapter that most people skip, also the most fun part of the book, since every language deals with concurrency in a different way. Some of them deal with it simply with mutexes, some use the actor model, atomic pointers, event emitters, greenlets, observable streams, gochannels... The list goes on.
-
-The irony is that many of these languages that provide _first-class_ support for concurrency are not even widely used in reactive domains where concurrency needs to be tackled the most, such as graphical user interface development.
-
-The one programming language that needs to have the most powerful concurrency support, namely  JavaScript, provides [promises](https://avaq.medium.com/broken-promises-2ae92780f33), [callbacks](https://www.geeksforgeeks.org/what-is-callback-hell-in-node-js/) and [async/await](https://www.youtube.com/watch?v=ITogH7lJTyE) as its building blocks.
-
-The weak concurrency support in JS is the reason why we're seeing a new ground-breaking framework idea popping up every now and then. But, if you think development with [MobX](https://mobx.js.org/) is magic, then you have to understand that callbacks are no different. Actually MobX could be much safer if you don't execute stupid side effects.
-
-## Enter Elm
-
-[Elm](https://elm-lang.org/) is a programming language designed specifically for programming GUIs, and [elm-ts](https://github.com/gcanti/elm-ts) is the fp-ts adaptation of the [Elm architecture](https://guide.elm-lang.org/architecture/) implemented using [RxJS](https://rxjs.dev/). It is worth noting that elm-ts works like Elm only on the surface, otherwise internally they are totally different. Also, the Elm language uses the Hindley Milner type system [which is quite different](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript's own type system.
+Note that elm-ts works like Elm only on the surface, otherwise internally they are totally different. Also, the Elm language uses the Hindley Milner type system [which is quite different](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript's own type system.
 
 There is an entire literature about [Functional Reactive Programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) (FRP) and [the Elm paper](https://elm-lang.org/assets/papers/concurrent-frp.pdf) by [Evan Czaplicki](https://github.com/evancz) is a good start if you want to dig in deeper. For those interested, I would also recommend taking a look at [purescript-behaviors](https://github.com/paf31/purescript-behaviors) by [Phil Freeman](https://functorial.com/) which implements [push-pull FRP](http://conal.net/papers/push-pull-frp/) in PureScript and has been ported to fp-ts too by Giulio Canti, under the name [behaviors-ts](https://github.com/gcanti/behaviors-ts).
 
@@ -284,8 +276,8 @@ As you see, `update` takes a `msg` which has type `A` as its first parameter, an
 
 You send the new state to [subscribers](https://package.elm-lang.org/packages/elm/core/latest/Platform-Sub) (such as the `view` function), and continue to process new actions until there is [nothing else to do](https://package.elm-lang.org/packages/elm/core/latest/Platform-Cmd). This pattern, as simple as it may seem, when compared to the traditional MVC, is actually a very powerful way to model state changes in UIs, to test and [debug](https://en.wikipedia.org/wiki/Time_travel_debugging) them.
 
-## Conclusion
+# Conclusion
 
-[PureScript and Haskell](https://gcanti.github.io/fp-ts/guides/purescript.html) are very elegant and concise programming languages. fp-ts is only emulating them and it has to deal with all the nitty gritty details to make this work with TypeScript types, while keeping the API up to date to not fall behind the developments within TypeScript, or the greater JavaScript ecosystem.
+[PureScript and Haskell](https://gcanti.github.io/fp-ts/guides/purescript.html) are very elegant and concise programming languages. fp-ts is only emulating them and it has to deal with all the nitty gritty details to make this work with TypeScript types; while keeping the API up to date to not fall behind the developments within TypeScript, or the greater JavaScript ecosystem.
 
-So, working with fp-ts may feel like working in a construction zone sometimes, with coils of cables lying around everywhere and the loud [V8](https://v8.dev/) engine sound in the background; but once you get the hang of it, those cables or the noise doesn't bother you too much, because everything works flawlessly and nobody has to wear helmets in this worksite .
+Working with fp-ts may feel like working in a construction zone sometimes, with coils of cables lying around everywhere and the loud [V8](https://v8.dev/) engine sound in the background; but once you get the hang of it, those cables or the noise doesn't bother you too much, because everything works flawlessly and nobody has to wear helmets in this worksite.
