@@ -59,7 +59,7 @@ In imperative programming, side effects are explicit, but the result is hidden. 
 
 Syntactically speaking, HTML has everything it needs to become a Turing complete programming language. In fact there is a programming syntax called [S-Expression](https://en.wikipedia.org/wiki/S-expression) which is structurally identical to XML.
 
-[![Cassidy.1985.015.gif](./Cassidy.1985.015.gif)](./Cassidy.1985.015.gif)
+[![Cassidy.1985.015.gif](./images/Cassidy.1985.015.gif)](./images/Cassidy.1985.015.gif)
 
 This is the standard definition of the [Fibonacci sequence](https://rosettacode.org/wiki/Fibonacci_sequence) written in [Lisp](https://en.wikipedia.org/wiki/Lisp_(programming_language)), a real programming language from the 1960s. Replace parentheses with angle brackets, you have an XML tree instead.
 
@@ -142,7 +142,7 @@ But for Haskell it makes perfect sense. Why? What does a Haskell program _mean_ 
 
 One seemingly unrelated triangle, the [semiotic triangle](https://en.wikipedia.org/wiki/Triangle_of_reference), says that in order for something to make sense there needs to be a relation such that:
 
-[![semiotic triangle](./Ogden_semiotic_triangle-50.png )](./Ogden_semiotic_triangle-50.png)
+[![semiotic triangle](./images/Ogden_semiotic_triangle-50.png)](./images/Ogden_semiotic_triangle-50.png)
 
 Now take the bottom edge of the semiotic triangle, and imagine that we have this magical box (like **⟦⟧**) which evaluates programmatic objects (like syntax) into [mathematical objects](https://en.wikipedia.org/wiki/Mathematical_object) (like values).
 
@@ -483,7 +483,7 @@ In the robot language we composed function domains to denote a chain of steps. T
 
 Now get ready for the impact. This is the schematic representation (namely, a [commutative diagram](https://en.wikipedia.org/wiki/Commutative_diagram)) of a [Category](https://en.wikipedia.org/wiki/Category_(mathematics)) from [Category theory](https://en.wikipedia.org/wiki/Category_theory): a general theory for describing abstract structures and their relations. [^category-id] It is used in almost all areas of mathematics, NLP, AI and even in physics.
 
-[![commutative-morphism-50.png](./commutative-morphism-50.png)](./commutative-morphism-50.png)
+[![commutative-morphism-40.png](./images/commutative-morphism-40.png)](./images/commutative-morphism-40.png)
 
 
 # † In Category We Trust †
