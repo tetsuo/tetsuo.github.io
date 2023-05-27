@@ -1,5 +1,5 @@
 ---
-title: What makes functional programming click?
+title: Introduction to FP for absolute beginners
 description: Things to know about functional programming before jumping on the lambda train
 cover_title: Intro to FP
 tags: haskell,fp,language
@@ -7,11 +7,11 @@ published: 2023-05-22T12:41:00
 updated: 2023-05-22T12:41:00
 ---
 
-> Things to know about FP before jumping on the lambda train.
+> Things to know about functional programming before jumping on the lambda train.
 
 This post is the first of a series, which I think may be useful for those learning functional programming.
 
-# Ways of expressing
+# Ways of expressing: Declarative and Imperative
 
 Functional programming is **declarative**, meaning that computation's logic is expressed without describing its control flow. In contrast, languages like C, Python etc. are **imperative**. In those languages, you use statements like `if/else` and `while` to change a program's state.
 
@@ -134,9 +134,9 @@ const fib = n => n <= 1 ? n : fib(n-1) + fib(n-2)
 
 # Denotational semantics
 
-> There are two ways of looking at a function: as an algorithm which will produce a value given an argument, or as a set of ordered argument-value pairs. The first view is "dynamic" or **operational**, in that it sees a function as a sequence of operations in time. The second view is "static" or **denotational**: the function is regarded as a fixed set of associations between arguments and the corresponding values. &mdash; Simon L. Peyton Jones [^spj-book]
+> "There are two ways of looking at a function: as an algorithm which will produce a value given an argument, or as a set of ordered argument-value pairs. The first view is "dynamic" or **operational**, in that it sees a function as a sequence of operations in time. The second view is "static" or **denotational**: the function is regarded as a fixed set of associations between arguments and the corresponding values." Simon L. Peyton Jones [^spj-book]
 
-Not exactly. Explicit or not, it wouldn't have made any sense for the C compiler (nor the JavaScript interpreter) if there were no statements to begin with. Simply because a C program is a sequence of commands separated by the **;** symbol&mdash; that's what a C program means.
+Not exactly. Explicit or not, it wouldn't have made any sense for the C compiler (nor the JavaScript interpreter) if there were no statements to begin with. Simply because a C program is a sequence of commands separated by the **;** symbol &mdash; that's what a C program means.
 
 But for Haskell it makes perfect sense. Why? What does a Haskell program _mean_ then?
 
@@ -371,7 +371,7 @@ e ::= x            // variable
 
 Lambda abstractions are expressed in the form of `λx.y`, where `x` is the variable of the function and `y` is its body. Lambda functions are identical to functions in programming except that they are [unary](https://en.wikipedia.org/wiki/Unary_function).
 
-> Also, "The procedure of viewing a multiple-arity operation as a sequence of abstractions that yield an equivalent unary operation is called [_currying_](https://en.wikipedia.org/wiki/Currying) the operation." [^plato-lambda-calculus] &mdash; It is a reference to logician [Haskell Curry](https://en.wikipedia.org/wiki/Haskell_Curry).
+> Also, "The procedure of viewing a multiple-arity operation as a sequence of abstractions that yield an equivalent unary operation is called [_currying_](https://en.wikipedia.org/wiki/Currying) the operation." [^plato-lambda-calculus] It is a reference to logician [Haskell Curry](https://en.wikipedia.org/wiki/Haskell_Curry).
 
 Examples in JavaScript:
 
@@ -394,7 +394,7 @@ In fact a lot of these _combinator_ functions with one-letter names you've been 
 
 You'll hear that word a lot but it's important to understand in the beginning, the meaning of "combinator" is a more informal sense referring to the style of organizing libraries centered around the idea of combining things as we'll see in the next section, and not strictly to combinatory logic.
 
-> Check out [Raymond Smullyan](https://en.wikipedia.org/wiki/Raymond_Smullyan)'s [To Mock a Mockingbird](https://en.wikipedia.org/wiki/To_Mock_a_Mockingbird) if you want to learn more about combinatory logic.
+> Check out [Raymond Smullyan](https://en.wikipedia.org/wiki/Raymond_Smullyan)'s [**To Mock a Mockingbird**](https://en.wikipedia.org/wiki/To_Mock_a_Mockingbird) if you want to learn more about combinatory logic.
 
 # Total and partial functions
 
@@ -421,7 +421,7 @@ safeDiv a b = Just (a `div` b)
 
 Now this gives us a total meaning. `safeDiv` returns _Just_ a number or _Nothing_ (given 0), but it never throws an exception.
 
-# Algebraic Data Types (ADTs)
+# Algebraic Data Types
 
 `Maybe` is a sum type which is defined as follows:
 
@@ -430,7 +430,7 @@ data Maybe a = Just a | Nothing
     deriving (Eq, Ord)
 ```
 
-In Haskell, we use [ADTs](https://en.wikipedia.org/wiki/Algebraic_data_type) to define domains which combine other semantic domains.
+In Haskell, we use [Algebraic Data Types](https://en.wikipedia.org/wiki/Algebraic_data_type) (ADTs for short) to define domains which combine other semantic domains.
 
 * [**Sum types**](https://en.wikipedia.org/wiki/Tagged_union) are used for _alternation_: `A | B` meaning `A` or `B` but not both.
 * [**Product types**](https://en.wikipedia.org/wiki/Product_type) are used for _combination_: `A B` meaning `A` and `B` together.
@@ -500,7 +500,7 @@ A _type_ by itself doesn't mean anything in programming. It only starts to make 
 if A ⊢ B and B ⊢ C then A ⊢ C
 ```
 
-> "The doctrine of _computational trinitarianism_ holds that computation manifests itself in three forms: **proofs of propositions**, **programs of a type**, and **mappings between structures**. These three aspects give rise to three sects of worship: **Logic**, which gives primacy to proofs and propositions; **Languages**, which gives primacy to programs and types; **Categories**, which gives primacy to mappings and structures. The central dogma of computational trinitarianism holds that Logic, Languages, and Categories are but three manifestations of one divine notion of computation. There is no preferred route to enlightenment: each aspect provides insights that comprise the experience of computation in our lives. Computational trinitarianism entails that any concept arising in one aspect should have meaning from the perspective of the other two.  If you arrive at an insight that has importance for logic, languages, and categories, then you may feel sure that you have elucidated an essential concept of computation&mdash;you have made an enduring scientific discovery." &mdash; [Robert Harper, The Holy Trinity.](https://existentialtype.wordpress.com/2011/03/27/the-holy-trinity/)  [^curry-howard]
+> "The doctrine of _computational trinitarianism_ holds that computation manifests itself in three forms: **proofs of propositions**, **programs of a type**, and **mappings between structures**. These three aspects give rise to three sects of worship: **Logic**, which gives primacy to proofs and propositions; **Languages**, which gives primacy to programs and types; **Categories**, which gives primacy to mappings and structures. The central dogma of computational trinitarianism holds that Logic, Languages, and Categories are but three manifestations of one divine notion of computation. There is no preferred route to enlightenment: each aspect provides insights that comprise the experience of computation in our lives. Computational trinitarianism entails that any concept arising in one aspect should have meaning from the perspective of the other two.  If you arrive at an insight that has importance for logic, languages, and categories, then you may feel sure that you have elucidated an essential concept of computation&mdash;you have made an enduring scientific discovery." [Robert Harper, The Holy Trinity.](https://existentialtype.wordpress.com/2011/03/27/the-holy-trinity/) [^curry-howard]
 
 And what does this all mean for [the humble programmer](https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html)?
 
