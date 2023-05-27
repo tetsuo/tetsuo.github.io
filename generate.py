@@ -94,15 +94,15 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         img_src = img.get('src')
         img_filename = os.path.basename(img_src)
         dirname = os.path.dirname(img_src)
-        if '.' == dirname and img.parent.name == "a" and img.parent.parent.name == "p":
+        if img.parent.name == "a" and img.parent.parent.name == "p":
             anchor_url = urlparse(img.parent.get('href'))
 
-            if anchor_url.hostname == None:
+            if './images' == dirname and anchor_url.hostname == None:
                 img_w = re.findall('-(\d{1,3})$', os.path.splitext(img_src)[0])
+                img.parent.parent['class'] = 'ta-center'
                 if len(img_w) > 0:
                     img['class'] = 'i-' + img_w[0]
-                    img.parent.parent['class'] = 'ta-center'
-            elif anchor_url.hostname == domain_name:
+            if '.' == dirname and anchor_url.hostname == domain_name:
                 url_parts = anchor_url.path[1:].split('/')
                 if len(url_parts) != 2:
                     continue
@@ -130,9 +130,9 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
                 div_tag.append(iframe_tag)
 
                 img.parent.parent.replaceWith(div_tag)
-            continue
 
         img['src'] = '/images/' + img_filename
+        img.parent['href'] = img['src']
 
     images: list[dict[str, Any]] = []
     for img in imgs_body_feed:
