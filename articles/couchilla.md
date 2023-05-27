@@ -7,9 +7,9 @@ published: 2023-01-02T14:55:00
 updated: 2023-01-02T14:55:00
 ---
 
-> [couchilla](https://github.com/onur1/couchilla) is a bundler for packing design documents for CouchDB.
+> [**couchilla**](https://github.com/onur1/couchilla) is a bundler for packing design documents for CouchDB.
 
-[Design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are a special type of database entry that you can insert to [CouchDB](https://couchdb.apache.org/), they contain functions such as view and update functions. These functions are executed when requested and create secondary indexes, i.e. MapReduce views.
+[Design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are a special type of database entry that you can insert to [CouchDB](https://couchdb.apache.org/), they contain functions such as _view_ and _update_ functions. These functions are executed when requested and create secondary indexes, i.e. MapReduce views.
 
 CouchDB ships with JavaScript and Erlang support, but design functions are language-agnostic. So understandably, the distribution doesn't include a secondary tool to create a design document.
 
