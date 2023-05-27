@@ -7,7 +7,7 @@ published: 2023-01-07T21:25:00
 updated: 2023-01-07T21:25:00
 ---
 
-> [binproto](https://github.com/onur1/binproto) implements low-level support for binary-based two-way communication protocols. You can use it to create your own low-latency binary protocols for things like game networking or file transfer.
+> [**binproto**](https://github.com/onur1/binproto) implements low-level support for binary-based two-way communication protocols. You can use it to create your own low-latency binary protocols for things like game networking or file transfer.
 
 The Transmission Control Protocol (TCP) provides reliable delivery of a **stream** of bytes between two hosts. But it's the responsibility of the application level protocols to parse incoming data (either in text or bytes) into an application-specific _message_.
 
@@ -32,7 +32,7 @@ Each message starts with a header which is a varint encoded unsigned 64-bit inte
 
 binproto uses an internal buffer which allocates 4096 bytes by default, meaning that it will process what's inside the buffer as long its size is equal or greater than this value; which is a sensible default for many applications. You can adjust this value for optimal performance if your protocol requires larger (or smaller) chunks.
 
-> [See the full binproto API documentation at pkg.go.dev](https://pkg.go.dev/github.com/onur1/binproto)
+> See the full [API documentation](https://pkg.go.dev/github.com/onur1/binproto) at pkg.go.dev
 
 ## Example: Echo
 
