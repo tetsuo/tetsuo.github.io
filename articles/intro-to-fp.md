@@ -486,7 +486,7 @@ Now get ready for the impact. This is the schematic representation (namely, a [c
 [![commutative-morphism-40.png](./images/commutative-morphism-40.png)](./images/commutative-morphism-40.png)
 
 
-# † In Category We Trust †
+# In Category We Trust
 
 It turns out we've been modeling our language semantics with a **Category** from the very beginning.
 
