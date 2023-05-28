@@ -420,8 +420,8 @@ iframe {
   }
 
   ul {
-    margin-top: .4em;
-    margin-bottom: .6em;
+    margin-top: .2em;
+    margin-bottom: .5em;
     width: 100%;
   }
 
@@ -431,11 +431,12 @@ iframe {
 
   ul,
   ul li {
-    line-height: 1.58em;
+    line-height: 1.56em;
   }
 
   ul li ul {
     font-size: initial;
+    margin-bottom: 0.2em;
   }
   .footnotes {
     margin-top: 20px;
@@ -565,6 +566,6 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6, li, ul li {
   color: #1f2328;
 }
