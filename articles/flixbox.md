@@ -172,7 +172,7 @@ There are many type validation libraries out there, but there must be a reason w
 
 The reason is that other libraries are full of design mistakes which cause [type inference](https://en.wikipedia.org/wiki/Type_inference) to work poorly. You can't just _invent_ a technique for composing types, you can only _discover_ such things; and that discovery was made decades ago, io-ts is simply implementing that.
 
-# Optics and immutable state updates
+# Optics &mdash;i.e. immutable state updates
 
 > [monocle-ts](https://www.github.com/gcanti/monocle-ts) is a partial porting of [Monocle](https://www.optics.dev/Monocle/) from Scala. It is used in the client application for reading and transforming the application state.
 
@@ -237,7 +237,7 @@ const SearchQuery = t.interface({
 const results = lit('results').then(query(SearchQuery))
 ```
 
-# Enter Elm
+# Poor man's Elm in TypeScript
 
 > [Elm](https://elm-lang.org/) is a programming language designed specifically for programming GUIs. [elm-ts](https://github.com/gcanti/elm-ts) is the fp-ts adaptation of it built on top of [RxJS](https://rxjs.dev/).
 
