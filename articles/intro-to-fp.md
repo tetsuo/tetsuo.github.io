@@ -349,7 +349,7 @@ print(program(initial_pos))
 # (6,4)
 ```
 
-# λ-calculus
+# Lambda Calculus
 
 In 1937, [Alan Turing](https://en.wikipedia.org/wiki/Alan_Turing) conceptualized a [machine with a mutable state](https://en.wikipedia.org/wiki/Turing_machine) to show that a general solution to [the decision problem](https://en.wikipedia.org/wiki/Entscheidungsproblem) is impossible.
 
