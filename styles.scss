@@ -261,7 +261,8 @@ iframe {
   h1 {
     font-size: 1.38em;
     font-weight: bold;
-    margin-top: 0.92em;
+    margin-top: 0.46em;
+    padding-top: 0.46em;
     margin-bottom: 0.72em;
   }
   .title {
@@ -471,7 +472,7 @@ iframe {
     pre {
       width: 100%;
       margin-top: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .codehilite {
       margin-bottom: 12px;
@@ -488,7 +489,8 @@ iframe {
       margin-bottom: 5px;
     }
     h2 {
-      margin-top: 16px;
+      margin-top: 0.38em;
+      padding-top: 0.38em;
       margin-bottom: 0.4em;
     }
     h3 {
@@ -568,4 +570,24 @@ h4,
 h5,
 h6, li, ul li {
   color: #1f2328;
+}
+
+h1, h2 {
+  .bookmark {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgb(31, 35, 40)' %3E%3Cpath d='m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z'/%3E%3C/svg%3E");
+    width: 16px;
+    height: 16px;
+    display: none;
+    margin-left: 8px;
+    color: #1f2328;
+  }
+  &:hover {
+    .bookmark {
+      display: inline-block;
+    }
+  }
+}
+
+.title h1 {
+  padding-top: 0;
 }

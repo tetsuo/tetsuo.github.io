@@ -62,8 +62,13 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
 
     body = markdown(
         data,
-        extras=["footnotes",
-                "fenced-code-blocks", "tables", "metadata"]
+        extras=[
+            "header-ids",
+            "footnotes",
+            "fenced-code-blocks",
+            "tables",
+            "metadata"
+        ]
     )
 
     # highlightjs-lang disables pygments which is needed for
@@ -168,6 +173,22 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
             a['href'] = "/" + a['href'][2:-3] + ".html"
         elif not a['href'].startswith("#"):
             a['target'] = "_blank"
+
+    headlines = soup_body.find_all(["h1", "h2"])
+
+    for h in headlines:
+        if h['id'] is not None:
+            headline_a = soup_body.new_tag("a")
+            headline_a.attrs['class'] = 'bookmark'
+            h['id'] = "/" + h['id']
+            headline_a.attrs['href'] = '#' + h['id']
+            h.append(headline_a)
+
+    for h in soup_body.find_all(["h3", "h4", "h5"]):
+        del h['id']
+
+    for h in soup_body_feed.find_all(["h1", "h2", "h3", "h4", "h5"]):
+        del h['id']
 
     div_containers_body = soup_body.find_all("div", recursive=False)
 
