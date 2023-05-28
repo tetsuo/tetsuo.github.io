@@ -145,6 +145,7 @@ iframe {
 .header {
   overflow: hidden;
   width: 100%;
+  height: 22px;
   margin-top: 24px;
 
   div {
@@ -325,10 +326,10 @@ iframe {
     border-left: 0;
     border-right: 0;
     p {
-      color: blueviolet;
+      color: #8f00c0;
     }
     code {
-      color: blueviolet;
+      color: #8f00c0;
     }
   }
 
