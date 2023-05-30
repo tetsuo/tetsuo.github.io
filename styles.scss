@@ -294,7 +294,7 @@ iframe {
       font-size: 0.9em;
       background-color: #afb8c133;
       color: #1f2328;
-      padding: .2em .4em;
+      padding: .2em .36em;
       border-radius: 4px;
     }
   }
@@ -386,7 +386,7 @@ iframe {
   }
 
   ul li code {
-    padding: 0.3em 0.2em;
+    padding: .2em .36em;
   }
 
   pre {
@@ -453,6 +453,9 @@ iframe {
     }
   }
   .body {
+    .i-60 {
+      width: 60%;
+    }
     .i-50 {
       width: 50%;
     }
@@ -590,4 +593,9 @@ h1, h2 {
 
 .title h1 {
   padding-top: 0;
+}
+
+blockquote.note {
+  border-color: #d9afff;
+  background-color: #fbf6ff;
 }

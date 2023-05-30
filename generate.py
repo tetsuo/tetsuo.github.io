@@ -217,6 +217,13 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     if 'cover_title' in body.metadata:
         cover_title = body.metadata['cover_title']
 
+    blockquotes = soup_body.find_all("blockquote")
+
+    for blockquote in blockquotes:
+        if blockquote.parent.name == "blockquote":
+            blockquote.parent.replace_with(blockquote)
+            blockquote.attrs['class'] = "note"
+
     return Entry(
         slug=slug,
         body=str(soup_body),

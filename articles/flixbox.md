@@ -4,7 +4,7 @@ description: Barebones web app example using typed functional programming librar
 cover_title: flixbox
 tags: typescript,fp
 published: 2023-01-25T12:41:00
-updated: 2023-01-25T12:41:00
+updated: 2023-05-29T12:41:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
@@ -161,7 +161,7 @@ Both the server and the client use this library extensively for type validation.
 
 To name a few use cases,
 
-- [The client application state](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Model.ts) is defined with it.
+- The [client application state](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Model.ts) is defined with it.
 - [TMDb data model](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model) is defined with it, too.
 - It is used for [reporting validation errors](https://github.com/onur1/flixbox/blob/0.0.7/src/server/Error.ts#L17).
 - Routers use it for [matching queries](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Router.ts#L5).
@@ -243,7 +243,7 @@ const results = lit('results').then(query(SearchQuery))
 
 Note that elm-ts works like Elm only on the surface, otherwise internally they are totally different. Also, the Elm language uses the Hindley Milner type system [which is quite different](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript's own type system.
 
-There is an entire literature about [Functional Reactive Programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) (FRP) and [the Elm paper](https://elm-lang.org/assets/papers/concurrent-frp.pdf) by [Evan Czaplicki](https://github.com/evancz) is a good start if you want to dig in deeper. For those interested, I would also recommend taking a look at [purescript-behaviors](https://github.com/paf31/purescript-behaviors) by [Phil Freeman](https://functorial.com/) which implements [push-pull FRP](http://conal.net/papers/push-pull-frp/) in PureScript and has been ported to fp-ts too by Giulio Canti, under the name [behaviors-ts](https://github.com/gcanti/behaviors-ts).
+There is an entire literature about [Functional Reactive Programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) (FRP) and the [Elm paper](https://elm-lang.org/assets/papers/concurrent-frp.pdf) by [Evan Czaplicki](https://github.com/evancz) is a good start if you want to dig in deeper. For those interested, I would also recommend taking a look at [purescript-behaviors](https://github.com/paf31/purescript-behaviors) by [Phil Freeman](https://functorial.com/) which implements [push-pull FRP](http://conal.net/papers/push-pull-frp/) in PureScript and has been ported to fp-ts too by Giulio Canti, under the name [behaviors-ts](https://github.com/gcanti/behaviors-ts).
 
 [Elm is very similar to Redux](https://redux.js.org/understanding/history-and-design/prior-art). The terms, Message and the Update function in Elm are analogous to Action and Reducer in Redux.
 
