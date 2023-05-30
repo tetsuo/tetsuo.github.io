@@ -4,7 +4,7 @@ description: Barebones web app example using typed functional programming librar
 cover_title: flixbox
 tags: typescript,fp
 published: 2023-01-25T12:41:00
-updated: 2023-05-29T12:41:00
+updated: 2023-05-29T12:42:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
@@ -61,7 +61,7 @@ Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/
 
 Under the hood, hyper-ts runs [Express](https://expressjs.com/) server, but you can integrate it with any HTTP server you like.
 
-Hyper is modeled as a [State monad](https://paulgray.net/the-state-monad/)&mdash; you can think of it as the combination of [Reader](https://dev.to/gcanti/getting-started-with-fp-ts-reader-1ie5) and [Writer](https://levelup.gitconnected.com/reader-writer-and-state-monad-with-fp-ts-6d7149cc9b85) monads, the kind of [monads](https://dev.to/gcanti/getting-started-with-fp-ts-monad-6k) which allow you to read/write values from/to an environment in a monadic fashion. In this case, it reads information about the incoming request and writes a response through the Express API.
+Hyper is modeled as a [State monad](https://paulgray.net/the-state-monad/) &mdash;you can think of it as the combination of [Reader](https://dev.to/gcanti/getting-started-with-fp-ts-reader-1ie5) and [Writer](https://levelup.gitconnected.com/reader-writer-and-state-monad-with-fp-ts-6d7149cc9b85) monads, the kind of [monads](https://dev.to/gcanti/getting-started-with-fp-ts-monad-6k) which allow you to read/write values from/to an environment in a monadic fashion. In this case, it reads information about the incoming request and writes a response through the Express API.
 
 The main principle is that it doesn't immediately mutate the connection (by writing headers or etc.), but it outputs a list of actions to run in strictly correct order (otherwise your code wouldn't have compiled in the first place) when the middleware has finished processing a request. This concept is also really helpful [while testing](https://github.com/onur1/flixbox/blob/0.0.7/__tests__/server.ts) your applications.
 
