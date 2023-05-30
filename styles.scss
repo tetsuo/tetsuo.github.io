@@ -134,7 +134,7 @@ iframe {
 }
 
 .content {
-  padding: 1.2em 0 1em 0;
+  padding: 0 0 1em 0;
   display: inline-block;
   width: 100%;
   background-color: #fff;
@@ -144,8 +144,8 @@ iframe {
 .header {
   overflow: hidden;
   width: 100%;
-  height: 22px;
-  margin-top: 24px;
+  padding: 24px 0px 20px 0px;
+  margin: 0px;
 
   div {
     width: 100%;
