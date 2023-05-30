@@ -4,7 +4,7 @@ description: Things to know about functional programming before jumping on the l
 cover_title: Intro to FP
 tags: haskell,fp,language
 published: 2023-05-22T12:41:00
-updated: 2023-05-29T12:41:00
+updated: 2023-05-29T14:41:00
 ---
 
 > Things to know about functional programming before jumping on the lambda train.
@@ -263,7 +263,7 @@ S⟦go W k⟧ = λ(x,y).(x−k,y)
    M⟦s;m⟧ = M⟦m⟧ ◦ S⟦s⟧
 ```
 
-The **◦** operator means [**function composition**](https://en.wikipedia.org/wiki/Function_composition). It is said that, if `f` and `g` are two functions then `(g◦f)` is the function such that `(g◦f)(x) = g(f(x))` for every value of `x`. It is also said that a [**higher-order function**](https://en.wikipedia.org/wiki/Higher-order_function) is a function which takes one or more functions as arguments and returns a function as a result.
+The **◦** operator means [function composition](https://en.wikipedia.org/wiki/Function_composition). It is said that, if `f` and `g` are two functions then `(g◦f)` is the function such that `(g◦f)(x) = g(f(x))` for every value of `x`. It is also said that a [higher-order function](https://en.wikipedia.org/wiki/Higher-order_function) is a function which takes one or more functions as arguments and returns a function as a result.
 
 A Move expression is composed of Step expressions and it can be likened to a pipeline where each Step is passed the result of the one it succeeds. In the case of an empty string after a semicolon, it simply returns the position passed without making any changes.
 
@@ -312,7 +312,7 @@ print(program(initial_pos))
 
 In 1937, [Alan Turing](https://en.wikipedia.org/wiki/Alan_Turing) conceptualized a [machine with a mutable state](https://en.wikipedia.org/wiki/Turing_machine) to show that a general solution to [the decision problem](https://en.wikipedia.org/wiki/Entscheidungsproblem) is impossible. His solution inspired others and within a decade it gave rise to the [Von-Neumann architecture](https://en.wikipedia.org/wiki/Von_Neumann_architecture) which eventually evolved into the modern PCs we use today. Computing machines... _with memories._
 
-This is not the end of the story though. The same year a man named [Alonzo Church](https://en.wikipedia.org/wiki/Alonzo_Church) invented a type of mathematical formalism he called [**λ-calculus**](https://en.wikipedia.org/wiki/Lambda_calculus) which [happens to be equivalent](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis) to a [Turing machine](https://en.wikipedia.org/wiki/Turing_machine). Anything a Turing machine can do, Lambda calculus can do, and vice versa.
+This is not the end of the story though. The same year a man named [Alonzo Church](https://en.wikipedia.org/wiki/Alonzo_Church) invented a type of mathematical formalism he called [λ-calculus](https://en.wikipedia.org/wiki/Lambda_calculus) which [happens to be equivalent](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis) to a [Turing machine](https://en.wikipedia.org/wiki/Turing_machine). Anything a Turing machine can do, Lambda calculus can do, and vice versa.
 
 It is a specialized function notation which he used to explicitly express the basic notions of function abstraction and application. It's the world's first programming language and arguably the simplest.
 
@@ -414,7 +414,7 @@ Mc⟦Move⟧ : Int × (Pos → Pos)
 
 In Object-oriented Programming (OOP), an _instance_ is an individual object which belongs to a certain type of class.
 
-In Haskell, [**type classes**](https://en.wikipedia.org/wiki/Type_class) are defined by specifying a set of functions (together with their respective types) that must exist for every type that belongs to the class. So types can be parameterized; a type class `Eq` intended to contain types that admit equality would be declared in the following way:
+In Haskell, [type classes](https://en.wikipedia.org/wiki/Type_class) are defined by specifying a set of functions (together with their respective types) that must exist for every type that belongs to the class. So types can be parameterized; a type class `Eq` intended to contain types that admit equality would be declared in the following way:
 
 ```haskell
 class Eq a where
@@ -422,25 +422,25 @@ class Eq a where
   (/=) :: a -> a -> Bool
 ```
 
-`Maybe` data type is an _instance_ of `Eq` and `Ord` type classes (respectively for equality and ordering) and provides implementations for the operators/functions defined on them. It is also said to be a [**type constructor**](https://wiki.haskell.org/Constructor) for this reason.
+`Maybe` data type is an _instance_ of `Eq` and `Ord` type classes (respectively for equality and ordering) and provides implementations for the operators/functions defined on them. It is also said to be a [type constructor](https://wiki.haskell.org/Constructor) for this reason.
 
-This type of polymorphism is called [higher-kinded polymorphism](https://en.wikipedia.org/wiki/Kind_(type_theory)). So just as [higher-order functions](https://en.wikipedia.org/wiki/Higher-order_function) abstract both first-order values and functions, **higher-kinded types** (HKTs for short) abstract both types and type constructors. [^lightweight-hkt]
+This type of polymorphism is called [higher-kinded polymorphism](https://en.wikipedia.org/wiki/Kind_(type_theory)). So just as [higher-order functions](https://en.wikipedia.org/wiki/Higher-order_function) abstract both first-order values and functions, higher-kinded types (HKTs for short) abstract both types and type constructors. [^lightweight-hkt]
 
 # Function composition
 
 So far we've seen how denotational semantics is baked into FP languages and how Haskell marries abstract syntax into lambda terms.
 
-Earlier in the arithmetic example, we turned syntactic expressions like `add 1 2` and `mul 2 5` into `1 + 2` and `2 × 5`. Note that addition and multiplication are both [associative](https://en.wikipedia.org/wiki/Associative_property) binary operations with identity elements.
+Earlier in the arithmetic example, we turned syntactic expressions like `add 1 2` and `mul 2 5` into `1 + 2` and `2 × 5`. Note that addition and multiplication are both **associative** binary operations with **identity** elements.
 
 In the robot language, we composed function domains to denote a chain of steps. The composition of functions is also associative. That is, if `f`, `g` and `h` are composable, then `f ∘ (g ∘ h) = (f ∘ g) ∘ h`. Since the result won't change, it doesn't matter in which order the steps are added to each other.
 
-Now check this out. This is the schematic representation (namely, a [commutative diagram](https://en.wikipedia.org/wiki/Commutative_diagram)) of a [**category**](https://en.wikipedia.org/wiki/Category_(mathematics)) [^category-id] from [**category theory**](https://en.wikipedia.org/wiki/Category_theory): a general theory for describing abstract structures and their relations. It is used in almost all areas of mathematics, NLP, AI and even in physics.
+Now check this out. This is the schematic representation (namely, a [commutative diagram](https://en.wikipedia.org/wiki/Commutative_diagram)) of a [**category**](https://en.wikipedia.org/wiki/Category_(mathematics)) [^category-id] from [category theory](https://en.wikipedia.org/wiki/Category_theory): a general theory for describing abstract structures and their relations. It is used in almost all areas of mathematics, NLP, AI and even in physics.
 
 [![commutative-morphism-40.png](./images/commutative-morphism-40.png)](./images/commutative-morphism-40.png)
 
 It turns out we've been modeling our language semantics with a category from the very beginning.
 
->> Now it might be a good time to watch the first 9 minutes of [Propositions as Types](https://www.youtube.com/watch?v=IOiZatlZtGU) talk by [Philip Wadler](https://en.wikipedia.org/wiki/Philip_Wadler).
+>> Now it might be a good time to watch the first 9 minutes of the [Propositions as Types](https://www.youtube.com/watch?v=IOiZatlZtGU) talk by [Philip Wadler](https://en.wikipedia.org/wiki/Philip_Wadler).
 
 A category is like a set except that it focuses not on objects (as elements) but on the relations or **morphisms between objects**; _how things relate_ to each other.
 

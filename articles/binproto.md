@@ -1,10 +1,10 @@
 ---
 title: Length-prefix message framing in Go
 cover_title: binproto
-description: Support for binary-based request response protocols in Golang
-tags: golang,networking
+description: Support for binary-based request response protocols in Go
+tags: go,net
 published: 2023-01-07T21:25:00
-updated: 2023-01-07T21:25:00
+updated: 2023-05-29T14:25:00
 ---
 
 > [**binproto**](https://github.com/onur1/binproto) implements low-level support for binary-based two-way communication protocols. You can use it to create your own low-latency binary protocols for things like game networking or file transfer.
