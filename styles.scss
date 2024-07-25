@@ -46,7 +46,7 @@ body {
 
 a {
   text-decoration: none;
-  color: #0000da;
+  color: #0447ce;
 }
 
 a:hover {
@@ -229,17 +229,12 @@ iframe {
       margin-top: 0;
       margin-bottom: 10px;
     }
-    p:nth-child(2) {
-      margin-top: 0;
-      padding-top: 0;
-    }
   }
   .pagination {
     margin-top: 60px !important;
   }
 
   .entry {
-    border-bottom: 1px solid #d8dee4;
     .preview-frame {
       h1 {
         font-weight: normal;
@@ -320,17 +315,17 @@ iframe {
     }
   }
   blockquote:first-of-type {
-    border: 1px solid #d9afff;
+    border: 1px solid #ff9800;
     padding-left: 0;
     padding-right: 0;
     background: none;
     border-left: 0;
     border-right: 0;
     p {
-      color: #8f00c0;
+      color: #1f2328;
     }
     code {
-      color: #8f00c0;
+      color: #1f2328;
     }
   }
 
@@ -541,7 +536,7 @@ iframe {
 }
 
 .entry p a code {
-  color: #0000da;
+  color: #0447ce;
 }
 
 .tag-title {
