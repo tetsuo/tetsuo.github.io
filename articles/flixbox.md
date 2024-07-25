@@ -1,6 +1,6 @@
 ---
 title: Barebones web app example using fp-ts
-description: Barebones web app example using typed functional programming library fp ts in TypeScript
+description: Barebones web app example using functional programming library fp ts in TypeScript
 cover_title: flixbox
 tags: typescript,fp
 published: 2023-01-25T12:41:00
