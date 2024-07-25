@@ -6,13 +6,13 @@
   "repository": "git@github.com:onur1/website.git",
   "license": "MIT",
   "scripts": {
-    "sass": "node-sass styles.scss > public/assets/styles.css",
+    "sass": "sass styles.scss > public/assets/styles.css",
     "clean": "rm -f public/* public/assets/styles.css templates/manifest.webmanifest templates/favicons.html"
   },
   "dependencies": {
     "bourbon-neat": "^4.0.0",
     "favicons": "7.0.2",
-    "node-sass": "^8.0.0",
-    "normalize-scss": "^7.0.1"
+    "normalize-scss": "^7.0.1",
+    "sass": "^1.77.8"
   }
 }
