@@ -1,5 +1,5 @@
 ---
-title: FP primer: Denotational semantics
+title: Denotational semantics
 description: Learn how fp provides mathematical meaning to programs
 cover_title: Denotational
 tags: haskell,fp,language
@@ -188,7 +188,7 @@ e ::= x            // variable
 
 Lambda abstractions are expressed in the form of `λx.y`, where `x` is the variable of the function and `y` is its body.
 
-> For practicality, I extended λ-calculus to include `+` and `-` operators in the following example. Also in pure lambda, all functions are [unary](https://en.wikipedia.org/wiki/Currying); there are no numbers, no operators, no booleans, no if/else, no loops, no self references, no recursions. But still it is _sufficiently expressive_ to compute anything a Turing machine can compute. [Go figure](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis).
+> For practicality, λ-calculus is extended to include `+` and `-` operators in the following example. Also in pure lambda, all functions are [unary](https://en.wikipedia.org/wiki/Currying); there are no numbers, no operators, no booleans, no if/else, no loops, no self references, no recursions. But still it is _sufficiently expressive_ to compute anything a Turing machine can compute. [Go figure](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis).
 
 That said, here is how we evaluate Step expressions into λ terms:
 
@@ -210,7 +210,7 @@ M⟦Move⟧ : Pos → Pos
 
 The **◦** operator means [function composition](https://en.wikipedia.org/wiki/Function_composition): a [higher-order function](https://en.wikipedia.org/wiki/Higher-order_function) which takes one or more functions as arguments and returns a function as a result.
 
-Functional programming is all about function composition, and we'll discover more about it in my upcoming [FP primer](./fp-primer.html) posts. For now, it's worth noting that that this operation really is no different than adding two numerals or multiplying them. Those are both associative binary operations with identity elements; so does the composition of functions. That is, if `f`, `g` and `h` are composable, then `f ∘ (g ∘ h) = (f ∘ g) ∘ h`.
+Functional programming is all about function composition, and we'll discover more about it in my upcoming [FP primer](./fp-primer.html) posts. For now, let's just note that function composition is really is no different than adding two numerals or multiplying them. Those are both associative binary operations with identity elements; so does the composition of functions. That is, if `f`, `g` and `h` are composable, then `f ∘ (g ∘ h) = (f ∘ g) ∘ h`.
 
 Finally, here is how Move expressions would be evaluated in Python for finding a target position:
 
