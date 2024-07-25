@@ -12,7 +12,7 @@
 			<div class="centered entry" id="e-{{ entry.slug }}">
 				<div class="preview-frame">
 					<h1><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
-					<div class="info">{{ locale.format_date(entry.published, full_format=True, shorter=True) }}{% if entry.tags %} &mdash; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}{% end %}</div>
+					<div class="info">{{ locale.format_date(entry.published, full_format=True, shorter=True) }}{% if entry.tags %} &middot; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}{% end %}</div>
 				</div>
 			</div>
 			{% end %}
