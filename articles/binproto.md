@@ -1,21 +1,21 @@
 ---
-title: Length-prefix message framing in Go
+title: Build custom binary protocols in Go with multiplexing support
 cover_title: binproto
-description: Building a robust low-latency binary protocol implementation in Go
+description: Build custom binary protocols in Go with multiplexing support
 tags: go,net
 published: 2023-01-07T21:25:00
-updated: 2023-05-29T14:25:00
+updated: 2024-08-10T00:00:00
 ---
 
-> [**binproto**](https://github.com/onur1/binproto) implements low-level support for binary-based two-way communication protocols. You can use it to create your own low-latency binary protocols for things like game networking or file transfer.
+> [**binproto**](https://github.com/onur1/binproto) provides generic support for binary communication protocols. Ideal for applications like game networking or file transfer, it enables low-latency data exchange.
 
-The Transmission Control Protocol (TCP) provides reliable delivery of a **stream** of bytes between two hosts. But it's the responsibility of the application level protocols to parse incoming data (either in text or bytes) into an application-specific _message_.
+The Transmission Control Protocol (TCP) ensures reliable delivery of byte streams between devices. However, application-level protocols are responsible for parsing incoming data (text or binary) into meaningful messages specific to the application.
 
-Go's standard library provides [net/textproto](https://pkg.go.dev/net/textproto) for implementing text protocols (in the style of HTTP, SMTP) in a convenient fashion. However, for binary protocols, there is really no consensus on what might be the most generic way for dividing a long stream of bytes into discrete messages.
+While Go's standard library offers a convenient framework for handling text-based protocols (like HTTP and SMTP) with [net/textproto](https://pkg.go.dev/net/textproto), there's no widely agreed-upon approach for dividing a long stream of bytes into discrete messages.
 
-## Message format
+## Length-Prefix Framing
 
-[binproto](https://github.com/onur1/binproto) internally implements a streaming state machine borrowed from the [hypercore wire protocol](https://dat-ecosystem-archive.github.io/how-dat-works/#wire-protocol). Over the wire each message is packed in the following format:
+Internally, binproto leverages a streaming state machine inspired by the [hypercore wire protocol](https://dat-ecosystem-archive.github.io/how-dat-works/#wire-protocol). Over the wire each message is packed in the following format:
 
 ```
 ╔──────────────────────────────────────────────╗
@@ -24,19 +24,26 @@ Go's standard library provides [net/textproto](https://pkg.go.dev/net/textproto)
            └─ 60-bits   └─ 4-bits
 ```
 
-This simple technique, which is performed basically by writing the size of each message to a stream before a message itself, is called **length-prefix framing**.
+This simple technique prefaces each message with its size, allowing binproto to efficiently determine individual message boundaries within the byte stream.
 
-Each message starts with a header which is a varint encoded unsigned 64-bit integer and consists of a **channel ID** (first 60-bits) and a **channel type** (last 4-bits), the rest is the body of a message.
+## Message Structure
 
-## Buffering
+Each message starts with a header, which is a variable-length encoded (varint) unsigned 64-bit integer, containing:
 
-binproto uses an internal buffer which allocates 4096 bytes by default, meaning that it will process what's inside the buffer as long its size is equal or greater than this value; which is a sensible default for many applications. You can adjust this value for optimal performance if your protocol requires larger (or smaller) chunks.
+* **Channel ID (first 60 bits)**: Identifies the specific channel for the message.
+* **Channel Type (last 4 bits)**: Denotes the type of data contained in the message.
 
-> See the full [API documentation](https://pkg.go.dev/github.com/onur1/binproto) at pkg.go.dev
+Header is followed by the message payload.
 
-## Example: Echo
+## Configurable Buffer Size
 
-To start receiving and sending messages, all we really need to do is to pipe a `net.Conn` into a `binproto.Conn` instance. Once a connection is established, we can call `ReadMessage()` and `Send()` methods on a `Conn` instance to read and send messages.
+binproto uses an internal buffer with a default size of 4096 bytes. This means it processes data within the buffer as long as the data size meets or exceeds this value, a reasonable default for many applications. However, you can adjust this value for optimal performance if your protocol deals with larger or smaller data chunks.
+
+> For detailed information on the available functions and functionalities, refer to the [API documentation](https://pkg.go.dev/github.com/onur1/binproto) available at pkg.go.dev.
+
+## Example Usage
+
+To start receiving and sending messages, simply pipe a `net.Conn` (network connection) into a `binproto.Conn` instance. Once the connection is established, use the `ReadMessage()` and `Send()` methods on the `Conn` object to read incoming messages and send messages over the network, respectively.
 
 ```go
 package main
@@ -141,6 +148,4 @@ func (s *server) close() error {
 }
 ```
 
-## Encryption
-
-Note that, binproto doesn't implement encryption, but there should be some module somewhere which implements the open source [NOISE protocol](http://www.noiseprotocol.org/) that you can use as a drop-in replacement for `net`.
+**Note**: binproto doesn't provide encryption, but there are Go modules out there which can be used as a drop-in replacement for `net` to add encryption capabilities. See: [NOISE protocol](http://www.noiseprotocol.org/).

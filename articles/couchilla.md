@@ -1,25 +1,25 @@
 ---
-title: Bundle your CouchDB map/reduce functions with ease
+title: CommonJS support for CouchDB design documents
 cover_title: couchilla
-description: Bundler for packing CouchDB design documents
+description: CommonJS support for CouchDB design documents
 tags: javascript,couchdb,database
 published: 2023-01-02T14:55:00
-updated: 2023-01-02T14:55:00
+updated: 2024-08-10T00:00:00
 ---
 
 > [**couchilla**](https://github.com/onur1/couchilla) is a bundler for packing design documents for CouchDB.
 
-[Design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are a special type of database entry that you can insert to [CouchDB](https://couchdb.apache.org/), they contain functions such as _view_ and _update_ functions. These functions are executed when requested and create secondary indexes, i.e. MapReduce views.
+[Design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are special database entries within [CouchDB](https://couchdb.apache.org/) that house JavaScript functions like _views_ and _updates_. These functions, executed on demand, generate secondary indexes, often termed MapReduce views.
 
-CouchDB ships with JavaScript and Erlang support, but design functions are language-agnostic. So understandably, the distribution doesn't include a secondary tool to create a design document.
+While CouchDB supports JavaScript and Erlang, design functions are language-independent. Consequently, the distribution lacks a dedicated tool for creating design documents.
 
-The JavaScript support is based on the [Mozilla Spidermonkey](https://firefox-source-docs.mozilla.org/js/index.html) engine and it has somewhat strict module dependency rules and other limitations that you need to be aware of while writing your design functions.
+JavaScript support in CouchDB relies on the Mozilla SpiderMonkey engine, imposing specific module dependency rules and limitations on design function development.
 
-[couchilla](https://github.com/onur1/couchilla) is a tool for conveniently bundling design documents for CouchDB, with CommonJS support. It takes view and filter functions from a directory of JavaScript files and outputs a design document JSON.
+[couchilla](https://github.com/onur1/couchilla) addresses this by providing a convenient way to bundle design documents with CommonJS support. It aggregates view and filter functions from a JavaScript directory and produces a design document in JSON format.
 
 ## Directory structure
 
-Here is an example directory structure of a simple design document:
+Here's an example of a basic design document directory structure:
 
 ```
 .
@@ -31,10 +31,9 @@ Here is an example directory structure of a simple design document:
 └── validate_doc_update.js
 ```
 
-* Files that contain [view functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#view-functions) are located in the `views` folder.
-  * Files with `.map.js` (or only `.js`) extensions are transformed into [map functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#map-functions).
-  * Files with `.reduce.js` extensions are transformed into [reduce functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#reduce-and-rereduce-functions).
-* Files that contain [filter functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#filter-functions) are located in the `filters` folder.
+* [View functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#view-functions) reside in the `views` directory. Files with `.map.js` (or simply `.js`) are converted into [map functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#map-functions).
+  * [Reduce functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#reduce-and-rereduce-functions) are defined in files with `.reduce.js` extensions.
+* [Filter functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#filter-functions) belong in the `filters` directory.
 
 ## Examples
 
@@ -103,11 +102,11 @@ You can opt to use [Erlang native functions](https://docs.couchdb.org/en/stable/
 /* builtin _sum */
 ```
 
-During compilation this will be replaced with a call to the builtin [`_sum`](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#sum) function of CouchDB.
+During compilation this will be replaced with a call to the builtin [`_sum`](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#sum) function.
 
-### CommonJS
+### Requiring other modules
 
-All code should be inside the exported default function, including your `require()` calls.
+All code, including `require()` statements, must be enclosed within the exported default function.
 
 `views/gamma.map.js`
 

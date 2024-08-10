@@ -1,17 +1,17 @@
 ---
-title: Denotational semantics
-description: Learn how fp provides mathematical meaning to programs
-cover_title: Denotational
+title: Demystifying denotational semantics
+description: Demystifying denotational semantics
+cover_title: A primer to FP
 tags: haskell,fp,language
 published: 2023-05-30T12:41:00
-updated: 2023-05-30T12:41:00
+updated: 2024-08-10T00:00:00
 ---
 
-> This post is the first of a series, which I think may be useful for those learning functional programming.
+> This post aims to introduce the core concepts of functional programming in a way that I believe would have been most helpful to me as a beginner.
 
-In purely functional programming, a **function** is regarded as a fixed set of associations between arguments and the corresponding values.
+## What is a function?
 
-Here is the [Fibonacci sequence](https://rosettacode.org/wiki/Fibonacci_sequence) defined by the linear recurrence equation in [Haskell](https://www.haskell.org/):
+In FP, a **function** is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example from [Haskell](https://www.haskell.org/) demonstrating the Fibonacci sequence.
 
 ```haskell
 fib :: Integer -> Integer
@@ -20,21 +20,21 @@ fib 1 = 1
 fib n = fib (n-1) + fib (n-2)
 ```
 
-What we have in here consists of _equations_, each of which establishes an equality between the left and right hand sides of the equal sign. Each case expects some input integer to conform to a given pattern, `0`, `1` or `n` and outputs a Fibonacci number. `fib n` runs recursively until the base case is reached and a sum is returned.
+This defines `fib` as a function that takes an integer `n` and returns the nth Fibonacci number. Each case acts like an equation, defining the relationship between input and output. `fib n` runs recursively until the base case is reached and a sum is returned.
 
-This view of a function is said to be [denotational](https://en.wikipedia.org/wiki/Denotational_semantics) since you are constructing _denotations_ (or meanings) to define it; in contrast to [operational](https://en.wikipedia.org/wiki/Operational_semantics), where a function is seen as a sequence of _operations_ in time.
+This view of a function is called [denotational](https://en.wikipedia.org/wiki/Denotational_semantics). We define its "meaning" by establishing relationships between inputs and outputs. This contrasts with [operational semantics](https://en.wikipedia.org/wiki/Operational_semantics), where functions are seen as sequences of _operations_ executed over time.
 
-> In FP, we understand the "true meaning" of a program, because we know the mathematical object it denotes. The mathematical objects for the Haskell programs `fib 1`, `1`, `5-4`, and `fib (2-1) + fib (2-2)` can be represented by the integer 1. We say that all those programs _denote_ the integer 1.
+Each expression can be understood based on its mathematical equivalent. For example, `fib 1` and `5-4` both represent the integer 1 in the program. We say they _denote_ the same value.
 
-Similarly, `fib 0`, `fib 1` and `fib 42`, what they all have in common is that they all denote Fibonacci numbers: the meaning of the `fib n` expression is the n-th Fibonacci number, an element of the Fibonacci sequence.
+>> The collection of such mathematical objects is called the **semantic domain**. Broadly speaking, denotational semantics is concerned with finding domains that represent what programs do; it aims to provide a mathematical foundation for understanding program behavior.
 
-The collection of such mathematical objects is called the **semantic domain**. Broadly speaking, denotational semantics is concerned with finding domains that represent what programs do.
+## The role of pure functions
 
-# Referential transparency
+Here, the meaning of `fib 2` is derived from the meanings of `fib 1` and `fib 0`. This **compositional** property is foundational for building formal proofs of program correctness within denotational semantics.
 
-Denotational semantics is **compositional**. `fib 2` depends on the meaning of its constituents, `fib 1` and `fib 0`. To achieve compositionality, an expression must be [referentially transparent](https://en.wikipedia.org/wiki/Referential_transparency) meaning that it can be replaced with its corresponding value without changing the program's behavior.
+To ensure compositionality, an expression must be [referentially transparent](https://en.wikipedia.org/wiki/Referential_transparency), meaning it can be substituted with its equivalent value without altering the program's outcome.
 
-**Example**: A function that adds two numbers is referentially transparent, but a function that divides a number by another is not, simply because the divisor can be zero and division by zero is undefined. In a lot of languages (including Haskell) division by zero throws an exception (a side-effect) since _division_ is a [partial function](https://en.wikipedia.org/wiki/Partial_function).
+For instance, a function adding two numbers is referentially transparent. In contrast, a function that divides a number by another is not, because the divisor can be zero and division by zero is undefined.
 
 ```haskell
 > 10 `div` 2
@@ -43,7 +43,18 @@ Denotational semantics is **compositional**. `fib 2` depends on the meaning of i
 *** Exception: divide by zero
 ```
 
-To turn a partial function into a total function (a function defined for all possible input values) in Haskell, we can wrap the result with a [`Maybe`](https://wiki.haskell.org/Maybe) data type.
+In this case, to handle division by zero, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. It can either hold a value (`Just a`) or indicate no value (`Nothing`). This allows us to ensure a _total_ division function that always return a result, avoiding exceptions.
+
+```haskell
+data Maybe a = Just a | Nothing
+```
+
+> While we're at it, a type such as this is also known as an [Algebraic Data Type](https://en.wikipedia.org/wiki/Algebraic_data_type) (ADT for short):
+>
+> * [Sum types](https://en.wikipedia.org/wiki/Tagged_union) are used for _alternation_: `A | B` meaning `A` or `B` but not both.
+> * [Product types](https://en.wikipedia.org/wiki/Product_type) are used for _combination_: `A B` meaning `A` and `B` together.
+
+The improved version doesn't produce any observable effects other than its return value:
 
 ```haskell
 safeDiv :: Integral a => a -> a -> Maybe a
@@ -51,19 +62,19 @@ safeDiv a 0 = Nothing
 safeDiv a b = Just (a `div` b)
 ```
 
-Now this gives us a total meaning. `safeDiv` returns _Just_ a number or _Nothing_ (given 0), but it never throws an exception.
+By eliminating side effects and state mutations, functional languages like Haskell, PureScript, and Scala create a programming environment where function behavior is entirely predictable and transparent.
 
-# Denotational definition
+# The linguistic turn in FP
 
-So imagine that there is a magical box (like **⟦⟧**) which evaluates programs into mathematical objects. You put any programmatic **expression** inside this box, and on the other end of the equation you get some **value** for it.
+While not strictly languages in the same sense, the term "language" is often applied to FP libraries as well, since they provide a specialized syntax and semantics for a particular problem domain, much like a dedicated language.
 
-```
-⟦E⟧ : V
-```
+Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any **expression** inside, and the box gives you its corresponding **value**.
 
-"An expression is a _syntactic_ object, formed according to the syntax rules of the language. A value, by contrast, is an _abstract_ mathematical object, such as 'the number 5', or 'the function which squares its argument'." [^spj-book]
+This can be represented as `⟦E⟧ : V`, where `E` represents an expression (syntactic object) built according to the programming language's rules, while `V` represents the abstract value (e.g., a number, a function).
 
-Take simple arithmetic expressions written in prefix notation as example:
+#### Example: Calculator
+
+Here are some arithmetic expressions in prefix notation:
 
 ```
 ⟦add 1 2⟧ = 1 + 2
@@ -72,7 +83,7 @@ Take simple arithmetic expressions written in prefix notation as example:
  ⟦neg 42⟧ = -42
 ```
 
-We can define the **abstract syntax** of such a language in [Backus-Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form):
+We can define the **abstract syntax** of such expressions using [Backus-Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form):
 
 ```
 n ∈ Int ::= ... | -1 | 0 | 1 | 2 | ...
@@ -82,9 +93,8 @@ e ∈ Exp ::= add e e
          |  n
 ```
 
-All expressions map to an integer eventually. Therefore we can say, the **semantic domain** of this language is the set of all integers ℤ.
+Here, all expressions eventually evaluate to integers, so the **semantic domain** is the set of all integers (ℤ). This definition aligns with how Haskell's [numerals-base](https://hackage.haskell.org/package/numerals-base-0.3/docs/Text-Numeral-Exp.html) package encodes numerals using the `data` keyword.
 
-In fact, this definition is equivalent to how Haskell's [numerals-base](https://hackage.haskell.org/package/numerals-base-0.3/docs/Text-Numeral-Exp.html) package encodes a numeral using the `data` keyword and a `type` alias.
 
 ```haskell
 type ℤ = Integer
@@ -96,7 +106,7 @@ data Exp = Lit ℤ
          | Mul Exp Exp
 ```
 
-You can work out the rest of the implementation for evaluating those expressions in Haskell, but it's beyond the scope of this document. Essentially, you need a way of assigning a value from the domain ℤ, to each and every expression that this syntax can produce. Namely, a **valuation function**.
+While the specifics of evaluating these expressions are beyond our scope, the key is to assign a value from the domain (ℤ) to every possible expression this syntax can generate. This function that assigns values is called a **valuation function**.
 
 ```
       ⟦Exp⟧ : Int
@@ -106,36 +116,11 @@ You can work out the rest of the implementation for evaluating those expressions
         ⟦n⟧ = n
 ```
 
-# Algebraic data types
-
-As you see, _domain_ has a very precise meaning in denotational semantics. Haskell's `data` keyword allows writing structured **type** definitions that describe the **composition** of different domains, as well.
-
-`Maybe` is actually a sum type which is defined as follows:
-
-```haskell
-data Maybe a = Just a | Nothing
-```
-
-A type such as this is also known as an [algebraic data type](https://en.wikipedia.org/wiki/Algebraic_data_type) (ADT for short):
-
-* [Sum types](https://en.wikipedia.org/wiki/Tagged_union) are used for _alternation_: `A | B` meaning `A` or `B` but not both.
-* [Product types](https://en.wikipedia.org/wiki/Product_type) are used for _combination_: `A B` meaning `A` and `B` together.
-
-Here is an example of how a binary tree would be declared in Haskell:
-
-```haskell
-data Tree = Empty
-          | Leaf Int
-          | Node Int Tree Tree
-
-tree = Node 1 (Leaf 2) (Node 3 (Leaf 4) Empty)
-```
-
-# Example: Move language
+# Let's move it
 
 >> Move language specification is taken from [Eric Walkingshaw](https://web.engr.oregonstate.edu/~walkiner/)'s [CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20).
 
-In the following **Move** program, each `go` command instructs a robot to move n steps in the given direction. A semicolon is used for chaining a sequence of steps.
+This example introduces a simple robot language called "Move". It uses commands like `go E 3` to instruct a robot to move specific steps in a direction.
 
 ```
 go E 3; go N 4; go S 1;
@@ -153,32 +138,38 @@ m ∈ Move ::= ε | s ; m
 
 (Epsilon stands for empty string.)
 
-The same syntax can have many different meanings.
+Let's explore two interpretations of Move programs.
 
-### Finding the total distance
+### Find total distance
 
-Here is a how a Step or a Move expression would be evaluated for summing up the total distance a robot needs to travel. In that case, the semantic domain is the set of all natural numbers ℕ.
+We define a semantic domain of natural numbers (ℕ) and functions that compute the total distance the robot travels.
+
+For Step expressions:
 
 ```
   S⟦Step⟧ : Nat
 S⟦go d k⟧ = k
+```
 
+For Move expressions:
+
+```
   M⟦Move⟧ : Nat
      M⟦ε⟧ = 0
    M⟦s;m⟧ = S⟦s⟧ + M⟦m⟧
 ```
 
-### Moving robots around
+### Find target position
 
-Based on its current position on a 2d plane, a robot should be able to compute a target position to move into. In this scenario, a Move program's semantic domain is the set of all functions that map a position (x,y) pair into another one:
+The semantic domain then becomes the set of all **functions** that map a starting position (x, y) to a target position after executing the Move program.
 
 ```
 ⟦Expr⟧ : Pos → Pos
 ```
 
-To denote functions, we'll use a mathematical formalism which is called [Lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus). Without going into too much detail: λ-calculus is used for explicitly expressing the basic notions of function abstraction and application. It's the world's first programming language, and arguably the simplest.
+This involves using [Lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus) (λ-calculus) to express functions for each movement, the world's first programming language.
 
-This is the complete BNF grammar of λ-calculus:
+Lambda abstractions are expressed in the form of `λx.y`, where `x` is the variable of the function and `y` is its body. This is the complete BNF grammar of λ-calculus:
 
 ```
 e ::= x            // variable
@@ -186,11 +177,9 @@ e ::= x            // variable
     | λ x . e      // function definition
 ```
 
-Lambda abstractions are expressed in the form of `λx.y`, where `x` is the variable of the function and `y` is its body.
+For practical purposes, we'll extend lambda calculus to include addition and subtraction operators in the following examples. It's important to note that pure lambda calculus is inherently simpler, with only unary functions and no built-in arithmetic or control flow constructs. Surprisingly, even with these limitations, it's theoretically capable of computing anything a Turing machine can.
 
-> For practicality, λ-calculus is extended to include `+` and `-` operators in the following example. Also in pure lambda, all functions are [unary](https://en.wikipedia.org/wiki/Currying); there are no numbers, no operators, no booleans, no if/else, no loops, no self references, no recursions. But still it is _sufficiently expressive_ to compute anything a Turing machine can compute. [Go figure](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis).
-
-That said, here is how we evaluate Step expressions into λ terms:
+Here, we evaluate Step expressions into λ terms to find a target position:
 
 ```
   S⟦Step⟧ : Pos → Pos
@@ -200,7 +189,7 @@ S⟦go E k⟧ = λ(x,y).(x+k,y)
 S⟦go W k⟧ = λ(x,y).(x−k,y)
 ```
 
-A Move expression is composed of Step expressions and it can be likened to a pipeline where each Step is passed the result of the one it succeeds. In the case of an empty string after a semicolon, it simply returns the position passed without making any changes.
+A Move expression is a sequence of Step expressions. It can be visualized as a pipeline where each Step processes the output of the preceding one. An empty Move expression, represented by an empty string, simply returns the input position unchanged.
 
 ```
 M⟦Move⟧ : Pos → Pos
@@ -210,9 +199,11 @@ M⟦Move⟧ : Pos → Pos
 
 The **◦** operator means [function composition](https://en.wikipedia.org/wiki/Function_composition): a [higher-order function](https://en.wikipedia.org/wiki/Higher-order_function) which takes one or more functions as arguments and returns a function as a result.
 
-Functional programming is all about function composition, and we'll discover more about it in my upcoming [FP primer](./fp-primer.html) posts. For now, let's just note that function composition is really is no different than adding two numerals or multiplying them. Those are both associative binary operations with identity elements; so does the composition of functions. That is, if `f`, `g` and `h` are composable, then `f ∘ (g ∘ h) = (f ∘ g) ∘ h`.
+Note that, function composition shares similarities with arithmetic operations like addition and multiplication. Both are associative binary operations with identity elements. For instance, just as `(a + b) + c` equals `a + (b + c)`, the composition of functions follows the same pattern: that is, if `f`, `g` and `h` are composable, then `f ∘ (g ∘ h)` is equivalent to `(f ∘ g) ∘ h`.
 
-Finally, here is how Move expressions would be evaluated in Python for finding a target position:
+> As you may know, functional programming languages draw a lot of inspiration from [category theory](https://en.wikipedia.org/wiki/Category_theory), the _science_ of composition. Category theory formalizes the concept of composition and structure, providing a robust framework for reasoning about program behavior. While not strictly necessary for coding (and definitely out of scope today), understanding this mathematical foundation offers valuable insights into languages like Haskell.
+
+Before concluding, let's see how Move expressions can be evaluated in Python to determine a target position.
 
 ```python
 # M⟦ε⟧ = λp.p
@@ -253,5 +244,3 @@ print(target_pos)
 # Output:
 # (6,4)
 ```
-
-[^spj-book]: Simon L. Peyton Jones, [The implementation of functional programming languages (P29)](https://www.microsoft.com/en-us/research/wp-content/uploads/1987/01/slpj-book-1987-small.pdf)
