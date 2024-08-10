@@ -486,7 +486,7 @@ def create_cover_image(title: str, desc: str, outfile: str):
         with Image(width=940, height=529, background=Color("#aaa")) as img:
             ctx.fill_color = "#0000ff"
             ctx.font = "public/assets/Code_Pro_Demo-webfont.ttf"
-            ctx.font_size = 100
+            ctx.font_size = 50
             ctx.text(40, 142, title)
             ctx.fill_color = "#fff"
             ctx.font_size = 50
