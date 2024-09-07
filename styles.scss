@@ -3,6 +3,9 @@
 
 @include normalize();
 
+$font-family-sans-serif: Arial, Helvetica, sans-serif;
+$font-family-monospace: Menlo, Monaco, Consolas, "Courier New", Courier, "Liberation Mono", monospace;
+
 $gutter-hi: 62px;
 $gutter-low: 20px;
 
@@ -46,7 +49,7 @@ body {
 
 a {
   text-decoration: none;
-  color: #0447ce;
+  color: #463dd0;
 }
 
 a:hover {
@@ -63,7 +66,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: $font-family-sans-serif;
   font-weight: normal;
   width: 100%;
 }
@@ -144,8 +147,11 @@ iframe {
 .header {
   overflow: hidden;
   width: 100%;
-  padding: 24px 0px 20px 0px;
+  padding: 24px 0px 24px 0px;
   margin: 0px;
+  border-bottom: none;
+  margin-bottom: 18px;
+  background-color: #463dd0;
 
   div {
     width: 100%;
@@ -153,7 +159,7 @@ iframe {
 
   table {
     border-spacing: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: $font-family-sans-serif;
     font-size: 1.15em;
     line-height: 1.2em;
 
@@ -201,16 +207,21 @@ iframe {
     }
   }
 
+  a {
+    color: #fff;
+    font-weight: bold;
+  }
+
   .author {
     a {
-      color: #1f2328;
+      color: #fff;
     }
   }
 }
 
 
 .index {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: $font-family-sans-serif;
   h1 {
     font-size: 1.2em;
     margin-bottom: 0.5em;
@@ -218,7 +229,7 @@ iframe {
 
   .info {
     margin-bottom: 14px;
-    font-size: 0.88em;
+    font-size: 0.9em;
     color: #4d5156;
   }
   .body {
@@ -237,7 +248,6 @@ iframe {
   .entry {
     .preview-frame {
       h1 {
-        font-weight: normal;
         font-size: 1.1em;
       }
       margin-bottom: 8px;
@@ -247,10 +257,10 @@ iframe {
 }
 
 .entry {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: $font-family-sans-serif;
   .info {
     margin-bottom: 14px;
-    font-size: 0.88em;
+    font-size: 0.9em;
     color: #4d5156;
   }
   h1 {
@@ -263,7 +273,6 @@ iframe {
   .title {
     h1 {
       font-size: 1.4em;
-      font-weight: normal;
       margin-top: 0.4em;
       margin-bottom: 0.7em;
     }
@@ -283,9 +292,9 @@ iframe {
     font-size: 0.94em;
   }
   p {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: $font-family-sans-serif;
     code {
-      font-family: Menlo, Monaco, Consolas, "Courier New", Courier, monospace;
+      font-family: $font-family-monospace;
       font-size: 0.9em;
       background-color: #afb8c133;
       color: #1f2328;
@@ -315,7 +324,7 @@ iframe {
     }
   }
   blockquote:first-of-type {
-    border: 1px solid #ff9800;
+    border: 1px solid #ddd;
     padding-left: 0;
     padding-right: 0;
     background: none;
@@ -323,6 +332,7 @@ iframe {
     border-right: 0;
     p {
       color: #1f2328;
+      font-weight: bold;
     }
     code {
       color: #1f2328;
@@ -332,7 +342,7 @@ iframe {
   table {
     font-size: 1em;
     width: 100%;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: $font-family-sans-serif;
     color: #111;
     border: 1px solid #ddd;
     border-right: none;
@@ -342,7 +352,7 @@ iframe {
     margin-bottom: 2em;
     thead {
       background-color: #eee;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: $font-family-sans-serif;
       tr th {
         font-size: 0.9em;
         color: #111;
@@ -372,7 +382,7 @@ iframe {
   }
 
   code {
-    font-family: Menlo, Monaco, Consolas, "Courier New", Courier, monospace;
+    font-family: $font-family-monospace;
     font-size: 0.87em;
     background-color: #afb8c133;
     padding: .2em .4em;
@@ -399,7 +409,7 @@ iframe {
     margin: 0;
     overflow-x: scroll;
     line-height: 20px;
-    font-family: Menlo, Monaco, Consolas, "Courier New", Courier, "Liberation Mono", monospace;
+    font-family: $font-family-monospace;
   }
 
   .codehilite {
@@ -536,14 +546,14 @@ iframe {
 }
 
 .entry p a code {
-  color: #0447ce;
+  color: #463dd0;
 }
 
 .tag-title {
   padding-top: 10px;
   padding-bottom: 10px;
   color: #4d5156;
-  font-size: 14px;
+  font-size: 0.9em;
 }
 
 math {
