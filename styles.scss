@@ -3,7 +3,7 @@
 
 @include normalize();
 
-$font-family-sans-serif: Arial, Helvetica, sans-serif;
+$font-family-sans-serif: "IBM Plex Sans", sans-serif;
 $font-family-monospace: Menlo, Monaco, Consolas, "Courier New", Courier, "Liberation Mono", monospace;
 
 $gutter-hi: 62px;
@@ -49,7 +49,7 @@ body {
 
 a {
   text-decoration: none;
-  color: #463dd0;
+  color: #0000cc;
 }
 
 a:hover {
@@ -73,7 +73,7 @@ h6 {
 
 p {
   color: #1f2328;
-  line-height: 1.56em;
+  line-height: 1.64em;
 }
 
 iframe {
@@ -151,7 +151,7 @@ iframe {
   margin: 0px;
   border-bottom: none;
   margin-bottom: 18px;
-  background-color: #747474;
+  background-color: #fff;
 
   div {
     width: 100%;
@@ -208,13 +208,22 @@ iframe {
   }
 
   a {
-    color: #fff;
+    color: #272727;
+    text-decoration: none;
     font-weight: bold;
+    &:hover{
+      text-decoration: underline;
+      text-decoration-color: #0000cc;
+    }
   }
 
   .author {
     a {
-      color: #fff;
+      color: #0000cc;
+      &:hover{
+        text-decoration: underline;
+        text-decoration-color: #272727;
+      }
     }
   }
 }
@@ -225,6 +234,16 @@ iframe {
   h1 {
     font-size: 1.2em;
     margin-bottom: 0.5em;
+  }
+
+  h1 a {
+    color: #272727;
+    text-decoration: underline;
+    text-decoration-color: #0000cc;
+    &:hover {
+      text-decoration: none;
+      color: #0000cc;
+    }
   }
 
   .info {
@@ -257,6 +276,7 @@ iframe {
 }
 
 .entry {
+  font-size: 118%;
   font-family: $font-family-sans-serif;
   .info {
     margin-bottom: 14px;
@@ -436,7 +456,7 @@ iframe {
 
   ul,
   ul li {
-    line-height: 1.56em;
+    line-height: 1.64em;
   }
 
   ul li ul {
@@ -546,7 +566,7 @@ iframe {
 }
 
 .entry p a code {
-  color: #463dd0;
+  color: #0000cc;
 }
 
 .tag-title {
