@@ -1,15 +1,13 @@
 ---
-title: Demystifying denotational semantics
+title: Introduction to FP semantics
 description: Demystifying denotational semantics
 cover_title: A primer to FP
 tags: haskell,fp,language
 published: 2023-05-30T12:41:00
-updated: 2024-08-10T00:00:00
+updated: 2024-09-08T01:20:00
 ---
 
-> This post aims to introduce the core concepts of functional programming in a way that I believe would have been most helpful to me as a beginner.
-
-## What is a function?
+> Exploring denotational semantics &mdash;a mathematical approach to define what programs mean.
 
 In FP, a **function** is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example from [Haskell](https://www.haskell.org/) demonstrating the Fibonacci sequence.
 
@@ -28,13 +26,11 @@ Each expression can be understood based on its mathematical equivalent. For exam
 
 >> The collection of such mathematical objects is called the **semantic domain**. Broadly speaking, denotational semantics is concerned with finding domains that represent what programs do; it aims to provide a mathematical foundation for understanding program behavior.
 
-## The role of pure functions
-
-Here, the meaning of `fib 2` is derived from the meanings of `fib 1` and `fib 0`. This **compositional** property is foundational for building formal proofs of program correctness within denotational semantics.
+Note that here, the meaning of `fib 2` is derived from the meanings of `fib 1` and `fib 0`. This **compositional** property is foundational for building _formal proofs of program correctness_ within denotational semantics.
 
 To ensure compositionality, an expression must be [referentially transparent](https://en.wikipedia.org/wiki/Referential_transparency), meaning it can be substituted with its equivalent value without altering the program's outcome.
 
-For instance, a function adding two numbers is referentially transparent. In contrast, a function that divides a number by another is not, because the divisor can be zero and division by zero is undefined.
+For instance, a function adding two numbers is referentially transparent. In contrast, a function that divides a number by another is not, because the divisor can be zero.
 
 ```haskell
 > 10 `div` 2
@@ -43,7 +39,11 @@ For instance, a function adding two numbers is referentially transparent. In con
 *** Exception: divide by zero
 ```
 
-In this case, to handle division by zero, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. It can either hold a value (`Just a`) or indicate no value (`Nothing`). This allows us to ensure a _total_ division function that always return a result, avoiding exceptions.
+Dividing by zero is undefined, which is a side effect in this case, resulting in an exception.
+
+### Dealing with side-effects
+
+To handle division by zero, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. It can either hold a value (`Just a`) or indicate no value (`Nothing`). This allows us to ensure a _total_ division function that always return a result, avoiding exceptions.
 
 ```haskell
 data Maybe a = Just a | Nothing
@@ -62,17 +62,17 @@ safeDiv a 0 = Nothing
 safeDiv a b = Just (a `div` b)
 ```
 
-By eliminating side effects and state mutations, functional languages like Haskell, PureScript, and Scala create a programming environment where function behavior is entirely predictable and transparent.
+By eliminating side effects and state mutations, functional languages like Haskell, PureScript, and Scala create a programming environment where function behavior is entirely predictable and transparent. That brings us to our main subject.
 
-# The linguistic turn in FP
+# Denotational semantics
 
-While not strictly languages in the same sense, the term "language" is often applied to FP libraries as well, since they provide a specialized syntax and semantics for a particular problem domain, much like a dedicated language.
+Regardless of the language syntax you use, as long as it supports defining and applying functions, you can apply FP concepts. However, it's crucial to understand the underlying semantics to determine whether your program's behavior will be the same as its Haskell equivalent, even if they have different syntactic forms.
 
 Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any **expression** inside, and the box gives you its corresponding **value**.
 
 This can be represented as `⟦E⟧ : V`, where `E` represents an expression (syntactic object) built according to the programming language's rules, while `V` represents the abstract value (e.g., a number, a function).
 
-#### Example: Calculator
+#### Example: Calculator syntax
 
 Here are some arithmetic expressions in prefix notation:
 
@@ -116,7 +116,7 @@ While the specifics of evaluating these expressions are beyond our scope, the ke
         ⟦n⟧ = n
 ```
 
-# Let's move it
+# Move language
 
 >> Move language specification is taken from [Eric Walkingshaw](https://web.engr.oregonstate.edu/~walkiner/)'s [CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20).
 
@@ -177,7 +177,7 @@ e ::= x            // variable
     | λ x . e      // function definition
 ```
 
-For practical purposes, we'll extend lambda calculus to include addition and subtraction operators in the following examples. It's important to note that pure lambda calculus is inherently simpler, with only unary functions and no built-in arithmetic or control flow constructs. Surprisingly, even with these limitations, it's theoretically capable of computing anything a Turing machine can.
+For practical purposes, we'll extend lambda calculus to include addition and subtraction operators in the following examples. It's important to note that pure lambda calculus is inherently simpler, with only unary functions and no built-in arithmetic or control flow constructs. Surprisingly, even with these limitations, [it's theoretically capable of computing anything a Turing machine can](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis).
 
 Here, we evaluate Step expressions into λ terms to find a target position:
 
