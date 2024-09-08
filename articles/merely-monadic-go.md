@@ -7,7 +7,7 @@ published: 2024-08-30T00:00:00
 updated: 2024-08-30T00:00:00
 ---
 
-> Package [warp](https://github.com/onur1/warp) provides a collection of experimental monads in Go.
+> Package [warp](https://github.com/onur1/warp) provides a collection of experimental Monad implementations in Go.
 
 Since Go version 1.18, the language has incorporated [generics](https://go.dev/blog/intro-generics), a highly anticipated feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism).
 
