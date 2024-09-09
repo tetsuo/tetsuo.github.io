@@ -1,7 +1,7 @@
 ---
 title: Merely monadic in Go
-cover_title: Monads in Go
-description: Monadic data structures in Go
+cover_title: Merely monadic in Go
+description: Experimenting with Monad implementations in Golang
 tags: go,fp,language
 published: 2024-08-30T00:00:00
 updated: 2024-08-30T00:00:00

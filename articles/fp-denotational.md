@@ -1,15 +1,15 @@
 ---
-title: Introduction to FP semantics
-description: Demystifying denotational semantics
-cover_title: A primer to FP
+title: What makes Haskell click
+description: What makes Haskell click
+cover_title: Understanding FP semantics
 tags: haskell,fp,language
 published: 2023-05-30T12:41:00
 updated: 2024-09-08T01:20:00
 ---
 
-> Exploring denotational semantics &mdash;a mathematical approach to define what programs mean.
+> Exploring denotational semantics &mdash;a mathematical approach to defining what programs mean.
 
-In FP, a **function** is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example from [Haskell](https://www.haskell.org/) demonstrating the Fibonacci sequence.
+In Haskell, a **function** is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example demonstrating the Fibonacci sequence.
 
 ```haskell
 fib :: Integer -> Integer
@@ -62,11 +62,11 @@ safeDiv a 0 = Nothing
 safeDiv a b = Just (a `div` b)
 ```
 
-By eliminating side effects and state mutations, functional languages like Haskell, PureScript, and Scala create a programming environment where function behavior is entirely predictable and transparent. That brings us to our main subject.
+By avoiding side effects and state mutations, functional languages such as Haskell, PureScript, and Scala foster a programming environment where the behavior of functions is fully predictable and transparent &mdash;in other words, [_pure_](https://en.wikipedia.org/wiki/Pure_function). This brings us to our main topic.
 
 # Denotational semantics
 
-Regardless of the language syntax you use, as long as it supports defining and applying functions, you can apply FP concepts. However, it's crucial to understand the underlying semantics to determine whether your program's behavior will be the same as its Haskell equivalent, even if they have different syntactic forms.
+Denotational semantics is a formal method for describing the meaning of programs by mapping each expression to a mathematical object. It supports equational reasoning, as we've seen, and focuses on _what_ a program computes, rather than _how_ it computes it.
 
 Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any **expression** inside, and the box gives you its corresponding **value**.
 
