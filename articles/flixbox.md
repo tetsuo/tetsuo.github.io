@@ -225,9 +225,9 @@ const results = lit('results').then(query(SearchQuery))
 
 # Elm in TypeScript
 
-flixbox leverages concepts from [Elm](https://elm-lang.org/), a language specifically designed for building graphical user interfaces (GUIs). [elm-ts](https://github.com/gcanti/elm-ts), built on top of [RxJS](https://rxjs.dev/), provides an fp-ts adaptation of these concepts for TypeScript.
+flixbox UI builds on concepts from [Elm](https://elm-lang.org/), a language specifically designed for building graphical user interfaces (GUIs). [elm-ts](https://github.com/gcanti/elm-ts), which is based on [RxJS](https://rxjs.dev/), offers a TypeScript adaptation using fp-ts.
 
-However, elm-ts offers a surface-level resemblance to Elm; internally they operate quite differently. Additionally, Elm utilizes the Hindley-Milner type system, which [significantly diverges](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript.
+However, while elm-ts bears a surface-level resemblance to Elm, they operate quite differently under the hood. Additionally, Elm uses the Hindley-Milner type system, which [differs significantly](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript's type system.
 
 The application state is managed through messages and an update function, similar to Redux but with a functional approach. This pattern simplifies state management, testing, and debugging.
 

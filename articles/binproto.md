@@ -9,7 +9,7 @@ updated: 2024-08-10T00:00:00
 
 > [**binproto**](https://github.com/onur1/binproto) provides generic support for binary communication protocols. Ideal for applications like game networking or file transfer, it enables low-latency data exchange.
 
-The Transmission Control Protocol (TCP) ensures reliable delivery of byte streams between devices. However, application-level protocols are responsible for parsing incoming data (text or binary) into meaningful messages specific to the application.
+The Transmission Control Protocol (TCP) ensures reliable delivery of byte streams between devices, but it is up to application-level protocols to interpret the incoming data (whether text or binary) and convert it into meaningful messages specific to the application.
 
 While Go's standard library offers a convenient framework for handling text-based protocols (like HTTP and SMTP) with [net/textproto](https://pkg.go.dev/net/textproto), there's no widely agreed-upon approach for dividing a long stream of bytes into discrete messages.
 

@@ -9,7 +9,7 @@ updated: 2024-08-10T00:00:00
 
 > [**tango**](https://github.com/onur1/tango) provides a textual syntax for logical and relational expressions compatible with [Mango selectors](https://docs.couchdb.org/en/stable/api/database/find.html).
 
-As mentioned [in my previous post](./couchilla.md), [couchilla](https://github.com/onur1/couchilla) bundles design documents for creating CouchDB design documents. While MapReduce views are awesome, in most cases, `/db/_find` API offers faster querying using [Mango selector expressions](https://docs.couchdb.org/en/stable/api/database/find.html)  in JSON format. tango introduces a textual syntax for that.
+In my [previous post](./couchilla.md), I introduced [couchilla](https://github.com/onur1/couchilla), a lightweight command-line tool for bundling CouchDB design documents. While MapReduce views are powerful, the [`/db/_find`](https://docs.couchdb.org/en/stable/api/database/find.html) API typically provides faster querying in most cases by using Mango selector expressions in JSON format. Tango introduces a textual syntax for these queries.
 
 In Mango, the query to find movies directed by Roy Andersson after 2007 is expressed in a tree-like structure resembling a syntax tree.
 
