@@ -17,7 +17,7 @@
 
 {% if len(entries) > 0 %}
 
-{% block title %}{{ entries[0].title }} — {{ settings.title }}{% end %}
+{% block title %}{{ entries[0].title }} - {{ settings.title }}{% end %}
 {% block head_description %}
 {% set title = escape(entries[0].title) %}
 <meta name="title" content="{{ title }}" />
@@ -55,7 +55,7 @@
 				"sameAs": ["https://twitter.com/{{ settings.author }}"]
 			}
 		],
-		"headline": "{{ entries[0].title }} — {{ entries[0].short_description }}",
+		"headline": "{{ entries[0].title }} - {{ entries[0].short_description }}",
 		"image": [{{ ",".join('"' + "https://" + settings.domain + "/images/" + image['filename'] + '"' for image in entries[0].images) }}],
 		"datePublished": "{{ entries[0].published.strftime(date_format) }}",
 		"dateModified": "{{ entries[0].updated.strftime(date_format) }}"
@@ -181,6 +181,30 @@
 		</script>
 		{% end %}
 		{% end %}
+
+		{% if len(fullsize_ids) > 0 %}
+		<script>
+			function onResizeMessage(event) {
+				const e = event.data
+				if (!e.startsWith("redraw")) {
+					return
+				}
+				const id = e.slice(7)
+				const iframeDiv = document.querySelector("#" + id + "-iframe")
+				if (!iframeDiv) {
+					return
+				}
+				iframeDiv.style.height = iframeDiv.clientWidth + "px"
+			}
+			window.addEventListener('message', onResizeMessage)
+		</script>
+		{% end %}
+		{% for id in fullsize_ids %}
+		<script>
+			console.log("{{ id }}")
+		</script>
+		{% end %}
+
 
 		{% if  settings.comments %}
 			{% if debug %}
