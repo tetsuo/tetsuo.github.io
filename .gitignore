@@ -5,11 +5,14 @@ priv
 tmp
 scripts
 public/*
+public/assets/*
 !public/*/
 !public/images
 !public/assets/tango.css
 !public/assets/fontello
-public/assets/*
 !public/assets/Code_Pro_Demo-webfont.ttf
 templates/manifest.webmanifest
 templates/favicons.html
+* copy.*
+!public/assets/meslo.css
+!public/assets/Meslo*.ttf

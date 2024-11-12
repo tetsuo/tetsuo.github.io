@@ -1,0 +1,97 @@
+/* https://github.com/andreberg/Meslo-Font */
+
+/* Regular */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGL-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bold */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGL-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Italic */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGL-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Bold Italic */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGL-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Medium Regular */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGM-Regular.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Medium Bold */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGM-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Medium Italic */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGM-Italic.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* Medium Bold Italic */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGM-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Small Regular */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGS-Regular.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* Small Bold */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGS-Bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* Small Italic */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGS-Italic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+/* Small Bold Italic */
+@font-face {
+  font-family: "Meslo";
+  src: url("/assets/meslo/MesloLGS-BoldItalic.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+}
