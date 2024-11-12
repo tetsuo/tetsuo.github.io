@@ -4,7 +4,7 @@ description: Barebones web app example using fpts in TypeScript
 cover_title: flixbox
 tags: typescript,fp
 published: 2023-01-25T12:41:00
-updated: 2024-08-10T00:00:00
+updated: 2024-11-12T00:00:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
@@ -154,7 +154,7 @@ flixbox utilizes the lightweight and composable logging module, [logging-ts](htt
 - [Validating React props](https://github.com/onur1/flixbox/blob/0.0.7/src/app/components/Layout.tsx#L77)
 - [Validating environment variables](https://github.com/onur1/flixbox/blob/0.0.7/src/server/index.ts#L72)
 
-There are many type validation libraries available in the JavaScript community. However, the libraries developed by Giulio Canti, including io-ts and previously [tcomb](https://github.com/gcanti/tcomb), have gained significant popularity and adoption.
+There are many type validation libraries available in the JavaScript community. However, the libraries developed by Giulio Canti, including io-ts and its predecessor [tcomb](https://github.com/gcanti/tcomb), have gained significant popularity and adoption.
 
 Many other libraries suffer from design flaws that hinder [type inference](https://en.wikipedia.org/wiki/Type_inference). Type composition techniques aren't inventions, but rather discoveries made decades ago. io-ts excels by effectively implementing these established principles.
 
@@ -225,19 +225,19 @@ const results = lit('results').then(query(SearchQuery))
 
 # Elm in TypeScript
 
-flixbox UI builds on concepts from [Elm](https://elm-lang.org/), a language specifically designed for building graphical user interfaces (GUIs). [elm-ts](https://github.com/gcanti/elm-ts), which is based on [RxJS](https://rxjs.dev/), offers a TypeScript adaptation using fp-ts.
+flixbox UI builds on concepts from [Elm](https://elm-lang.org/), a language specifically designed for building graphical user interfaces (GUIs). [elm-ts](https://github.com/gcanti/elm-ts), which leverages [RxJS](https://rxjs.dev/), provides a TypeScript adaptation using fp-ts.
 
-However, while elm-ts bears a surface-level resemblance to Elm, they operate quite differently under the hood. Additionally, Elm uses the Hindley-Milner type system, which [differs significantly](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript's type system.
+While elm-ts bears a surface-level resemblance to Elm, they function quite differently under the hood. Additionally, Elm employs the Hindley-Milner type system, which [differs significantly](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript's type system.
 
-The application state is managed through messages and an update function, similar to Redux but with a functional approach. This pattern simplifies state management, testing, and debugging.
+The application state in flixbox is managed through messages and an update function—similar to Redux but with a more functional approach. This pattern simplifies state management, making testing and debugging more straightforward.
 
-For those interested in diving deeper into FRP, here are some resources:
+For those interested in exploring FRP further, here are some resources:
 
 * [Functional Reactive Programming](https://en.wikipedia.org/wiki/Functional_reactive_programming)
 * [Elm paper](https://elm-lang.org/assets/papers/concurrent-frp.pdf) by [Evan Czaplicki](https://github.com/evancz)
 * [Push-pull FRP](http://conal.net/papers/push-pull-frp/) in PureScript using [purescript-behaviors](https://github.com/paf31/purescript-behaviors)
 
-Elm shares similarities with [Redux](https://redux.js.org/understanding/history-and-design/prior-art). Messages in Elm correspond to Actions in Redux, and the Update function in Elm aligns with the Reducer function in Redux.
+Elm's design shares similarities with [Redux](https://redux.js.org/understanding/history-and-design/prior-art). Messages in Elm are comparable to actions in Redux, and Elm's update function aligns with Redux's Reducer function, both facilitating predictable state changes in applications.
 
 [`src/app/Msg.ts`](https://github.com/onur1/flixbox/tree/0.0.7/src/app/Msg.ts)
 

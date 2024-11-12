@@ -4,16 +4,14 @@ cover_title: Merely monadic in Go
 description: Experimenting with Monad implementations in Golang
 tags: go,fp,language
 published: 2024-08-30T00:00:00
-updated: 2024-08-30T00:00:00
+updated: 2024-11-12T00:00:00
 ---
 
 > Package [warp](https://github.com/onur1/warp) provides a collection of experimental Monad implementations in Go.
 
-Since Go version 1.18, the language has incorporated [generics](https://go.dev/blog/intro-generics), a highly anticipated feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism).
+Since Go version 1.18 introduced [generics](https://go.dev/blog/intro-generics), a long-awaited feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism), implementing Monads in Go has become more feasible. This post, inspired by Philip Wadler's Featherweight Go presentation, demonstrates how generics simplify these implementations.
 
-Last summer, inspired by **Philip Wadler**'s [Featherweight Go](https://www.youtube.com/watch?v=Dq0WFigax_c) presentation, I experimented with several Monad implementations. It seems the addition of generics has made it possible to implement them with relative ease.
-
-Before we proceed, it's important to acknowledge that Go's core strengths lie in imperative programming rather than functional abstractions like monads. For most use cases, the [rate](https://pkg.go.dev/golang.org/x/time/rate) package is likely a more suitable option than implementing a monad to abstract over channels. Nonetheless, exploring the monadic approach provides valuable insights. Let's begin by briefly comparing polymorphism in Haskell and Go.
+Before we proceed, it’s important to note that Go’s core strengths lie in imperative programming rather than functional abstractions like Monads. For example, for most use cases, the [rate](https://pkg.go.dev/golang.org/x/time/rate) package is likely a more suitable option than implementing a Monad to abstract over channels. Nonetheless, exploring monadic patterns provides valuable insights. Let’s begin by comparing polymorphism in Haskell and Go.
 
 ## Polymorphism in Haskell
 
@@ -29,7 +27,7 @@ We can generalize this by replacing `Number` with a _type variable_ `a` to accom
 (+) :: a -> a -> a
 ```
 
-Or, restrict the type `a` to instances of the `Num` class. In the following example, `(Num a) =>` is a _type constraint_: this is **ad-hoc polymorphism** in Haskell.
+Or, restrict the type `a` to instances of the `Num` class. Here, `(Num a) =>` is a _type constraint_: this is **ad-hoc polymorphism** in Haskell.
 
 ```haskell
 (+) :: (Num a) => a -> a -> a
@@ -55,13 +53,13 @@ Similarly, here's a "greater than" definition in Go:
 func GreaterThan(x, y int64) bool
 ```
 
-Go has long supported a form of [structural subtyping](https://en.wikipedia.org/wiki/Structural_type_system) through structures and interfaces. The newly introduced `any` keyword is an alias for the empty `interface{}`. When used as a _type parameter_, `any` signifies no type constraints, allowing `T` to represent any type in the following definition.
+Go has supported [structural subtyping](https://en.wikipedia.org/wiki/Structural_type_system) through structures and interfaces. The newly introduced `any` keyword, an alias for the empty `interface{}`, indicates no type constraints when used as a _type parameter_:
 
 ```go
 func GreaterThan[T any](x, y T) bool
 ```
 
-We can restrict it to [`constraints.Ordered`](https://pkg.go.dev/golang.org/x/exp/constraints#Ordered), which specifies types supporting comparison operators.
+To restrict the type, we can use [`constraints.Ordered`](https://pkg.go.dev/golang.org/x/exp/constraints#Ordered), which specifies types supporting comparison operators.
 
 ```go
 import "golang.org/x/exp/constraints"
@@ -75,11 +73,11 @@ There is also a built-in [comparable](https://go.dev/ref/spec#Comparison_operato
 func Equals[T comparable](x, y T) bool
 ```
 
-> Refer to the [Introduction to Generics](https://go.dev/blog/intro-generics) and the [Type Parameters Proposal](https://go.googlesource.com/proposal/+/HEAD/design/43651-type-parameters.md) for more information.
+> For more details, refer to the [Introduction to Generics](https://go.dev/blog/intro-generics) and the [Type Parameters Proposal](https://go.googlesource.com/proposal/+/HEAD/design/43651-type-parameters.md).
 
 # What is a Monad?
 
-Let's consider the `==` operator defined in the `Eq` class first. While commonly used for numbers and strings, the concept of equality can be extended to other data types as well. For example, we could define equality for a hypothetical "Fruit" type, allowing comparisons between apples and oranges. Essentially, any type can be compared for equality as long as an appropriate `Eq` implementation exists.
+A Monad defines a way to sequence computations. For example, in Haskell, the `Eq` type class allows equality operations for various types. While commonly used for numbers and strings, the concept of equality can be extended to other data types. For instance, we could define equality for a hypothetical `Fruit` type, allowing comparisons between apples and oranges. Essentially, any type can be compared for equality as long as an appropriate `Eq` implementation exists.
 
 Similarly, the [Monad](https://wiki.haskell.org/All_About_Monads) class introduces the `>>=` (bind) operator:
 
@@ -90,45 +88,28 @@ class Monad m where
   return ::   a                 -> m a
 ```
 
-The `bind` operator, with the `m a -> (a -> m b) -> m b` type signature, defines a function for **sequencing computations** within a _monadic_ context. It takes a _monadic value_ of type `a` and a function that maps a value of type `a` to a monadic value of type `b`. It then applies the function to the value inside the input monad and returns a new monadic value of type `b`, effectively chaining two computations together.
+The `bind` operator, `m a -> (a -> m b) -> m b`, allows us to chain computations within a monadic context, enabling declarative control flow. Using `>>=`, we can sequentially apply functions while managing values within specific contexts. With a suitable Monad instance, any computation can be sequenced using `>>=`.
 
-Long story short, any computation can be sequenced using `>>=` given a suitable Monad instance. Computations on [lists](https://www.schoolofhaskell.com/school/starting-with-haskell/basics-of-haskell/13-the-list-monad), [branching logic](https://hackage.haskell.org/package/base/docs/Data-Either.html), and [asynchronous operations](https://rxjs.dev/guide/overview) can all be composed using the `bind` operator within the context of a Monad. [Declarative style](https://en.wikipedia.org/wiki/Declarative_programming), in particular, benefit significantly from this pattern as control flow is implicitly managed.
-
-It's worth noting that [most Monads are also Applicatives and Functors](https://www.adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html), forming a hierarchical relationship.
-
-Now, my Monad elevator pitch is over. Time to take it for a spin with the `Result` and `Event` Monads.
+Now that my Monad elevator pitch is over, it's time to take them for a spin with the `Result` and `Event` Monads.
 
 # Result
 
-A `Result` represents a computation that either yields a value of type `A` or an error:
+A `Result` represents a computation that either yields a value of type `A` or an error—in other words, a computation that either succeeds or fails.
 
 ```go
 type Result[A any] func(context.Context) (A, error)
 ```
 
-> See the [API documentation](https://pkg.go.dev/github.com/onur1/warp/result) at pkg.go.dev
+> See the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/result).
 
-Compare it with Haskell's [`Either`](https://hackage.haskell.org/package/base/docs/Data-Either.html):
+In Haskell, this is similar to [`Either`](https://hackage.haskell.org/package/base/docs/Data-Either.html):
 
 ```haskell
 data  Either a b  =  Left a | Right b
   deriving (Eq, Ord)
 ```
 
-Type classes like `Eq` and `Ord` offer additional capabilities. For instance, you can compare `Either` values if their underlying types support equality. Here's how [fp-ts](https://gcanti.github.io/fp-ts/) handles `Eq` for `Either`.
-
-```typescript
-const getEq = <E, A>(EL: Eq<E>, EA: Eq<A>): Eq<Either<E, A>> => ({
-  equals: (x, y) =>
-    x === y || (
-      isLeft(x)
-      ? isLeft(y) && EL.equals(x.left, y.left)
-      : isRight(y) && EA.equals(x.right, y.right)
-    )
-})
-```
-
-A Go equivalent using `Result` is shown below.
+You can compare `Either` values if their underlying types support equality. A Go equivalent using `Result` and [comparable](https://go.dev/ref/spec#Comparison_operators) is shown below:
 
 ```go
 type Eq[T any] func(a, b T) bool
@@ -146,9 +127,7 @@ func GetEq[A comparable](el Eq[error], ea Eq[A]) Eq[warp.Result[A]] {
 }
 ```
 
-One might expect to use a generic `Eq` function to compare `Result` values. However, since `Result` internally represents computations as functions, direct comparison is not possible as functions are not [comparable](https://go.dev/ref/spec#Comparison_operators).
-
-Fortunately, the monad interface provides a suitable abstraction. Additionally, Go's [error subtyping](https://go.dev/blog/go1.13-errors) feature (introduced in version 1.13) enables effective error handling through pattern matching.
+Here, we demonstrate a sequence of safe mathematical operations in Go—division, logarithm, square root, and doubling—using a `Result` monad to handle potential errors gracefully:
 
 ```go
 package main
@@ -164,16 +143,19 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+// Define custom error messages for specific invalid operations
 var (
 	errDivisionByZero       = errors.New("division by zero")
 	errNegativeSquareRoot   = errors.New("negative square root")
 	errNonPositiveLogarithm = errors.New("non-positive logarithm")
 )
 
+// Type constraint for numeric types that can be used in calculations
 type num interface {
 	constraints.Float | constraints.Integer
 }
 
+// Safe division function that returns a Result with an error if y is zero
 func div[T num](x, y T) warp.Result[T] {
 	if y == 0.0 {
 		return result.Error[T](errDivisionByZero)
@@ -181,6 +163,7 @@ func div[T num](x, y T) warp.Result[T] {
 	return result.Ok(x / y)
 }
 
+// Safe square root function that returns an error for negative inputs
 func sqrt[T num](x T) warp.Result[T] {
 	if x < 0.0 {
 		return result.Error[T](errNegativeSquareRoot)
@@ -188,6 +171,7 @@ func sqrt[T num](x T) warp.Result[T] {
 	return result.Ok(T(math.Sqrt(float64(x))))
 }
 
+// Safe logarithm function that returns an error for non-positive inputs
 func log[T num](x T) warp.Result[T] {
 	if x <= 0.0 {
 		return result.Error[T](errNonPositiveLogarithm)
@@ -195,11 +179,13 @@ func log[T num](x T) warp.Result[T] {
 	return result.Ok(T(math.Log(float64(x))))
 }
 
+// Function to double the input value
 func double[T num](x T) T {
 	return x * 2
 }
 
-func op[T num](x, y T) warp.Result[T] {
+// Function that chains the operations: division, logarithm, square root, and doubling
+func calculateResult[T num](x, y T) warp.Result[T] {
 	return result.Ap(
 		result.Ok(double[T]),
 		result.Chain(
@@ -210,60 +196,46 @@ func op[T num](x, y T) warp.Result[T] {
 }
 
 func main() {
+	// Perform the calculation and handle the result or error using Fork
 	result.Fork(
 		context.TODO(),
 		result.Map(
-			op(20.0, 10.0),
+			calculateResult(20.0, 10.0),
 			func(a float64) string {
 				return fmt.Sprintf("%.6f", a)
 			},
 		),
+		// Error handler: prints the error message if an error occurs
 		func(err error) {
 			fmt.Printf("Error is %v\n", err)
-		}, func(msg string) {
+		},
+		// Success handler: prints the result if calculation succeeds
+		func(msg string) {
 			fmt.Printf("Result is %s\n", msg)
 		})
 }
 ```
 
->> A more comprehensive usage example is provided by the [**middleware**](https://github.com/onur1/middleware) package, which introduces the `Middleware` monad built upon the `Result` type.
+>> For a more comprehensive example, see the [**middleware**](https://github.com/onur1/middleware) package, which introduces `Middleware` built on top of the `Result` type.
 
 # Event
 
-An `Event` represents a timeline of distinct happenings, each with corresponding data.
+An `Event` represents a series of occurrences over time, each with associated data:
 
 ```go
 type Event[A any] func(context.Context, chan<- A)
 ```
 
-> See the [API documentation](https://pkg.go.dev/github.com/onur1/warp/event) at pkg.go.dev
+> See the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/event).
 
-The `Event` implementation is based on Phil Freeman's [purescript-event](https://github.com/paf31/purescript-event), subsequently ported to TypeScript by Giulio Canti as part of [behaviors-ts](https://github.com/gcanti/behaviors-ts), but it differs by utilizing **channel subscriptions** in Go for a fully asynchronous approach.
-
-#### PureScript
-
-```haskell
-newtype Event a = Event ((a -> Effect Unit) -> Effect (Effect Unit))
-```
-
-#### TypeScript
-
-```typescript
-type Subscriber<A> = (a: A) => void
-
-interface Event<A> {
-  (sub: Subscriber<A>): void
-}
-```
-
->> **Extra knowledge:** While the theoretical foundations of the `Event` monad can be attributed to Conal Elliott and Paul Hudak's ['Functional Reactive Animation'](http://conal.net/papers/icfp97/), the `Observable` monad from [ReactiveX](https://reactivex.io/intro.html) is undoubtedly its most widely recognized implementation.
+Inspired by Phil Freeman’s [purescript-event](https://github.com/paf31/purescript-event), the Go `Event` implementation uses channels for a fully asynchronous approach.
 
 An `Event` constructor accepts two parameters:
 
 * A _context_ to signal upstream cancellation.
 * A _send-only channel_ for pushing values of type `A` to downstream.
 
-A single event constructed with `event.Internal` is demonstrated below. This event emits the current time at a frequency of one second.
+To create a basic event that emits the current time every second:
 
 ```go
 package main
@@ -277,7 +249,7 @@ import (
 )
 
 func main() {
-	run := event.Interval(time.Second * 1) // emit every second
+	run := event.Interval(time.Second * 1) // Emit every second
 
 	values := make(chan time.Time)
 
@@ -294,7 +266,7 @@ func main() {
 // 2024-09-02 11:47:50.940966 +0200 CEST m=+3.001281450
 ```
 
-Let's spice things up a bit by using combinators such as `Map`, `Filter`, and `Alt`.
+Using combinators like `Map`, `Filter`, and `Alt`, we can manipulate event streams. Here’s an example that filters, maps, and merges events:
 
 ```go
 package main
@@ -308,29 +280,34 @@ import (
 )
 
 func main() {
+	// Create a channel to receive integer events
 	nums := make(chan int)
 
-	first := event.Filter( // skip 3
-		event.Count( // count number events
-			event.Interval(time.Second*1), // emit every second
+	// First event stream: emits a count every second, filtering out the value 3
+	first := event.Filter(
+		event.Count(
+			event.Interval(time.Second * 1),
 		),
 		func(x int) bool {
 			return x != 3
 		},
 	)
 
-	second := event.Map( // double it
-		event.After(time.Second*2, 21), // emit 21 after 2 seconds
+	// Second event stream: emits the value 21 after a 2-second delay and doubles it
+	second := event.Map(
+		event.After(time.Second*2, 21),
 		func(x int) int {
 			return x * 2
 		},
 	)
 
-	// merge events
+	// Merge the two event streams using Alt, which combines the events
 	run := event.Alt(first, second)
 
+	// Start the merged event stream in a goroutine, sending results to nums channel
 	go run(context.TODO(), nums)
 
+	// Print each value as it is received from the nums channel
 	for num := range nums {
 		fmt.Println(num)
 	}
@@ -343,95 +320,3 @@ func main() {
 // 4
 // 5
 ```
-
-`event.Alt` is used for alternating between two events.
-
-Note that in both purescript-event and event-ts, the first subscription must complete before the second one can start. This means that the second event won't be subscribed to until the first one emits a value.
-
-```haskell
-instance altEvent :: Alt Event where
-  alt (Event f) (Event g) = Event \k -> do
-    c1 <- f k
-    c2 <- g k
-    pure (c1 *> c2)
-```
-
-in TypeScript:
-
-```typescript
-const alt = <A>(fx: Event<A>, fy: Event<A>): Event<A> =>
-  sub => {
-    fx(sub)
-    fy()(sub)
-  }
-```
-
-The channel-based version in Go doesn't have this limitation. The implementation is bulkier, but much of it is boilerplate code to ensure that no values are emitted when the context is canceled.
-
-```go
-// Alt creates an event which emits values simultaneously from two source events.
-func Alt[A any](x warp.Event[A], y warp.Event[A]) warp.Event[A] {
-	return func(ctx context.Context, sub chan<- A) {
-		defer close(sub)
-
-		var (
-			xs = make(chan A)
-			ys = make(chan A)
-			a  A
-			ok bool
-		)
-
-		var done <-chan struct{}
-
-		if ctx != nil {
-			done = ctx.Done()
-		}
-
-		go x(ctx, xs)
-		go y(ctx, ys)
-
-		for {
-			select {
-			case a, ok = <-xs:
-				if !ok {
-					xs = nil
-					if ys == nil {
-						return
-					}
-					break
-				}
-				select {
-				case <-done:
-					return
-				default:
-					select {
-					case <-done:
-						return
-					case sub <- a:
-					}
-				}
-			case a, ok = <-ys:
-				if !ok {
-					ys = nil
-					if xs == nil {
-						return
-					}
-					break
-				}
-				select {
-				case <-done:
-					return
-				default:
-					select {
-					case <-done:
-						return
-					case sub <- a:
-					}
-				}
-			}
-		}
-	}
-}
-```
-
-The same pattern is used throughout the other combinator implementations. One potential issue with this approach is that it can create an excessive number of nested goroutines, especially for tasks that do not require asynchronous execution. To address this, the channel scheduler should be decoupled. However, for now, I'm not sure if the benefits justify the additional hassle for implementing a scheduler.
