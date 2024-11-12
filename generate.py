@@ -131,6 +131,10 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
                 if 'r' in url_type:
                     div_tag.attrs['data-resizable'] = ""
                     div_tag.attrs['class'] = "resizeable-widget"
+                if 'f' in url_type:
+                    div_tag.attrs['data-fullsize'] = ""
+                    iframe_tag.attrs['style'] = "width: 100%"
+                    div_tag.attrs['style'] = "width: 100%"
 
                 div_tag.append(iframe_tag)
 
@@ -202,6 +206,8 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
             metadata.append("resize")
         if el.get('data-routable') is not None:
             metadata.append("route")
+        if el.get('data-fullsize') is not None:
+            metadata.append("full-size")
 
         return metadata
 
@@ -329,6 +335,7 @@ class Generator:
         for entry in self.entries:
             resizable_ids: list[str] = []
             router_ids: list[str] = []
+            fullsize_ids: list[str] = []
 
             for mm in entry.metadata:
                 if len(mm) < 1:
@@ -338,11 +345,14 @@ class Generator:
                     resizable_ids.append(sid)
                 if mm.count('route') > 0:
                     router_ids.append(sid+"-iframe")
+                if mm.count('full-size') > 0:
+                    fullsize_ids.append(sid)
 
             self._generate(t, [entry], entry.slug, include_json_body=True,
                            extra_args={
                 "resizable_ids": resizable_ids,
                 "router_ids": router_ids,
+                "fullsize_ids": fullsize_ids,
             })
 
         t = self.template_loader.load("index.html")
