@@ -24,7 +24,7 @@ Internally, binproto leverages a streaming state machine inspired by the [hyperc
            └─ 60-bits   └─ 4-bits
 ```
 
-This simple structure prefaces each message with its size, enabling binproto to efficiently determine identify message boundaries within a continuous byte stream.
+This simple structure prefaces each message with its size, enabling binproto to efficiently determine message boundaries within a continuous byte stream.
 
 ## Message Structure
 
