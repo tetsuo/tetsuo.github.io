@@ -457,7 +457,7 @@ iframe {
     font-family: $font-family-monospace;
     font-optical-sizing: auto;
     font-size: 0.87em;
-    background-color: $color-code-bg;
+    background-color: $color-code-bg-2;
     padding: .2em .4em;
     border-radius: $default-border-radius;
     color: $color-text;
@@ -496,10 +496,12 @@ iframe {
     margin: 10px 0;
     margin-bottom: 20px;
     border: 1px solid $color-code-border;
+    overflow: hidden;
 
     pre code {
       border: none;
       padding: 0;
+      overflow-x: scroll;
     }
 
     .w {
@@ -511,7 +513,6 @@ iframe {
   ul {
     margin-top: .2em;
     margin-bottom: .5em;
-    width: 100%;
   }
 
   ul li {
