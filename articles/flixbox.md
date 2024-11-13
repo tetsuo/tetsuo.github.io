@@ -57,7 +57,7 @@ Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/
 
 > The [server](https://github.com/onur1/flixbox/tree/0.0.7/src/server) API uses [hyper-ts](https://github.com/DenisFrezzato/hyper-ts), an fp-ts port of [Hyper](https://hyper.wickstrom.tech/), enforcing strict middleware composition through static type checking. It runs on Express but can integrate with other HTTP servers.
 
-Hyper is modeled as a State monad, reading incoming requests and writing responses through Express. Instead of directly mutating the connection, it produces a list of actions to execute in order. This design aids [testing](https://github.com/onur1/flixbox/blob/0.0.7/__tests__/server.ts).
+Hyper is modeled as a State monad, reading incoming requests and writing responses through Express. Instead of directly mutating the connection, it produces a list of actions to execute in order.
 
 The example below showcases the pipeline for handling `/movie/ID` requests, caching results from TMDb.
 
@@ -229,7 +229,7 @@ flixbox UI builds on concepts from [Elm](https://elm-lang.org/), a language spec
 
 While elm-ts bears a surface-level resemblance to Elm, they function quite differently under the hood. Additionally, Elm employs the Hindley-Milner type system, which [differs significantly](https://dev.to/lucamug/typescript-and-elm-3g38) from TypeScript's type system.
 
-The application state in flixbox is managed through messages and an update function—similar to Redux but with a more functional approach. This pattern simplifies state management, making testing and debugging more straightforward.
+In flixbox, application state is managed through messages and an update function—similar to Redux but with a more functional approach. This cyclical pattern significantly simplifies state management, making testing and debugging (including time-travel debugging) much more straightforward.
 
 For those interested in exploring FRP further, here are some resources:
 
@@ -237,7 +237,7 @@ For those interested in exploring FRP further, here are some resources:
 * [Elm paper](https://elm-lang.org/assets/papers/concurrent-frp.pdf) by [Evan Czaplicki](https://github.com/evancz)
 * [Push-pull FRP](http://conal.net/papers/push-pull-frp/) in PureScript using [purescript-behaviors](https://github.com/paf31/purescript-behaviors)
 
-Elm's design shares similarities with [Redux](https://redux.js.org/understanding/history-and-design/prior-art). Messages in Elm are comparable to actions in Redux, and Elm's update function aligns with Redux's Reducer function, both facilitating predictable state changes in applications.
+Elm's design shares similarities with [Redux](https://redux.js.org/understanding/history-and-design/prior-art). Messages in Elm are comparable to actions in Redux, and Elm's update function aligns with Redux's reducer function, both facilitating predictable state changes in applications.
 
 [`src/app/Msg.ts`](https://github.com/onur1/flixbox/tree/0.0.7/src/app/Msg.ts)
 
@@ -263,5 +263,3 @@ type Msg =
   * It transforms the state and potentially returns a new message.
 * **State Updates**: The new state is sent to [subscribers](https://package.elm-lang.org/packages/elm/core/latest/Platform-Sub) like the `view` function.
 * **Continuous Processing**: New actions are processed until no further actions remain.
-
-This cyclic pattern simplifies state management, enhancing testing and debugging capabilities (including time-travel debugging).

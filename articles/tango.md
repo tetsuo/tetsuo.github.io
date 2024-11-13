@@ -36,6 +36,6 @@ With tango, this can instead be written as:
 director == "Roy Andersson" && year > 2007
 ```
 
-This syntax includes standard C comparison operators and supports parentheses to specify explicit precedence. At present, Tango does not support unary operators or the `$in` operator for matching elements within arrays.
+This syntax includes standard C comparison operators and supports parentheses to specify explicit precedence. At present, tango does not support unary operators or the `$in` operator for matching elements within arrays.
 
 The [Shunting Yard algorithm](https://en.wikipedia.org/wiki/Shunting_yard_algorithm), as [implemented here](https://github.com/onur1/tango/blob/master/parse.js) and devised by [Edsger W. Dijkstra](https://en.wikipedia.org/wiki/Edsger_W._Dijkstra), is a linear-time algorithm for parsing expressions using a technique known as [operator precedence parsing](https://en.wikipedia.org/wiki/Operator-precedence_parser). It uses a stack to manage operators and a queue to output expressions in Reverse Polish Notation or to construct an Abstract Syntax Tree (AST).
