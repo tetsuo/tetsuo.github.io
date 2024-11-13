@@ -9,9 +9,9 @@ updated: 2024-11-13T00:00:00
 
 > Package [warp](https://github.com/onur1/warp) provides a collection of experimental Monad implementations in Go.
 
-Since Go version 1.18 introduced [generics](https://go.dev/blog/intro-generics), a long-awaited feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism), implementing Monads in Go has become more feasible. This post, inspired by Philip Wadler's Featherweight Go presentation, demonstrates how generics simplify these implementations.
+The introduction of [generics](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)—has greatly simplified implementing functional patterns, making the language more appealing and practical for functional programmers.
 
-Before we proceed, it’s important to note that Go’s core strengths lie in imperative programming rather than functional abstractions like Monads. For example, for most use cases, the [rate](https://pkg.go.dev/golang.org/x/time/rate) package is likely a more suitable option than implementing a Monad to abstract over channels. Nonetheless, exploring monadic patterns provides valuable insights. Let’s begin by comparing polymorphism in Haskell and Go.
+Before we dive in, it's worth noting that Go’s core strengths are rooted in imperative programming rather than functional abstractions like Monads. For example, if you’re only interested in batching or delaying incoming data, the [rate](https://pkg.go.dev/golang.org/x/time/rate) package is likely more suitable than implementing a Monad to manage channels. Nonetheless, exploring monadic patterns provides valuable insights. Let's begin by comparing polymorphism in Haskell and Go.
 
 ## Polymorphism in Haskell
 
