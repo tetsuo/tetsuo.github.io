@@ -228,7 +228,7 @@ type Event[A any] func(context.Context, chan<- A)
 
 > See the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/event).
 
-Inspired by Phil Freeman’s [purescript-event](https://github.com/paf31/purescript-event), the Go `Event` implementation uses channels for a fully asynchronous approach.
+Inspired by Phil Freeman's [purescript-event](https://github.com/paf31/purescript-event), the Go `Event` implementation uses channels for a fully asynchronous approach.
 
 An `Event` constructor accepts two parameters:
 
@@ -266,7 +266,7 @@ func main() {
 // 2024-09-02 11:47:50.940966 +0200 CEST m=+3.001281450
 ```
 
-Using combinators like `Map`, `Filter`, and `Alt`, we can manipulate event streams. Here’s an example that filters, maps, and merges events:
+Using combinators like `Map`, `Filter`, and `Alt`, we can manipulate event streams. Here's an example that filters, maps, and merges events:
 
 ```go
 package main
