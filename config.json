@@ -13,7 +13,7 @@
   "email": "ogunduz@gmail.com",
   "analyticsId": "UA-1238030-3",
   "showComments": false,
-  "buildImages": true,
+  "buildImages": false,
   "links": [
     {
       "url": "https://github.com/onur1",
