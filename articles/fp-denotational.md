@@ -1,10 +1,10 @@
 ---
-title: Exploring functional semantics: Why Haskell clicks
-description: What makes Haskell click
+title: Why Haskell Just Works?
+description: Why Haskell Just Works?
 cover_title: Understanding FP semantics
 tags: haskell,fp,language
 published: 2023-05-30T12:41:00
-updated: 2024-11-12T00:00:00
+updated: 2024-11-13T00:00:00
 ---
 
 > This article delves into Haskell's use of denotational semantics, a mathematical approach to defining program logic.

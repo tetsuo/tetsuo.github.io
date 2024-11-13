@@ -1,10 +1,10 @@
 ---
-title: Merely monadic in Go
-cover_title: Merely monadic in Go
+title: Going Monadic with Go Generics
+cover_title: Going Monadic with Go Generics
 description: Experimenting with Monad implementations in Golang
 tags: go,fp,language
 published: 2024-08-30T00:00:00
-updated: 2024-11-12T00:00:00
+updated: 2024-11-13T00:00:00
 ---
 
 > Package [warp](https://github.com/onur1/warp) provides a collection of experimental Monad implementations in Go.

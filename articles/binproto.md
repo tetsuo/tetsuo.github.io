@@ -1,10 +1,10 @@
 ---
-title: Build custom binary protocols in Go with multiplexing support
+title: Custom Binary Protocols with Multiplexing in Go
 cover_title: binproto
-description: Build custom binary protocols in Go with multiplexing support
+description: Custom Binary Protocols with Multiplexing in Go
 tags: go,net
 published: 2023-01-07T21:25:00
-updated: 2024-11-12T00:00:00
+updated: 2024-11-13T00:00:00
 ---
 
 > [**binproto**](https://github.com/onur1/binproto) provides generic support for binary communication protocols. Ideal for applications like game networking or file transfer, it enables low-latency data exchange.
