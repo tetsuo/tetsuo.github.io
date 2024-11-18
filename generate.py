@@ -99,7 +99,9 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         img_src = img.get('src')
         img_filename = os.path.basename(img_src)
         dirname = os.path.dirname(img_src)
-        if img.parent.name == "a" and img.parent.parent.name == "p":
+        if img.parent.name == "p":
+            img.parent['class'] = 'ta-center'
+        elif img.parent.name == "a" and img.parent.parent.name == "p":
             anchor_url = urlparse(img.parent.get('href'))
 
             if './images' == dirname and anchor_url.hostname == None:
