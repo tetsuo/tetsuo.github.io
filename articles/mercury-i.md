@@ -2,7 +2,7 @@
 title: A Minimalist's Guide to Event-Driven Email Pipelines: Part 1
 cover_title: A Minimalist's Guide to Event-Driven Email Pipelines: Part 1
 description: Building a reactive account management system with PostgreSQL triggers and real-time notifications
-tags: sql,postgresql
+tags: sql,reactive,database
 published: 2024-11-17T00:00:00
 updated: 2024-11-17T00:00:00
 ---
@@ -11,9 +11,9 @@ updated: 2024-11-17T00:00:00
 
 >> In this two-part series, we'll build a cost-effective email notification system for token-based user actions. The first part focuses on implementing the foundational workflows using **PostgreSQL**, while the second part will extend the solution with **Go** to enable batch processing, parallelism, and other optimizations.
 
-**PostgreSQL**, a robust open-source relational database, offers advanced features like **triggers** and **real-time notifications** that enable developers to build reactive systems directly within the database. By leveraging these capabilities, we can automate workflows such as account activation, password recovery, and status changes without the need for external job schedulers or complex application logic.
+Did you know that **PostgreSQL** can automate complex workflows, react to data changes, and even send notifications—all without relying on any third-party plugin or complicated application logic?
 
-This article explores the schema and triggers needed to achieve this, laying the groundwork for a database-driven email notification system that efficiently responds to user actions.
+In this article, we'll demonstrate these capabilities by building a simple account management system that leverages **triggers** and **real-time notifications** to handle tasks like account activation, password recovery, and status changes, laying the groundwork for a database-driven email notification system that efficiently responds to user actions.
 
 # Overview
 
