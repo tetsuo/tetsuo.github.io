@@ -11,7 +11,7 @@ updated: 2024-11-13T00:00:00
 
 The introduction of [generics](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)—has greatly simplified implementing functional patterns, making the language more appealing and practical for functional programmers.
 
-Before we dive in, it's worth noting that Go’s core strengths are rooted in imperative programming rather than functional abstractions like Monads. For example, if you’re only interested in batching or delaying incoming data, the [rate](https://pkg.go.dev/golang.org/x/time/rate) package is likely more suitable than implementing a Monad to manage channels. Nonetheless, exploring monadic patterns provides valuable insights. Let's begin by comparing polymorphism in Haskell and Go.
+Before we dive in, it's worth noting that Go's core strengths are rooted in imperative programming rather than functional abstractions like Monads. For example, if you're only interested in batching or delaying incoming data, the [rate](https://pkg.go.dev/golang.org/x/time/rate) package is likely more suitable than implementing a Monad to manage channels. Nonetheless, exploring monadic patterns provides valuable insights. Let's begin by comparing polymorphism in Haskell and Go.
 
 ## Polymorphism in Haskell
 
@@ -100,7 +100,7 @@ A `Result` represents a computation that either yields a value of type `A` or an
 type Result[A any] func(context.Context) (A, error)
 ```
 
-> See the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/result).
+> See the `Result` documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/result).
 
 In Haskell, this is similar to [`Either`](https://hackage.haskell.org/package/base/docs/Data-Either.html):
 
@@ -226,7 +226,7 @@ An `Event` represents a series of occurrences over time, each with associated da
 type Event[A any] func(context.Context, chan<- A)
 ```
 
-> See the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/event).
+> See the `Event` documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/event).
 
 Inspired by Phil Freeman's [purescript-event](https://github.com/paf31/purescript-event), the Go `Event` implementation uses channels for a fully asynchronous approach.
 

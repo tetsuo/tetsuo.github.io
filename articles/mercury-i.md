@@ -474,7 +474,7 @@ _We'll address this further in the second part._
 
 ## Single-Consumer Queue
 
-When you update `last_seq`, PostgreSQL locks the `jobs` row being updated, preventing other processes from modifying it until the transaction is complete. However, PostgreSQL **does not prevent multiple processes from attempting to read the same cursor** before one updates it. This can lead to duplicate processing if you’re not careful.
+When you update `last_seq`, PostgreSQL locks the `jobs` row being updated, preventing other processes from modifying it until the transaction is complete. However, PostgreSQL **does not prevent multiple processes from attempting to read the same cursor** before one updates it. This can lead to duplicate processing if you're not careful.
 
 If there's any chance of concurrent execution, using `FOR UPDATE` is essential:
 
@@ -511,6 +511,6 @@ Keep in mind that databases aren't designed to handle queuing functionalities (l
 >
 > If there are hundreds of jobs per second, dedicated queues will be more efficient. However, processing hundreds of emails per second also implies significant costs—likely tens of thousands of euros paid to a cloud provider. At that scale, it might be more cost-effective to [hire a few engineers](/about.html) to optimize your system and address these challenges directly 🤓
 
-# What’s Next?
+# What's Next?
 
 In Part 2, we'll use Go to integrate batch processing and parallelism into the system, transforming this reactive SQL-driven pipeline into a scalable, production-ready solution.
