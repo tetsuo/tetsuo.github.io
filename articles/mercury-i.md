@@ -1,6 +1,6 @@
 ---
-title: A Minimalist's Guide to Event-Driven Email Pipelines: Part 1
-cover_title: A Minimalist's Guide to Event-Driven Email Pipelines: Part 1
+title: End-to-End Workflow Automation with PostgreSQL and Go: Part 1
+cover_title: End-to-End Workflow Automation with PostgreSQL and Go: Part 1
 description: Building a reactive account management system with PostgreSQL triggers and real-time notifications
 tags: sql,reactive,database
 published: 2024-11-17T00:00:00
