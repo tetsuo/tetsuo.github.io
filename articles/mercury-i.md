@@ -344,10 +344,11 @@ INSERT INTO tokens (account, action)
 
 **Expected Outcome**:
 
-- The `LISTEN` session should immediately display a notification like:
-  ```
-  Asynchronous notification "token_inserted" with payload "" received.
-  ```
+The `LISTEN` session should immediately display a notification like:
+
+```
+Asynchronous notification "token_inserted" with payload "" received.
+```
 
 # Roll-Your-Own Email Queue
 
