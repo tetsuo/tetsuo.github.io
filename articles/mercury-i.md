@@ -11,7 +11,7 @@ updated: 2024-11-17T00:00:00
 
 >> In this two-part series, we'll build a cost-effective email notification system for token-based user actions. The first part focuses on implementing the foundational workflows using **PostgreSQL**, while the second part will extend the solution with **Go** to enable batch processing, parallelism, and other optimizations.
 
-Did you know that **PostgreSQL** can automate complex workflows, react to data changes, and even send notifications—all without relying on any third-party plugin or complicated application logic?
+Did you know that PostgreSQL can automate complex workflows, react to data changes, and even send notifications—all without relying on any third-party extension or complicated application logic.
 
 In this article, we'll demonstrate these capabilities by building a simple account management system that leverages **triggers** and **real-time notifications** to handle tasks like account activation, password recovery, and status changes, laying the groundwork for a database-driven email notification system that efficiently responds to user actions.
 
@@ -457,7 +457,7 @@ CREATE INDEX tokens_id_expires_consumed_action_idx ON tokens
     (id, expires_at, consumed_at, action);
 ```
 
-#### Indexing Strategy
+Indexing Strategy:
 
 - **Equality Conditions First**: Since columns used in equality conditions (`=` or `IN`) are typically the most selective, they should come first.
 - **Range Conditions Next**: Columns used in range conditions (`>`, `<`, `BETWEEN`) should follow.
@@ -499,17 +499,13 @@ If there's any chance of concurrent execution, using `FOR UPDATE` is essential:
    - Consumer A updates `last_seq` to, say, `150` and releases the lock.
    - Consumer B then reads the updated `last_seq = 150`, processing the next set of tokens.
 
->> Alternatively, if the concern is to handle **multiple consumers** efficiently, you can consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup effectively.
+Alternatively, if the concern is to handle **multiple consumers** efficiently, you can consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe fashion.
 
 However, if you're certain that only a single consumer runs this query at any given time, I recommend sticking with the `jobs` table as a single point of reference. This approach avoids the need for complex locking mechanisms, and you can further enhance the `jobs` table to keep a history of job executions, parameters, and statuses, which can be valuable for auditing purposes.
 
-## Less Suitable for Critical Tasks
-
-Keep in mind that databases aren't designed to handle queuing functionalities (like retry mechanisms, dead-letter queues, task prioritization, and etc.) out of the box. Without built-in support for message acknowledgments and retries, you must manage error handling manually at the application level.
-
 > #### When to Switch to a Dedicated Queue?
 >
-> If there are hundreds of jobs per second, dedicated queues will be more efficient. However, processing hundreds of emails per second also implies significant costs—likely tens of thousands of euros paid to a cloud provider. At that scale, it might be more cost-effective to [hire a few engineers](/about.html) to optimize your system and address these challenges directly 🤓
+> If there are hundreds of jobs per second, dedicated queues will be more efficient. However, processing hundreds of emails per second also implies significant costs—likely tens of thousands of euros paid to a cloud provider. At that scale, it might be more cost-effective to hire a few engineers to optimize your system and address these challenges directly 🤓
 
 # What's Next?
 
