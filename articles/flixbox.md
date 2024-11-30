@@ -4,12 +4,12 @@ description: Building a Full-Stack Web App with fp-ts
 cover_title: flixbox
 tags: typescript,fp
 published: 2023-01-25T12:41:00
-updated: 2024-11-13T00:00:00
+updated: 2024-11-30T00:00:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
 
-> [**flixbox**](https://www.github.com/onur1/flixbox) showcases a full-stack client/server web application interacting with the [TheMovieDB](https://www.themoviedb.org/) API. It leverages the functional programming library [fp-ts](https://gcanti.github.io/fp-ts/) and its [module ecosystem](https://gcanti.github.io/fp-ts/ecosystem/).
+> [**flixbox**](https://www.github.com/tetsuo/flixbox) showcases a full-stack client/server web application interacting with the [TheMovieDB](https://www.themoviedb.org/) API. It leverages the functional programming library [fp-ts](https://gcanti.github.io/fp-ts/) and its [module ecosystem](https://gcanti.github.io/fp-ts/ecosystem/).
 
 [fp-ts](https://gcanti.github.io/fp-ts/) brings [typeclasses](https://en.wikipedia.org/wiki/Type_class) and [higher kinded types](https://en.wikipedia.org/wiki/Kind_(type_theory)), concepts from functional programming languages like [Haskell](https://www.haskell.org/) and [PureScript](https://www.purescript.org/), to [TypeScript](https://www.typescriptlang.org/). The entire flixbox application, including the server-side API, is built using libraries from the [fp-ts module ecosystem](https://gcanti.github.io/fp-ts/ecosystem/).
 
@@ -35,7 +35,7 @@ flixbox responds with appropriate HTTP status codes and errors for issues:
 GET /results?search_query=QUERY
 ```
 
-Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model/SearchResultSet.ts) object.
+Responds with a [`SearchResultSet`](https://github.com/tetsuo/flixbox/tree/0.0.7/src/tmdb/model/SearchResultSet.ts) object.
 
 ## Retrieving a movie
 
@@ -43,7 +43,7 @@ Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/
 GET /movie/ID
 ```
 
-Responds with a [`Movie`](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model/Movie.ts) object.
+Responds with a [`Movie`](https://github.com/tetsuo/flixbox/tree/0.0.7/src/tmdb/model/Movie.ts) object.
 
 ## Get popular movies
 
@@ -51,11 +51,11 @@ Responds with a [`Movie`](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/m
 GET /popular
 ```
 
-Responds with a [`SearchResultSet`](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model/SearchResultSet.ts) object.
+Responds with a [`SearchResultSet`](https://github.com/tetsuo/flixbox/tree/0.0.7/src/tmdb/model/SearchResultSet.ts) object.
 
 # HTTP middleware architecture
 
-> The [server](https://github.com/onur1/flixbox/tree/0.0.7/src/server) API uses [hyper-ts](https://github.com/DenisFrezzato/hyper-ts), an fp-ts port of [Hyper](https://hyper.wickstrom.tech/), enforcing strict middleware composition through static type checking. It runs on Express but can integrate with other HTTP servers.
+> The [server](https://github.com/tetsuo/flixbox/tree/0.0.7/src/server) API uses [hyper-ts](https://github.com/DenisFrezzato/hyper-ts), an fp-ts port of [Hyper](https://hyper.wickstrom.tech/), enforcing strict middleware composition through static type checking. It runs on Express but can integrate with other HTTP servers.
 
 Hyper is modeled as a State monad, reading incoming requests and writing responses through Express. Instead of directly mutating the connection, it produces a list of actions to execute in order.
 
@@ -68,7 +68,7 @@ When [`/movie/3423`](https://onurgunduz.com/flixbox/movie/3423) is called:
   * Otherwise fetches data from TMDb caches it, and returns the result.
 * Responds with a JSON object.
 
-[`server/Flixbox.ts`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/Flixbox.ts#L87)
+[`server/Flixbox.ts`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/Flixbox.ts#L87)
 
 ```typescript
 pipe(
@@ -104,11 +104,11 @@ pipe(
 )
 ```
 
-The `apSecond` function executes only if the preceding `GET` middleware succeeds, while `orElse` handles failures. The main pipeline short-circuits on [`AppError`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/Error.ts).
+The `apSecond` function executes only if the preceding `GET` middleware succeeds, while `orElse` handles failures. The main pipeline short-circuits on [`AppError`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/Error.ts).
 
 ### The `GET` middleware
 
-[`middleware/Method.ts`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/middleware/Method.ts)
+[`middleware/Method.ts`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/middleware/Method.ts)
 
 ```typescript
 import { right, left } from 'fp-ts/lib/Either'
@@ -137,22 +137,22 @@ All core middlewares return `AppError`:
 * `put`: Returns `ServerError` on save faillures.
 * `movie`: Handles TMDb API errors as `ProviderError`.
 
-An `orElse` handler can be added to manage `AppError`, sending appropriate error messages or logging issues. The [`destroy`](https://github.com/onur1/flixbox/blob/0.0.7/src/server/middleware/Error.ts) middleware handles this.
+An `orElse` handler can be added to manage `AppError`, sending appropriate error messages or logging issues. The [`destroy`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/middleware/Error.ts) middleware handles this.
 
 # Logging
 
-flixbox utilizes the lightweight and composable logging module, [logging-ts](https://github.com/gcanti/logging-ts/). This library, adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging), integrates seamlessly with hyper-ts using the [TaskEither](https://github.com/onur1/flixbox/blob/0.0.7/src/logging/TaskEither.ts) type.
+flixbox utilizes the lightweight and composable logging module, [logging-ts](https://github.com/gcanti/logging-ts/). This library, adapted from [purescripting-logging](https://github.com/rightfold/purescript-logging), integrates seamlessly with hyper-ts using the [TaskEither](https://github.com/tetsuo/flixbox/blob/0.0.7/src/logging/TaskEither.ts) type.
 
 # Runtime type system
 
 [io-ts](https://github.com/gcanti/io-ts/) is crucial for type validation throughout the application:
 
-- [Defining client application state](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Model.ts)
-- [Modeling TMDb data](https://github.com/onur1/flixbox/tree/0.0.7/src/tmdb/model)
-- [Reporting validation errors](https://github.com/onur1/flixbox/blob/0.0.7/src/server/Error.ts#L17)
-- [Matching queries](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Router.ts#L5)
-- [Validating React props](https://github.com/onur1/flixbox/blob/0.0.7/src/app/components/Layout.tsx#L77)
-- [Validating environment variables](https://github.com/onur1/flixbox/blob/0.0.7/src/server/index.ts#L72)
+- [Defining client application state](https://github.com/tetsuo/flixbox/blob/0.0.7/src/app/Model.ts)
+- [Modeling TMDb data](https://github.com/tetsuo/flixbox/tree/0.0.7/src/tmdb/model)
+- [Reporting validation errors](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/Error.ts#L17)
+- [Matching queries](https://github.com/tetsuo/flixbox/blob/0.0.7/src/app/Router.ts#L5)
+- [Validating React props](https://github.com/tetsuo/flixbox/blob/0.0.7/src/app/components/Layout.tsx#L77)
+- [Validating environment variables](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/index.ts#L72)
 
 There are many type validation libraries available in the JavaScript community. However, the libraries developed by Giulio Canti, including io-ts and its predecessor [tcomb](https://github.com/gcanti/tcomb), have gained significant popularity and adoption.
 
@@ -239,7 +239,7 @@ For those interested in exploring FRP further, here are some resources:
 
 Elm's design shares similarities with [Redux](https://redux.js.org/understanding/history-and-design/prior-art). Messages in Elm are comparable to actions in Redux, and Elm's update function aligns with Redux's reducer function, both facilitating predictable state changes in applications.
 
-[`src/app/Msg.ts`](https://github.com/onur1/flixbox/tree/0.0.7/src/app/Msg.ts)
+[`src/app/Msg.ts`](https://github.com/tetsuo/flixbox/tree/0.0.7/src/app/Msg.ts)
 
 ```typescript
 type Msg =
@@ -258,7 +258,7 @@ type Msg =
 
 * **Initial State**: You define an initial application state.
 * **View Function**: A pure view function renders visual elements based on the current state.
-* **Update Function**: When user interaction triggers a message (e.g., clicking a link triggers a `Navigate` message), the [update function](https://github.com/onur1/flixbox/blob/0.0.7/src/app/Effect.ts#L64) is called.
+* **Update Function**: When user interaction triggers a message (e.g., clicking a link triggers a `Navigate` message), the [update function](https://github.com/tetsuo/flixbox/blob/0.0.7/src/app/Effect.ts#L64) is called.
   * It receives the message and the current state as inputs.
   * It transforms the state and potentially returns a new message.
 * **State Updates**: The new state is sent to [subscribers](https://package.elm-lang.org/packages/elm/core/latest/Platform-Sub) like the `view` function.

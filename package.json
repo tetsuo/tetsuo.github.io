@@ -1,9 +1,9 @@
 {
-  "name": "@onur1/website",
+  "name": "@tetsuo/website",
   "version": "0.0.0",
   "private": true,
   "main": "index.js",
-  "repository": "git@github.com:onur1/website.git",
+  "repository": "git@github.com:tetsuo/website.git",
   "license": "MIT",
   "scripts": {
     "sass": "sass styles.scss > public/assets/styles.css",

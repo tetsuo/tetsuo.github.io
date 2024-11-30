@@ -1,18 +1,19 @@
 # website
 
-This repository contains the source code for [ogu.nz](https://ogu.nz). The site includes articles, resources, and updates. It is built using a combination of HTML, SCSS, Python, and JavaScript, with infrastructure management using Terraform.
+Source code for [ogu.nz](https://ogu.nz), a static site generator built with Python, HTML, SCSS, and JavaScript. Infrastructure managed with Terraform.
 
 ## Features
 
-- **Static Site Generation**: Generates a static website with custom templates.
-- **Article Management**: Contains a collection of articles stored in the `articles` directory.
-- **Infrastructure as Code**: Uses Terraform to manage infrastructure resources for deployment.
+- Static site generation with Markdown support.
+- Article and tag management.
+- Customizable templates and styles.
+- SEO-friendly with sitemaps and RSS feeds.
 
 ## Installation
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/onur1/website.git
+   git clone https://github.com/tetsuo/website.git
    ```
 2. Install dependencies:
    ```sh
@@ -22,8 +23,17 @@ This repository contains the source code for [ogu.nz](https://ogu.nz). The site 
 
 ## Usage
 
-- **Generate Content**: Use `generate.py` to build the site.
-- **Deploy**: The `sync-public-bucket` script can be used to sync files to a public hosting bucket.
+- Build the site:
+  ```sh
+  python generate.py
+  ```
+- Upload to S3 using the provided sync script:
+  ```sh
+  PUBLIC_S3_BUCKET_NAME="somebucket" \
+  DOMAIN_NAME="example.com" \
+  YES=1 \
+  ./sync-public-bucket .
+  ```
 
 ## License
 

@@ -4,10 +4,10 @@ cover_title: couchilla
 description: CommonJS Support for CouchDB Design Documents
 tags: javascript,couchdb,database
 published: 2023-01-02T14:55:00
-updated: 2024-11-13T00:00:00
+updated: 2024-11-30T00:00:00
 ---
 
-> [**couchilla**](https://github.com/onur1/couchilla) is a bundler for packing design documents for CouchDB.
+> [**couchilla**](https://github.com/tetsuo/couchilla) is a bundler for packing design documents for CouchDB.
 
 In [CouchDB](https://couchdb.apache.org/), [design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are special database entries that contain JavaScript functions, such as _views_ and _updates_. These functions, executed on demand, generate secondary indexes, often termed MapReduce views.
 
@@ -15,7 +15,7 @@ Although CouchDB supports JavaScript and Erlang, design functions themselves are
 
 JavaScript support in CouchDB relies on the Mozilla SpiderMonkey engine, which imposes specific module dependency rules and limitations on design function development.
 
-[couchilla](https://github.com/onur1/couchilla) addresses this by providing a convenient way to bundle design documents with CommonJS support. It aggregates view and filter functions from a JavaScript directory and produces a design document in JSON format.
+[couchilla](https://github.com/tetsuo/couchilla) addresses this by providing a convenient way to bundle design documents with CommonJS support. It aggregates view and filter functions from a JavaScript directory and produces a design document in JSON format.
 
 ## Directory structure
 

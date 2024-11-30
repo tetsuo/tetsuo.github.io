@@ -4,10 +4,10 @@ cover_title: Going Monadic with Go Generics
 description: Experimenting with Monad implementations in Golang
 tags: go,fp,language
 published: 2024-08-30T00:00:00
-updated: 2024-11-13T00:00:00
+updated: 2024-11-30T00:00:00
 ---
 
-> Package [warp](https://github.com/onur1/warp) provides a collection of experimental Monad implementations in Go.
+> Package [warp](https://github.com/tetsuo/warp) provides a collection of experimental Monad implementations in Go.
 
 The introduction of [generics](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)—has greatly simplified implementing functional patterns, making the language more appealing and practical for functional programmers.
 
@@ -100,7 +100,7 @@ A `Result` represents a computation that either yields a value of type `A` or an
 type Result[A any] func(context.Context) (A, error)
 ```
 
-> See the `Result` documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/result).
+> See the `Result` documentation at [pkg.go.dev](https://pkg.go.dev/github.com/tetsuo/warp/result).
 
 In Haskell, this is similar to [`Either`](https://hackage.haskell.org/package/base/docs/Data-Either.html):
 
@@ -138,8 +138,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/onur1/warp"
-	"github.com/onur1/warp/result"
+	"github.com/tetsuo/warp"
+	"github.com/tetsuo/warp/result"
 	"golang.org/x/exp/constraints"
 )
 
@@ -216,7 +216,7 @@ func main() {
 }
 ```
 
->> For a more comprehensive example, see the [**middleware**](https://github.com/onur1/middleware) package, which introduces `Middleware` built on top of the `Result` type.
+>> For a more comprehensive example, see the [**middleware**](https://github.com/tetsuo/middleware) package, which introduces `Middleware` built on top of the `Result` type.
 
 # Event
 
@@ -226,7 +226,7 @@ An `Event` represents a series of occurrences over time, each with associated da
 type Event[A any] func(context.Context, chan<- A)
 ```
 
-> See the `Event` documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/warp/event).
+> See the `Event` documentation at [pkg.go.dev](https://pkg.go.dev/github.com/tetsuo/warp/event).
 
 Inspired by Phil Freeman's [purescript-event](https://github.com/paf31/purescript-event), the Go `Event` implementation uses channels for a fully asynchronous approach.
 
@@ -245,7 +245,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/onur1/warp/event"
+	"github.com/tetsuo/warp/event"
 )
 
 func main() {
@@ -276,7 +276,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/onur1/warp/event"
+	"github.com/tetsuo/warp/event"
 )
 
 func main() {

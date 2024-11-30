@@ -4,10 +4,10 @@ cover_title: binproto
 description: Custom Binary Protocols with Multiplexing in Go
 tags: go,net
 published: 2023-01-07T21:25:00
-updated: 2024-11-13T00:00:00
+updated: 2024-11-30T00:00:00
 ---
 
-> [**binproto**](https://github.com/onur1/binproto) provides generic support for binary communication protocols. Ideal for applications like game networking or file transfer, it enables low-latency data exchange.
+> [**binproto**](https://github.com/tetsuo/binproto) provides generic support for binary communication protocols. Ideal for applications like game networking or file transfer, it enables low-latency data exchange.
 
 The Transmission Control Protocol (TCP) ensures reliable delivery of byte streams between devices, but interpreting this data stream (whether text or binary) and converting it into meaningful messages is left to application-level protocols.
 
@@ -39,7 +39,7 @@ Header is followed by the message payload.
 
 binproto operates with a default internal buffer size of 4096 bytes, meaning data is processed as long as it meets or exceeds this buffer size—an effective default for many applications. You can adjust this value to better suit protocols dealing with larger or smaller data chunks, optimizing performance as needed.
 
-> For more details on available functions and features, see the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/onur1/binproto).
+> For more details on available functions and features, see the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/tetsuo/binproto).
 
 ## Example
 
@@ -54,7 +54,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/onur1/binproto"
+	"github.com/tetsuo/binproto"
 )
 
 func main() {
