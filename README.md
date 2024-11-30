@@ -23,9 +23,25 @@ Source code for [ogu.nz](https://ogu.nz), a static site generator built with Pyt
 
 ## Usage
 
-- Build the site:
+- Generate favicons:
+  ```sh
+  convert -size 2049x2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \
+  -fill '#fff' -stroke '#0000ff' -strokewidth 300 -draw 'circle 1024,1024 1024,153' \
+  -fill 'black' -stroke '#1ba9e4' -strokewidth 290 -draw 'circle 1024,1024 760,760' \
+  -alpha set -background none \
+  -wave 100x1900 \
+  -colorspace sRGB \
+  -distort SRT 8 \
+  tmp/circle_sRGB.png && \
+  ./generate-favicons.js tmp/circle_sRGB.png
+  ```
+- Build pages:
   ```sh
   python generate.py
+  ```
+- Build styles:
+  ```sh
+  npm run sass
   ```
 - Upload to S3 using the provided sync script:
   ```sh
