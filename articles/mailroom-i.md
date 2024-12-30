@@ -9,11 +9,11 @@ updated: 2024-12-30T00:00:00
 
 > Unlocking the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine.
 
-In this two-part series, I'll guide you through building an efficient, database-driven **email notification system** for key user lifecycle events, such as account activation and password resets.
+>> In this two-part series, we'll build an efficient, database-driven **email notification system** for key user lifecycle events, such as account activation and password resets.
 
 The first part focuses on establishing the core workflows of a responsive account management system, using some of PostgreSQL's lesser-known features, such as **triggers** and **notification events**. In the second part, we'll build on this foundation with libpq and the AWS SDK to enable real-time processing and seamless email delivery.
 
-No RabbitMQ, no overcomplicated orchestration—just clean, database-first design. I hope this series inspires you to take a closer look at what PostgreSQL can do and how it can simplify your own systems. Let's dive in.
+No RabbitMQ, no overcomplicated orchestration—just clean, database-first design. I hope this series inspires you to take a closer look at what PostgreSQL can do beyond storing data and how it can simplify your own systems. Let's dive in.
 
 # Overview
 
@@ -502,13 +502,9 @@ If there's any chance of concurrent execution, using `FOR UPDATE` is essential:
    - Consumer A updates `last_seq` to, say, `150` and releases the lock.
    - Consumer B then reads the updated `last_seq = 150`, processing the next set of tokens.
 
-Alternatively, to efficiently handle **multiple consumers**, you might consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe way.
+> Alternatively, to efficiently handle **multiple consumers**, you might consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe fashion.
 
 However, if you're certain that only a single consumer runs this query at any given time, I recommend sticking with the `jobs` table as a single point of reference. This approach avoids the need for complex locking mechanisms, and you can further enhance the `jobs` table to keep a history of job executions, parameters, and statuses, which can be valuable for auditing purposes.
-
-> #### When to Switch to a Dedicated Queue?
->
-> For workloads involving thousands of jobs per second, dedicated queues can offer better efficiency of course. That said, processing such high volumes of emails comes with substantial costs—potentially tens of thousands of euros in cloud expenses. At that scale, investing in a few skilled engineers to optimize your system might prove more cost-effective than relying solely on additional expensive infrastructure.
 
 # What's Next?
 
