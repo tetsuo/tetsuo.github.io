@@ -1,19 +1,19 @@
 ---
-title: End-to-End Workflow Automation with PostgreSQL and Go: Part 1
+title: User Lifecycle Management: Part 1 – database schema
 cover_title: End-to-End Workflow Automation with PostgreSQL and Go: Part 1
 description: Building a reactive account management system with PostgreSQL triggers and real-time notifications
-tags: sql,reactive,database
+tags: postgres,mailroom,database,iam,sql
 published: 2024-11-17T00:00:00
-updated: 2024-11-17T00:00:00
+updated: 2024-12-30T00:00:00
 ---
 
-> Build a reactive account management system with PostgreSQL, using triggers, tokens, and real-time notifications to automate user workflows like activation and status changes.
+> Unlocking the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine.
 
->> In this two-part series, we'll build a cost-effective email notification system for token-based user actions. The first part focuses on implementing the foundational workflows using **PostgreSQL**, while the second part will extend the solution with **Go** to enable batch processing, parallelism, and other optimizations.
+In this two-part series, I'll guide you through building an efficient, database-driven **email notification system** for key user lifecycle events, such as account activation and password resets.
 
-Did you know that PostgreSQL can automate complex workflows, react to data changes, and even send notifications—all without relying on any third-party extension or complicated application logic.
+The first part focuses on establishing the core workflows of a responsive account management system, using some of PostgreSQL's lesser-known features, such as **triggers** and **notification events**. In the second part, we'll build on this foundation with libpq and the AWS SDK to enable real-time processing and seamless email delivery.
 
-In this article, we'll demonstrate these capabilities by building a simple account management system that leverages **triggers** and **real-time notifications** to handle tasks like account activation, password recovery, and status changes, laying the groundwork for a database-driven email notification system that efficiently responds to user actions.
+No RabbitMQ, no overcomplicated orchestration—just clean, database-first design. I hope this series inspires you to take a closer look at what PostgreSQL can do and how it can simplify your own systems. Let's dive in.
 
 # Overview
 
@@ -34,7 +34,7 @@ Here's the sequence diagram outlining the workflows:
 
 # Accounts
 
-We start by defining the `accounts` table, which manages user data and tracks the lifecycle states of accounts.
+The `accounts` table manages user data and tracks account lifecycle states.
 
 ```sql
 CREATE TYPE account_status AS ENUM (
@@ -71,7 +71,7 @@ CREATE TYPE token_action AS ENUM (
 CREATE TABLE tokens (
     id          BIGSERIAL PRIMARY KEY,
     action      token_action NOT NULL,
-    secret      VARCHAR(64) DEFAULT encode(gen_random_bytes(32), 'hex') UNIQUE NOT NULL,
+    secret      BYTEA DEFAULT gen_random_bytes(32) UNIQUE NOT NULL,
     code        VARCHAR(5) DEFAULT LPAD(TO_CHAR(RANDOM() * 100000, 'FM00000'), 5, '0'),
     account     BIGINT NOT NULL,
     expires_at  INTEGER DEFAULT EXTRACT(EPOCH FROM NOW() + INTERVAL '15 minute') NOT NULL,
@@ -123,7 +123,9 @@ CREATE TRIGGER before_account_insert
 
 #### Why not an `AFTER` trigger?
 
-While it may seem logical to create the token _after_ confirming the account's existence (since the token depends on the account), this approach has a critical flaw: if the token insertion fails, you could end up with an account that lacks a corresponding activation token, breaking downstream processes. To ensure **atomicity**, we use a `BEFORE` trigger, which rolls back the **entire transaction** if any part of it fails.
+While it may seem logical to create the token _after_ confirming the account's existence (since the token depends on the account), this approach has a critical flaw: if the token insertion fails, you could end up with an account that lacks a corresponding activation token, breaking downstream processes.
+
+The `BEFORE` trigger ensures that token creation and account insertion are part of the same transaction, guaranteeing consistency. If token creation fails, the entire transaction rolls back, preventing the system from entering an invalid state.
 
 This is why the `DEFERRABLE INITIALLY DEFERRED` constraint is applied to the `tokens` table. It allows a token to be inserted even before the associated account is created, provided both operations occur within the same transaction.
 
@@ -358,7 +360,7 @@ We use the `jobs` table to maintain a cursor for advancing through pending token
 
 ```sql
 CREATE TYPE job_type AS ENUM (
-    'user_action_queue'
+    'mailroom'
 );
 
 CREATE TABLE jobs (
@@ -374,7 +376,7 @@ INSERT INTO
 jobs
     (last_seq, job_type)
 VALUES
-    (0, 'user_action_queue');
+    (0, 'mailroom');
 ```
 
 ## Retrieving Pending Tokens
@@ -407,12 +409,12 @@ FROM
             OR (t.action = 'password_recovery'
                 AND a.status = 'active'))
 WHERE
-    jobs.job_type = 'user_action_queue'
+    jobs.job_type = 'mailroom'
 ```
 
 **Joins & Filters:**
 
-- `jobs`: Filtering by `job_type = 'user_action_queue'`
+- `jobs`: Filtering by `job_type = 'mailroom'`
 - `tokens`: Joining on `tokens.id > jobs.last_seq` with conditions:
     - `t.expires_at` (not expired)
     - `t.consumed_at` is NULL (unused)
@@ -428,14 +430,14 @@ Finally, we integrate the pending actions query into a CTE that simultaneously u
 
 ```sql
 WITH token_data AS (
-    -- Query logic here
+    -- Insert SELECT query here
 )
 UPDATE
     jobs
 SET
     last_seq = (SELECT MAX(id) FROM token_data)
 WHERE
-    job_type = 'user_action_queue'
+    job_type = 'mailroom'
     AND EXISTS (SELECT 1 FROM token_data)
 RETURNING
     (SELECT json_agg(token_data) FROM token_data);
@@ -500,14 +502,14 @@ If there's any chance of concurrent execution, using `FOR UPDATE` is essential:
    - Consumer A updates `last_seq` to, say, `150` and releases the lock.
    - Consumer B then reads the updated `last_seq = 150`, processing the next set of tokens.
 
-Alternatively, if the concern is to handle **multiple consumers** efficiently, you can consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe fashion.
+Alternatively, to efficiently handle **multiple consumers**, you might consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe way.
 
 However, if you're certain that only a single consumer runs this query at any given time, I recommend sticking with the `jobs` table as a single point of reference. This approach avoids the need for complex locking mechanisms, and you can further enhance the `jobs` table to keep a history of job executions, parameters, and statuses, which can be valuable for auditing purposes.
 
 > #### When to Switch to a Dedicated Queue?
 >
-> If there are hundreds of jobs per second, dedicated queues will be more efficient. However, processing hundreds of emails per second also implies significant costs—likely tens of thousands of euros paid to a cloud provider. At that scale, it might be more cost-effective to hire a few engineers to optimize your system and address these challenges directly 🤓
+> For workloads involving thousands of jobs per second, dedicated queues can offer better efficiency of course. That said, processing such high volumes of emails comes with substantial costs—potentially tens of thousands of euros in cloud expenses. At that scale, investing in a few skilled engineers to optimize your system might prove more cost-effective than relying solely on additional expensive infrastructure.
 
 # What's Next?
 
-In Part 2, we'll use Go to integrate batch processing and parallelism into the system, transforming this reactive SQL-driven pipeline into a scalable, production-ready solution.
+In Part 2, we'll build on this schema to implement a mailer pipeline for processing user lifecycle events.
