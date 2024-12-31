@@ -3,21 +3,21 @@
 
 @include normalize();
 
-$font-family-sans-serif: "IBM Plex Sans", sans-serif;
+$font-family-heading: "IBM Plex Sans", sans-serif;
+$font-family-paragraph: "Noto Sans", sans-serif;
 $font-family-monospace: Menlo, Monaco, Consolas, "Courier New", Courier, "Liberation Mono", monospace;
 
 $gutter-hi: 62px;
 $gutter-low: 20px;
-
 $color-white: #fff;
 $color-white-2: #fdfdfd;
 $color-white-1: #f0f4f5;
 $color-bg: $color-white;
-$color-blue: #0000ff;
-$color-link: $color-blue;
-$color-light-gray: #1f2328;
-$color-text: $color-light-gray;
-$color-gray-4d: #4d5156;
+$color-crimson-red: #990000;
+$color-link: $color-crimson-red;
+$color-dark-gray: #111;
+$color-text: $color-dark-gray;
+$color-gray-4d: #5a5459;
 $color-gray-eee: #eee;
 $color-gray-ddd: #ddd;
 $color-gray-efe: #f1f1f1;
@@ -32,7 +32,7 @@ $color-purple: #d9afff;
 $color-light-purple: #fbf6ff;
 $color-light-purple-2: #ece8f0;
 $color-border: orange;
-$color-header-bg: $color-bg;
+$color-header-bg: $color-white;
 $color-header-link: $color-text;
 
 $default-border-radius: 4px;
@@ -94,7 +94,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: $font-family-sans-serif;
+  font-family: $font-family-heading;
   font-weight: normal;
   width: 100%;
 }
@@ -187,7 +187,7 @@ iframe {
 
   table {
     border-spacing: 0;
-    font-family: $font-family-sans-serif;
+    font-family: $font-family-paragraph;
     font-size: 1.15em;
     line-height: 1.2em;
 
@@ -215,6 +215,7 @@ iframe {
 
     td:nth-child(2) {
       font-size: 0.9em;
+      font-family: $font-family-heading;
       text-align: right;
 
       ul {
@@ -250,6 +251,7 @@ iframe {
   }
 
   .author {
+    font-family: $font-family-heading;
     a {
       color: $color-header-link;
       font-weight: bold;
@@ -262,9 +264,10 @@ iframe {
 }
 
 .index {
-  font-family: $font-family-sans-serif;
+  font-family: $font-family-paragraph;
 
   h1 {
+    font-family: $font-family-heading;
     font-size: 1.2em;
     margin-bottom: 0.5em;
   }
@@ -312,8 +315,7 @@ iframe {
 }
 
 .entry {
-  font-size: 118%;
-  font-family: $font-family-sans-serif;
+  font-family: $font-family-paragraph;
 
   .info {
     margin-bottom: 14px;
@@ -331,9 +333,9 @@ iframe {
 
   .title {
     h1 {
-      font-size: 1.4em;
+      font-size: 1.6em;
       margin-top: 0.4em;
-      margin-bottom: 0.7em;
+      margin-bottom: 0.4em;
     }
   }
 
@@ -354,7 +356,7 @@ iframe {
   }
 
   p {
-    font-family: $font-family-sans-serif;
+    font-family: $font-family-paragraph;
 
     code {
       font-family: $font-family-monospace;
@@ -398,6 +400,7 @@ iframe {
     p {
       color: $color-text;
       font-weight: bold;
+      font-family: $font-family-heading;
     }
 
     code {
@@ -408,7 +411,7 @@ iframe {
   table {
     font-size: 1em;
     width: 100%;
-    font-family: $font-family-sans-serif;
+    font-family: $font-family-paragraph;
     color: $color-text;
     border: 1px solid $color-gray-ddd;
     border-right: none;
@@ -419,7 +422,7 @@ iframe {
 
     thead {
       background-color: $color-gray-eee;
-      font-family: $font-family-sans-serif;
+      font-family: $font-family-paragraph;
 
       tr th {
         font-size: 0.9em;
@@ -511,7 +514,7 @@ iframe {
   }
 
   ul {
-    margin-top: .2em;
+    margin-top: 0;
     margin-bottom: .5em;
   }
 
@@ -525,7 +528,7 @@ iframe {
   }
 
   ul li ul {
-    margin-bottom: 0.2em;
+    margin-bottom: 0;
   }
 
   .footnotes {
