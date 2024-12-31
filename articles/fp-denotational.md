@@ -1,6 +1,6 @@
 ---
-title: Why Haskell Just Works?
-description: Why Haskell Just Works?
+title: Why is Haskell the Way It is?
+description: Why is Haskell the Way It is?
 cover_title: Understanding FP semantics
 tags: haskell,fp,language
 published: 2023-05-30T12:41:00
