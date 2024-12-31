@@ -7,13 +7,11 @@ published: 2024-11-17T00:00:00
 updated: 2024-12-30T00:00:00
 ---
 
-> Unlocking the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine.
+> Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine.
 
->> In this two-part series, we'll build an efficient, database-driven **email notification system** for key user lifecycle events, such as account activation and password resets.
+In this two-part series, we'll build an efficient, database-driven **email notification system** for handling key user lifecycle events, such as account activation and password resets.
 
-The first part focuses on establishing the core workflows of a responsive account management system, using some of PostgreSQL's lesser-known features, such as **triggers** and **notification events**. In the second part, we'll build on this foundation with libpq and the AWS SDK to enable real-time processing and seamless email delivery.
-
-No RabbitMQ, no overcomplicated orchestration—just clean, database-first design. I hope this series inspires you to take a closer look at what PostgreSQL can do beyond storing data and how it can simplify your own systems. Let's dive in.
+The first part sets the stage for event-driven account management by tapping into some of PostgreSQL's lesser-known capabilities, including **triggers** and **notification events**. In the second part, we'll extend this foundation with libpq and the AWS SDK to enable real-time processing and seamless email delivery. Let's dive in.
 
 # Overview
 
@@ -217,7 +215,7 @@ CREATE OR REPLACE FUNCTION trg_after_token_inserted()
     LANGUAGE plpgsql
 AS $$
 BEGIN
-    NOTIFY token_inserted;
+    NOTIFY token_insert;
     RETURN NULL;
 END;
 $$;
@@ -234,7 +232,7 @@ To see the triggers in action, we'll walk through a simple end-to-end example. F
 
 ---
 
-### Step 1: Create a New Account
+### Create a New Account
 
 Insert a new account into the `accounts` table. This should automatically generate an activation token.
 
@@ -257,7 +255,7 @@ SELECT * FROM tokens WHERE account = 1;
 
 ---
 
-### Step 2: Consume the Activation Token
+### Consume the Activation Token
 
 Simulate token consumption by updating the `consumed_at` field in the `tokens` table.
 
@@ -285,7 +283,7 @@ SELECT * FROM tokens WHERE account = 1;
 
 ---
 
-### Step 3: Suspend the Account
+### Suspend the Account
 
 Change the account's status to `suspended` to test the suspension flow.
 
@@ -306,7 +304,7 @@ SELECT * FROM accounts WHERE id = 1;
 
 ---
 
-### Step 4: Unsuspend the Account
+### Unsuspend the Account
 
 Restore the account's status to `active`.
 
@@ -327,14 +325,14 @@ SELECT * FROM accounts WHERE id = 1;
 
 ---
 
-### Step 5: Observe Notifications
+### Observe Notifications
 
 Listen for token creation notifications using `LISTEN`.
 
 In one session:
 
 ```sql
-LISTEN token_inserted;
+LISTEN token_insert;
 ```
 
 In another session, create a new token:
@@ -349,12 +347,12 @@ INSERT INTO tokens (account, action)
 The `LISTEN` session should immediately display a notification like:
 
 ```
-Asynchronous notification "token_inserted" with payload "" received.
+Asynchronous notification "token_insert" with payload "" received.
 ```
 
-# Roll-Your-Own Email Queue
+# Email Queue
 
-Before wrapping up, we'll create a mechanism to retrieve pending user actions and establish a query to manage their progression through a database-driven queue for processing.
+Next, we'll create a mechanism to retrieve pending user actions and establish a query to manage their progression through a database-driven queue for processing.
 
 We use the `jobs` table to maintain a cursor for advancing through pending tokens. This table tracks the last processed token (`last_seq`) for each job type, allowing us to pick up where we left off.
 
@@ -424,7 +422,7 @@ WHERE
     - If `t.action = 'password_recovery'`, the account must be `active`
 
 
-## Advancing the User Action Queue Cursor
+## Advancing the Queue Cursor
 
 Finally, we integrate the pending actions query into a CTE that simultaneously updates the job cursor and retrieves data for the mailer.
 
