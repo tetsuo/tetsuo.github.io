@@ -2,7 +2,7 @@
 title: Querying CouchDB with Human-Readable Syntax
 cover_title: Tango Textual syntax for Mango
 description: Filter and select CouchDB with C-like expressions
-tags: javascript,couchdb,language
+tags: javascript,couchdb,language,database
 published: 2023-01-02T16:20:00
 updated: 2024-11-30T00:00:00
 ---

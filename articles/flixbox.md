@@ -2,7 +2,7 @@
 title: Building a Full-Stack Web App with fp-ts
 description: Building a Full-Stack Web App with fp-ts
 cover_title: flixbox
-tags: typescript,fp
+tags: typescript,fp,react
 published: 2023-01-25T12:41:00
 updated: 2024-11-30T00:00:00
 ---
