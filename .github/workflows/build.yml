@@ -76,15 +76,15 @@ jobs:
     - name: Build favicons
       run: |
         mkdir -p tmp
-        convert -size 2049x2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \
-          -fill '#fff' -stroke '#0000ff' -strokewidth 300 -draw 'circle 1024,1024 1024,153' \
-          -fill 'black' -stroke '#1ba9e4' -strokewidth 290 -draw 'circle 1024,1024 760,760' \
-          -alpha set -background none \
-          -wave 100x1900 \
-          -colorspace sRGB \
-          -distort SRT 8 \
-          tmp/circle_sRGB.png
-        ./generate-favicons.js tmp/circle_sRGB.png
+        convert -size 2049x2049 "xc:rgba(0,0,0,0)" \
+          -set colorspace RGB \
+          -fill none -stroke '#666666' -strokewidth 175 \
+          -draw "line 100,424 1949,424" \
+          -draw "line 100,824 1949,824" \
+          -draw "line 100,1224 1949,1224" \
+          -draw "line 100,1624 1500,1624" \
+          tmp/favicon.png
+        ./generate-favicons.js tmp/favicon.png
 
     - name: Build pages
       run: python generate.py config.json
