@@ -1,8 +1,8 @@
 ---
 title: User Lifecycle Management: Part 1 – database schema
-cover_title: End-to-End Workflow Automation with PostgreSQL and Go: Part 1
-description: Building a reactive account management system with PostgreSQL triggers and real-time notifications
-tags: postgres,mailroom,database,iam,sql
+cover_title: User Lifecycle Management: Part 1 – database schema
+description: Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine
+tags: postgres,database,iam,sql
 published: 2024-11-17T00:00:00
 updated: 2024-12-30T00:00:00
 ---
