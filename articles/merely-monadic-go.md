@@ -11,7 +11,9 @@ updated: 2024-11-30T00:00:00
 
 The introduction of [generics](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)—has greatly simplified implementing functional patterns, making the language more appealing and practical for functional programmers.
 
-Before we dive in, it's worth noting that Go's core strengths are rooted in imperative programming rather than functional abstractions like Monads. For example, if you're only interested in batching or delaying incoming data, the [rate](https://pkg.go.dev/golang.org/x/time/rate) package is likely more suitable than implementing a Monad to manage channels. Nonetheless, exploring monadic patterns provides valuable insights. Let's begin by comparing polymorphism in Haskell and Go.
+Before we dive in, it's worth noting that Go's core strengths are rooted in imperative programming rather than functional abstractions like Monads. Nonetheless, exploring monadic patterns provides valuable insights. Let's begin by comparing polymorphism in Haskell and Go.
+
+>> **Update (December 2024):**  Turns out a [proposal](https://github.com/golang/go/issues/61898) is now underway to introduce the `golang.org/x/exp/xiter` package, which complements the new [range-over-function](https://go.dev/blog/range-functions) (iterators) feature added in Go 1.23. 🥳
 
 ## Polymorphism in Haskell
 
@@ -77,9 +79,7 @@ func Equals[T comparable](x, y T) bool
 
 # What is a Monad?
 
-A Monad defines a way to sequence computations. For example, in Haskell, the `Eq` type class allows equality operations for various types. While commonly used for numbers and strings, the concept of equality can be extended to other data types. For instance, we could define equality for a hypothetical `Fruit` type, allowing comparisons between apples and oranges. Essentially, any type can be compared for equality as long as an appropriate `Eq` implementation exists.
-
-Similarly, the [Monad](https://wiki.haskell.org/All_About_Monads) class introduces the `>>=` (bind) operator:
+The [Monad](https://wiki.haskell.org/All_About_Monads) type class defines a way to sequence computations. It introduces the `>>=` (bind) operator. The only operator which is worthy enough to become part of the Haskell logo.
 
 ```haskell
 class Monad m where
