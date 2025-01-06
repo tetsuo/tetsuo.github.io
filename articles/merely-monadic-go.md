@@ -216,7 +216,7 @@ func main() {
 }
 ```
 
->> For a more comprehensive example, see the [**middleware**](https://github.com/tetsuo/middleware) package, which introduces `Middleware` built on top of the `Result` type.
+> For a more comprehensive example, see the [**middleware**](https://github.com/tetsuo/middleware) package, which introduces `Middleware` built on top of the `Result` type.
 
 # Event
 

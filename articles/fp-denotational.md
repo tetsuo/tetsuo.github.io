@@ -24,7 +24,7 @@ This view of a function is called [denotational](https://en.wikipedia.org/wiki/D
 
 Each expression in Haskell has a meaning rooted in its mathematical equivalent. For example, `fib 1` and `5-4` both represent the integer 1 in the program. We say they _denote_ the same value.
 
->> The collection of such mathematical objects is called the **semantic domain**. Broadly speaking, denotational semantics is concerned with finding domains that represent what programs do; it aims to provide a mathematical foundation for understanding program behavior.
+> The collection of such mathematical objects is called the **semantic domain**. Broadly speaking, denotational semantics is concerned with finding domains that represent what programs do; it aims to provide a mathematical foundation for understanding program behavior.
 
 Notice that the meaning of `fib 2` is derived from the meanings of `fib 1` and `fib 0`. This **compositional** property is essential for building formal proofs of program correctness within denotational semantics.
 
@@ -116,7 +116,7 @@ While the specifics of evaluating these expressions are beyond our scope, the go
 
 # Move language
 
->> Move language specification is adapted from [Eric Walkingshaw](https://web.engr.oregonstate.edu/~walkiner/)'s [CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20).
+> Move language specification is adapted from [Eric Walkingshaw](https://web.engr.oregonstate.edu/~walkiner/)'s [CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20).
 
 This example introduces a simple robot language called "Move", where commands like `go E 3` instruct a robot to move a specified number of steps in a direction.
 
