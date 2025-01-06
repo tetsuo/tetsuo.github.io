@@ -48,7 +48,7 @@
 .codehilite .nt { color: #013f9d; }
 .codehilite .nv { color: #000000 }
 .codehilite .ow { color: #013f9d; }
-.codehilite .w { color: #f6f8fa; text-decoration: underline }
+.codehilite .w { color: transparent; text-decoration: underline }
 .codehilite .mb { color: #0000cf; }
 .codehilite .mf { color: #0000cf; }
 .codehilite .mh { color: #0000cf; }
