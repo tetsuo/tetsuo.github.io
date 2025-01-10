@@ -838,3 +838,9 @@ blockquote.note {
   margin: 0;
   border-radius: 6px;
 }
+
+@media print {
+  .no-print {
+      display: none;
+  }
+}
