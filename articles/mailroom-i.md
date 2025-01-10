@@ -2,16 +2,16 @@
 title: User Lifecycle Management: Part 1 – database schema
 cover_title: User Lifecycle Management: Part 1 – database schema
 description: Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine
-tags: postgres,database,iam,sql
+tags: database,postgres,sql,io,mailroom
 published: 2024-11-17T00:00:00
-updated: 2024-12-30T00:00:00
+updated: 2025-01-10T13:37:00
 ---
 
 > Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine.
 
-In this two-part series, we'll build an efficient, database-driven **email notification system** for handling key user lifecycle events, such as account activation and password resets.
+In this three-part series, we'll build an efficient, **database-driven workflow engine** to streamline user lifecycle actions, such as account activation and password resets.
 
-The first part sets the stage for event-driven account management by tapping into some of PostgreSQL's lesser-known capabilities, including **triggers** and **notification events**. In the second part, we'll extend this foundation with libpq and the AWS SDK to enable real-time processing and seamless email delivery. Let's dive in.
+The first part focuses on the **database schema**, setting up tables and triggers to manage user accounts and their lifecycle states. The [second part](./mailroom-ii.html) introduces a collector to handle event processing, and the third part builds on that to implement an email sender. Let's dive in.
 
 # Overview
 
@@ -29,6 +29,8 @@ Key components include:
 Here's the sequence diagram outlining the workflows:
 
 ![Workflows](./images/mercury-postgresql-workflows.svg)
+
+_The admin isn't a key focus for this series but is still worth mentioning for context._
 
 # Accounts
 
@@ -506,4 +508,4 @@ However, if you're certain that only a single consumer runs this query at any gi
 
 # What's Next?
 
-In Part 2, we'll build on this schema to implement a mailer pipeline for processing user lifecycle events.
+Building on the job queue, [**Part 2**](./mailroom-ii.html) walks through creating a **collector** to process tokens in real-time and prepare them for email delivery.
