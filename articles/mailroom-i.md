@@ -2,7 +2,7 @@
 title: User Lifecycle Management: Part 1 – database schema
 cover_title: User Lifecycle Management: Part 1 – database schema
 description: Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine
-tags: database,postgres,sql,io,mailroom
+tags: database,postgres,sql,mailroom,iam
 published: 2024-11-17T00:00:00
 updated: 2025-01-10T13:37:00
 ---
