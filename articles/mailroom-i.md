@@ -1,17 +1,15 @@
 ---
-title: User Lifecycle Management: Part 1 – database schema
-cover_title: User Lifecycle Management: Part 1 – database schema
+title: User Lifecycle Automation: Part 1 – database schema
+cover_title: User Lifecycle Automation: Part 1 – database schema
 description: Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine
 tags: database,postgres,sql,mailroom,iam
 published: 2024-11-17T00:00:00
-updated: 2025-01-10T13:37:00
+updated: 2025-01-20T13:37:00
 ---
 
-> Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow automation engine.
+> Implementing a **database-driven workflow engine** to streamline account lifecycle operations, such as activation and password resets.
 
-In this three-part series, we'll build an efficient, **database-driven workflow engine** to streamline user lifecycle actions, such as account activation and password resets.
-
-The first part focuses on the **database schema**, setting up tables and triggers to manage user accounts and their lifecycle states. The [second part](./mailroom-ii.html) introduces a collector to handle event processing, and the third part builds on that to implement an email sender. Let's dive in.
+The first part (this post) focuses on the **database schema**, setting up tables and triggers to manage user accounts and their lifecycle states. The [second part](./mailroom-ii.md) introduces a collector to handle event processing, and the third part builds on that to implement an email sender. Let's dive in.
 
 # Overview
 
@@ -352,6 +350,9 @@ The `LISTEN` session should immediately display a notification like:
 Asynchronous notification "token_insert" with payload "" received.
 ```
 
+> `psql` might need a little nudge (empty `;`) to display notifications.
+
+
 # Email Queue
 
 Next, we'll create a mechanism to retrieve pending user actions and establish a query to manage their progression through a database-driven queue for processing.
@@ -396,20 +397,21 @@ SELECT
 FROM
     jobs
     JOIN tokens t
-    ON
-        t.id > jobs.last_seq
+        ON t.id > jobs.last_seq
         AND t.expires_at > EXTRACT(EPOCH FROM NOW())
         AND t.consumed_at IS NULL
         AND t.action IN ('activation', 'password_recovery')
     JOIN accounts a
-    ON
-        a.id = t.account
-        AND ((t.action = 'activation'
-                AND a.status = 'provisioned')
-            OR (t.action = 'password_recovery'
-                AND a.status = 'active'))
+    ON a.id = t.account
+    AND (
+      (t.action = 'activation' AND a.status = 'provisioned')
+      OR (t.action = 'password_recovery' AND a.status = 'active')
+    )
 WHERE
     jobs.job_type = 'mailroom'
+ORDER BY
+    id ASC
+LIMIT 10
 ```
 
 **Joins & Filters:**
@@ -424,30 +426,37 @@ WHERE
     - If `t.action = 'password_recovery'`, the account must be `active`
 
 
-## Advancing the Queue Cursor
+## Dequeueing Pending Jobs
 
 Finally, we integrate the pending actions query into a CTE that simultaneously updates the job cursor and retrieves data for the mailer.
 
 ```sql
 WITH token_data AS (
     -- Insert SELECT query here
-)
-UPDATE
+),
+updated_jobs AS (
+  UPDATE
     jobs
-SET
+  SET
     last_seq = (SELECT MAX(id) FROM token_data)
-WHERE
-    job_type = 'mailroom'
-    AND EXISTS (SELECT 1 FROM token_data)
-RETURNING
-    (SELECT json_agg(token_data) FROM token_data);
+  WHERE
+    EXISTS (SELECT 1 FROM token_data)
+  RETURNING last_seq
+)
+SELECT
+  td.action,
+  td.email,
+  td.login,
+  td.secret,
+  td.code
+FROM
+  token_data td
 ```
 
 By combining the data retrieval and cursor update in a single transaction, we ensure that either both actions succeed or neither does.
 
 - The `UPDATE` statement advances the `last_seq` in the `jobs` table to the maximum id of the tokens we just retrieved. This ensures that in subsequent runs, these tokens won't be processed again.
 - The `WHERE` clause includes an `EXISTS` condition to ensure that we only update the `last_seq` if there are tokens to process.
-- The `RETURNING` clause outputs the token data as a JSON array, which can be consumed by the mailer system to send out emails.
 
 ## Index Recommendations
 
@@ -469,13 +478,13 @@ Indexing Strategy:
 
 While this system is robust for small- to medium-scale use cases, it's important to acknowledge its limitations:
 
-## Polling-Based Processing
+### Polling-Based Processing
 
 The notification system relies on periodic polling of the database (`tokens.id > last_seq`) to retrieve new tasks. This approach can be inefficient when there are no new tokens to process, as it consumes resources without any real work.
 
-_We'll address this further in the second part._
+_We'll address this further in the [second part](./mailroom-ii.md)._
 
-## Single-Consumer Queue
+### Single-Consumer Queue
 
 When you update `last_seq`, PostgreSQL locks the `jobs` row being updated, preventing other processes from modifying it until the transaction is complete. However, PostgreSQL **does not prevent multiple processes from attempting to read the same cursor** before one updates it. This can lead to duplicate processing if you're not careful.
 
@@ -502,10 +511,12 @@ If there's any chance of concurrent execution, using `FOR UPDATE` is essential:
    - Consumer A updates `last_seq` to, say, `150` and releases the lock.
    - Consumer B then reads the updated `last_seq = 150`, processing the next set of tokens.
 
-> Alternatively, to efficiently handle **multiple consumers**, you might consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe fashion.
+#### Multiple Consumers
+
+Alternatively, to efficiently handle **multiple consumers**, you might consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe fashion.
 
 However, if you're certain that only a single consumer runs this query at any given time, I recommend sticking with the `jobs` table as a single point of reference. This approach avoids the need for complex locking mechanisms, and you can further enhance the `jobs` table to keep a history of job executions, parameters, and statuses, which can be valuable for auditing purposes.
 
 # What's Next?
 
-Building on the job queue, [**Part 2**](./mailroom-ii.html) walks through creating a **collector** to process tokens in real-time and prepare them for email delivery.
+In, [**Part 2**](./mailroom-ii.md) we'll build a collector to process tokens in real-time for email delivery.

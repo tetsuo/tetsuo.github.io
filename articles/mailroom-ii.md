@@ -1,15 +1,17 @@
 ---
-title: User Lifecycle Management: Part 2 – token collector
-cover_title: User Lifecycle Management: Part 2 – token collector
+title: User Lifecycle Automation: Part 2 – batch processing events
+cover_title: User Lifecycle Automation: Part 2 – batch processing events
 description: See in action how triggers, notifications, and libpq async calls unite for token batching with backpressure
 tags: c,mailroom,io,postgres,database
 published: 2025-01-10T14:47:00
-updated: 2025-01-12T09:14:00
+updated: 2025-01-20T13:37:00
 ---
 
-> Harnessing PostgreSQL notifications and libpq async API to drive a real-time token processing pipeline with backpressure.
+> Continuing from the previous post, this installment explores how to incorporate PostgreSQL notifications with backpressure to efficiently batch tokens.
 
-[Previously](/mailroom-i.html), we explored triggers in PostgreSQL and their role in managing a token queue. Although we lightly incorporated **NOTIFY** statements, we haven't fully examined their power yet. In this segment, we'll bring **notification events** into focus and build a **collector** to handle them.
+[Previously](./mailroom-i.md), we examined PostgreSQL triggers and their role in managing automated workflows. Although we briefly introduced **NOTIFY** statements, their full potential has yet to be explored. In this segment, we'll bring **notification events** into focus and develop a **collector** to process the tokens accumulating in the database.
+
+## Getting Started
 
 #### Setting Up Your Environment
 
@@ -33,7 +35,7 @@ psql -d mailroom < 0_init.up.sql
 
 Alternatively, you can use [go-migrate](https://github.com/golang-migrate/) which is often my preference.
 
-#### Inspect the Initial State
+#### Inspect the Initial State of the Database
 
 Before adding any mock data, let's take a look at the initial state of the `jobs` table:
 
@@ -50,7 +52,7 @@ You should see one row with `job_type` set to `mailroom` and `last_seq` set to z
 (1 row)
 ```
 
-#### Start Listening for Updates
+#### Listening for Notifications
 
 In a separate terminal, connect to the database again:
 
@@ -115,7 +117,7 @@ Asynchronous notification "token_insert" received from server process with PID 5
 
 #### Dequeuing Pending Jobs
 
-These notifications indicate that it's time to execute the query we defined in [Part 1](./mailroom-i.html):
+These notifications indicate that it's time to execute the query we defined in [Part 1](./mailroom-i.md):
 
 ```sql
 WITH token_data AS (
@@ -167,8 +169,8 @@ FROM
 
 ... which accomplishes two things:
 
-1. **Retrieves tokens generated after the `last_seq` along with the corresponding user data**
-2. **Updates the `last_seq` value to avoid selecting duplicates later**
+1. **Retrieves tokens generated after the `last_seq` along with the corresponding user data.**
+2. **Updates the `last_seq` value to avoid selecting duplicates later.**
 
 In other words, this query retrieves a batch of tokens and advances the cursor:
 
@@ -193,11 +195,17 @@ secret | \xa9763eec727835bd97b79018b308613268d9ea0db70493fd212771c9b7c3bcb2
 code   | 31620
 ```
 
-# Collector: Design
+# Overview
 
-Without notifications, we would need to query the database periodically to check for any pending jobs (like the batch above). While this can be okay for high-traffic scenarios, if token insertions are rare, continuous polling just eats up resources. By listening for database events and counting them instead, we can build a **collector** that responds in near real-time, knows exactly how many rows to dequeue, and queries the database only when there's actual work to do.
+The **collector** subscribes to a PostgreSQL notification channel, tracks incoming events, and executes a query when either a row limit (based on the number of received notifications) or a timeout is reached.
 
-On the flip side, the collector must also account for constraints imposed by our email provider—and, by extension, our budget. For instance, with Amazon SES charging **$0.10 per 1,000 emails**, a monthly budget of **$100** translates to:
+### Real-time Responsiveness
+
+Instead of continuously polling the database for pending jobs, the collector tracks notifications. This enables it to determine exactly how many rows to dequeue and query the database only when there's actual work to do.
+
+### Responsiveness vs. Budget Constraints
+
+However, the collector must also account for constraints imposed by our email provider—and, by extension, our budget. For instance, with Amazon SES charging **$0.10 per 1,000 emails**, a monthly budget of **$100** translates to:
 
 - **1,000,000 emails per month,**
 - **33,333 emails per day,**
@@ -213,9 +221,9 @@ At this rate, we would need to buffer for approximately **27 seconds** for batch
 
 ... which assumes we are operating at full capacity within our budget.
 
-## Pull-based Flow-control
+## Batch Processing and Flow-Control
 
-To manage these considerations, the system implements a form of **backpressure**. It doesn't do so in a "push-back to the producer" sense that some streaming frameworks (like Kafka) might use, but rather by _pulling_ tokens from the database in controlled batches and only fetching more when the collector is ready. In other words, the collector imposes a flow-control mechanism on itself to avoid overwhelming the downstream (email-sending) component.
+To accommodate these constraints, and prevent overwhelming downstream components (e.g., the email sender) we'll implement a form of **backpressure** by pulling tokens from the database in controlled batches, fetching more only when the collector is ready.
 
 Here's how it works in practice:
 
@@ -229,7 +237,7 @@ The collector queries the database for at most **N** tokens at a time (where **N
 
 > The time to wait for accumulating enough notifications to fill a batch.
 
-Instead of hammering the database every millisecond or immediately after a few notifications arrive, the collector also waits up to **X** milliseconds before processing tokens (where **X** is the **batch timeout**). If fewer than the batch limit have arrived during that window, the collector will still dequeue whatever did arrive—but it won't keep pulling more immediately. In effect, this ensures that surges of tokens are smoothed out over time (i.e., "batched").
+Instead of hammering the database every millisecond or immediately after a few notifications arrive, the collector also waits up to **X** milliseconds before processing tokens (where **X** is the **batch timeout**). If fewer than the batch limit have arrived during that window, the collector will still dequeue whatever did arrive—but it won't keep pulling more immediately. In effect, this sets an upper limit on how long new tokens can linger around before being handed over to the email sender.
 
 #### Example
 
@@ -243,57 +251,18 @@ This means:
 - If 10 notifications arrive in quick succession, the batch is triggered immediately.
 - If fewer than 10 arrive over 30 seconds, the batch is triggered when the timeout ends.
 
-> In many cases, users are fine waiting a short time for an email to arrive. Personally, I wouldn't be too concerned if my password recovery email arrived within **30 seconds**, though waiting a full minute might feel excessive. Note that this effectively sets an upper limit on how long new tokens can linger around before being handed over to the email sender, the batch timeout.
-
-# Collector: Implementation
+# Implementation
 
 The collector is written in C and interacts with PostgreSQL using [libpq](https://www.postgresql.org/docs/current/libpq.html).
 
 ## Connecting to PostgreSQL
 
-The query from [Part 1](./mailroom-i.html) lives in the [`db.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/db.c#L20) file, along with other DB-related functions. When the collector first connects, it issues a `LISTEN` command on the specified channel and creates the prepared statements for subsequent queries.
+The query from [Part 1](./mailroom-i.md) lives in the [`db.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/db.c#L20) file, along with other DB-related functions. When the collector first connects, it issues a `LISTEN` command on the specified channel and creates the prepared statements for subsequent queries.
 
 [`db.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/db.c#L299)
 
 ```c
-// Creates a prepared statement to be reused for efficient database queries.
-static bool db_prepare_statement(PGconn *conn, const char *stmt_name, const char *query)
-{
-  PGresult *res = PQprepare(conn, stmt_name, query, 2, NULL);
-  if (PQresultStatus(res) != PGRES_COMMAND_OK)
-  {
-    PQclear(res);
-    return false;
-  }
-  PQclear(res);
-  return true;
-}
-
-// Executes a LISTEN command on a specified channel to receive database
-// notifications in real time.
-static bool db_listen(PGconn *conn, const char *channel)
-{
-  char *escaped_channel = PQescapeIdentifier(conn, channel, strlen(channel));
-  if (!escaped_channel)
-  {
-    return false;
-  }
-
-  size_t command_len = strlen("LISTEN ") + strlen(escaped_channel) + 1;
-  char listen_command[command_len];
-  snprintf(listen_command, command_len, "LISTEN %s", escaped_channel);
-  PQfreemem(escaped_channel);
-
-  PGresult *res = PQexec(conn, listen_command);
-  if (PQresultStatus(res) != PGRES_COMMAND_OK)
-  {
-    PQclear(res);
-    return false;
-  }
-  PQclear(res);
-
-  return true;
-}
+#include <libpq-fe.h>
 
 // Establishes a connection to the database, listens for notifications, and
 // creates prepared statements.
@@ -304,164 +273,40 @@ bool db_connect(PGconn **conn, const char *conninfo, const char *channel)
   return PQstatus(*conn) == CONNECTION_OK &&
          db_listen(*conn, channel) &&
          db_prepare_statement(*conn, POSTGRES_HEALTHCHECK_PREPARED_STMT_NAME, "SELECT 1") &&
-         db_prepare_statement(*conn, POSTGRES_DATA_PREPARED_STMT_NAME, token_data);
+         db_prepare_statement(*conn, POSTGRES_DATA_PREPARED_STMT_NAME, query);
 }
 ```
 
 ## Fetching & Serializing Email Payloads
 
-When notifications arrive, the collector executes the query to fetch tokens in batches. Then it writes the results directly to stdout. Processing continues until it has exhausted the queued tokens or an error occurs.
+When notifications arrive, the collector fetches tokens in batches and writes the results **directly to stdout;** processing continues until it has exhausted the queued tokens or an error occurs. The [`db_dequeue()`](https://github.com/tetsuo/mailroom/blob/master/collector/src/db.c#L234C1-L252C2) function handles this logic.
 
-[`db.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/db.c#L105C1-L224C1)
+The results are output as **line-delimited batches**, formatted as **comma-separated values** in the following order:
 
-```c
-// Fetches and processes email payloads from the database.
-static int _db_dequeue(PGconn *conn, const char *queue, int limit)
-{
-  static const char *params[2];
-  static char limitstr[12];
-
-  PGresult *res = NULL;
-  int action_col, email_col, login_col, code_col, secret_col;
-  char *action, *email, *login, *code, *secret_text;
-  unsigned char *secret = NULL;
-  size_t secret_len;
-  int nrows;
-
-  static char signature_buffer[SIGNATURE_MAX_INPUT_SIZE];  // Input to sign
-  static unsigned char hmac_result[HMAC_RESULT_SIZE];      // HMAC output
-  static unsigned char combined_buffer[CONCATENATED_SIZE]; // secret + HMAC
-  static char base64_encoded[BASE64_ENCODED_SIZE];         // Base64-encoded output
-
-  size_t hmac_len = 0;
-
-  snprintf(limitstr, sizeof(limitstr), "%d", limit);
-  params[0] = queue;
-  params[1] = limitstr;
-
-  res = PQexecPrepared(conn, POSTGRES_DATA_PREPARED_STMT_NAME, 2, params, NULL, NULL, 0);
-  if (PQresultStatus(res) != PGRES_TUPLES_OK)
-  {
-    log_printf("ERROR: query execution failed: %s", PQerrorMessage(conn));
-    PQclear(res);
-    return -1;
-  }
-
-  nrows = PQntuples(res);
-  if (nrows == 0)
-  {
-    PQclear(res);
-    return 0;
-  }
-
-  action_col = PQfnumber(res, "action");
-  email_col = PQfnumber(res, "email");
-  login_col = PQfnumber(res, "login");
-  code_col = PQfnumber(res, "code");
-  secret_col = PQfnumber(res, "secret");
-
-  if (action_col == -1 || email_col == -1 || login_col == -1 ||
-      code_col == -1 || secret_col == -1)
-  {
-    log_printf("FATAL: missing columns in the result set");
-    PQclear(res);
-    return -2;
-  }
-
-  size_t signature_len;
-
-  for (int i = 0; i < nrows; i++)
-  {
-    action = PQgetvalue(res, i, action_col);
-    email = PQgetvalue(res, i, email_col);
-    login = PQgetvalue(res, i, login_col);
-    code = PQgetvalue(res, i, code_col);
-    secret_text = PQgetvalue(res, i, secret_col);
-
-    secret = PQunescapeBytea((unsigned char *)secret_text, &secret_len);
-    if (!secret || secret_len != 32)
-    {
-      log_printf("WARN: skipping row; PQunescapeBytea failed or invalid secret length");
-      continue;
-    }
-
-    if (strcmp(action, "activation") == 0)
-    {
-      printf("%d", 1);
-    }
-    else if (strcmp(action, "password_recovery") == 0)
-    {
-      printf("%d", 2);
-    }
-    else
-    {
-      printf("%d", 0);
-    }
-
-    printf(",%s,%s,", email, login);
-
-    signature_len = construct_signature_data(signature_buffer, action, secret, code);
-
-    hmac_len = HMAC_RESULT_SIZE;
-    if (!hmac_sign(signature_buffer, signature_len, hmac_result, &hmac_len))
-    {
-      log_printf("WARN: skipping row; HMAC signing failed");
-      PQfreemem(secret);
-      continue;
-    }
-
-    memcpy(combined_buffer, secret, 32);
-    memcpy(combined_buffer + 32, hmac_result, hmac_len);
-
-    if (!base64_urlencode(base64_encoded, sizeof(base64_encoded), combined_buffer, 32 + hmac_len))
-    {
-      log_printf("WARN: skipping row; base64 encoding failed");
-      PQfreemem(secret);
-      continue;
-    }
-
-    printf("%s,%s", base64_encoded, code);
-
-    PQfreemem(secret);
-
-    if (i < nrows - 1)
-    {
-      printf(",");
-    }
-  }
-
-  printf("\n");
-  fflush(stdout);
-  PQclear(res);
-
-  return nrows;
-}
-
-// Ensure no more than the batch limit is dequeued.
-int db_dequeue(PGconn *conn, const char *queue, int remaining, int max_chunk_size)
-{
-  int result = 0;
-  int chunk_size = 0;
-  int total = 0;
-  while (remaining > 0)
-  {
-    chunk_size = remaining > max_chunk_size ? max_chunk_size : remaining;
-    result = _db_dequeue(conn, queue, chunk_size);
-    if (result < 0)
-    {
-      return result;
-    }
-    total += result;
-    remaining -= chunk_size;
-    sleep_microseconds(10000); // 10ms
-  }
-  return total;
-}
+```
+action,email,username,secret,code
 ```
 
-### Signing & Verifying Tokens
+This schema is repeated for each row in the batch, all included in a single line.
 
-One key transformation during dequeue operation involves signing the token's `secret` with HMAC-SHA256 and encoding it in Base64 URL-safe format.
+- `action`: Numeric representation of the email action type (e.g., `1` for activation, `2` for password recovery).
+- `email`: Recipient's email address.
+- `username`: Recipient's login name.
+- `secret`: A base64 URL-encoded string containing the signed token.
+- `code`: Optional numeric code (e.g., for password recovery).
+
+#### Example
+
+Here, the first line contains a batch of three actions, including both password recovery and account activation actions. The second line contains a single action for account activation.
+
+```
+2,john.doe123@fakemail.test,johndoe,0WEKrnjY_sTEqogrR6qsp7r7Vg4SQ_0iM_1La5hHp5p31nbkrHUBS0Cz9T24iBDCk6CFqO7tJTihpsOVuHYgLg,35866,1,jane.smith456@notreal.example,janesmith,BfQXx31qfY2IJFTtzAp21IdeW0dDIxUT1Ejf3tYJDukNsfaxxOfldwL-lEfVy4SEkZ_v18rf-EWsvWXH5qgvIg,24735,1,emma.jones789@madeup.mail,emmajones,jxrR5p72UWTQ8JiU2DrqjZ-K8L4t8i454S9NtPkVn4-1-bin3ediP0zHMDQU2J_iIyzH4XmNtzpXZhjV0n5xcA,25416
+1,sarah.connor999@unreal.mail,resistance1234,zwhCIthd12DqpQSGB57S9Ky-OXV_8H0e8aHOv_kWoggIuAZ2sc-aQVpIoQ-M--PjwVfdIIxiXkv_WjRjGI57zA,38022
+```
+
+## Signing & Verifying Tokens
+
+During the dequeue operation, the token's secret is signed with HMAC-SHA256 and encoded in a URL-safe Base64 format.
 
 The encoded output contains:
 
@@ -500,17 +345,16 @@ static size_t construct_signature_data(char *output, const char *action,
 
 This step ensures authenticity checks can happen on the frontend without needing an immediate database call. If you'd like to see how the backend verifies these secrets, there is a [`verifyHmac.js`](https://github.com/tetsuo/mailroom/blob/master/etc/verifyHmac.js) script in the repo for reference.
 
-> **Remember to handle expired tokens.** One method is to include the `expires_at` value so you can check validity without a DB lookup. But if tokens remain valid for 15 minutes, a more thorough approach is to **cache consumed tokens** until they naturally expire, preventing reuse during their validity period.
-
-> **Also, remember to rotate your signing key often.**
+- **Be sure to handle expired tokens.** One approach is to include the `expires_at` value so you can check validity without a DB lookup. But if tokens remain valid for 15 minutes, a more thorough approach is to **cache consumed tokens** until they naturally expire, preventing reuse during their validity period.
+- **Also, regularly rotate your signing key.**
 
 ## Putting It All Together
 
 #### Environment Variables
 
-In [`main.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/main.c), you'll see references to environment variables like `MAILROOM_BATCH_TIMEOUT`, `MAILROOM_BATCH_LIMIT`, and `MAILROOM_SECRET_KEY` (a 64-character hex string). Consult the [`README`](https://github.com/tetsuo/mailroom/blob/master/README.md#environment-variables) file for the full list.
+In [`main.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/main.c), you'll see references to environment variables like `MAILROOM_BATCH_TIMEOUT`, `MAILROOM_BATCH_LIMIT`, and `MAILROOM_SECRET_KEY` (a 64-character hex string). Refer to the [`README`](https://github.com/tetsuo/mailroom/blob/master/README.md#environment-variables) file for the full list.
 
-### The Loop
+#### Loop Overview
 
 At a high level, the main loop repeatedly:
 
@@ -844,7 +688,7 @@ After the connection is killed, `select()` wakes up, causing `PQconsumeInput()` 
 
 # Further Improvements
 
-It's important to note that the **mailroom** system we are building is relatively basic. Industry-grade event streaming solutions often employ more sophisticated batching strategies.
+The **mailroom** system we are building is relatively basic. Advanced streaming solutions often employ more sophisticated batching strategies.
 
 #### Priority Queues
 
