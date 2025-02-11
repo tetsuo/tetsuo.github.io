@@ -1,0 +1,57 @@
+<html>
+  <head> </head>
+  <script type="module">
+    import drawP167 from './cubiclimit.js'
+
+    function throttle(fn, time) {
+      let timeout = null
+      return function () {
+        if (timeout) return
+        const context = this
+        const args = arguments
+        const later = () => {
+          fn.call(context, ...args)
+          timeout = null
+        }
+        timeout = setTimeout(later, time)
+      }
+    }
+
+    function redraw() {
+      const c = document.createElement('canvas')
+      c.id = 'root'
+      const w = window.innerWidth - 44
+      c.setAttribute('width', w)
+      c.setAttribute('height', w)
+      c.style.border = '1px solid #fff'
+      const d = document.querySelector('#container')
+      d.style.margin = "0px"
+      d.style.padding = "20px"
+      if (d) {
+        d.appendChild(c)
+        drawP167('root', '#1c1b17')
+      } else {
+        console.error('could not find #container element')
+      }
+      window.dispatchEvent(new MessageEvent("redraw"))
+      window.top.postMessage('redraw:cubiclimit')
+    }
+
+    function onresize() {
+      const d = document.querySelector('#container')
+      if (d && d.childNodes.length > 0) {
+        d.removeChild(d.childNodes[0])
+        redraw()
+      } else {
+        console.error('could not find #container element')
+      }
+    }
+
+    window.addEventListener('resize', throttle(onresize, 250))
+
+    window.addEventListener("load", redraw)
+  </script>
+  <body style="margin: 0; padding: 0; background-color: #1c1b17">
+    <div id="container"></div>
+  </body>
+</html>
