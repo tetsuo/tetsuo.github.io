@@ -999,7 +999,7 @@ const renderDrawing = (d: D.Drawing): Micro<void, never, Render> =>
 
 ### Transformation Composition
 
-The recursive function `go` walks through the `Drawing` DSL, updating the transform matrix (with operations like Scale, Rotate, and Translate) as it recurses through nested drawings.
+The recursive function `go` walks through a `Drawing`, updating the transform matrix (with operations like `Scale`, `Rotate`, and `Translate`) as it recurses through nested drawings.
 
 ### Style and Context Management
 
@@ -1014,7 +1014,7 @@ The helper `renderSubPath` converts a sub-path (a list of 3D points) into the co
 The final step is the `render` function, which "plugs in" a real `CanvasRenderingContext2D` implementation by providing a concrete instance of the **Render** service. This function builds the effect (from `renderDrawing`) and then supplies a real implementation that calls the actual Canvas API:
 
 ```ts
-export const render = (d: D.Drawing, ctx: CanvasRenderingContext2D): Micro<void, never, never> =>
+const render = (d: D.Drawing, ctx: CanvasRenderingContext2D): Micro<void, never, never> =>
   provideService(renderDrawing(d), Render, {
     fill(fillRule) {
       ctx.fill(fillRule)
