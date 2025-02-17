@@ -1,8 +1,8 @@
 ---
 title: Batch Processing Account Lifecycle Events from PostgreSQL
 cover_title: Batch Processing Account Lifecycle Events from PostgreSQL
-description: Unlock the hidden potential of PostgreSQL as a simple yet powerful workflow engine
-tags: database,postgres,c,sql,io,iam,rust
+description: Manage account lifecycles and batch-process operations—such as activation and password resets—using PostgreSQL triggers and notifications
+tags: database,c,sql,rust
 published: 2024-11-17T00:00:00
 updated: 2025-02-11T13:37:00
 ---

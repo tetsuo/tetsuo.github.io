@@ -2,7 +2,7 @@
 title: Experimenting with Functional Abstractions in Go
 cover_title: Experimenting with Functional Abstractions in Go
 description: Experimenting with Functional Abstractions in Go
-tags: go,fp,lang,haskell
+tags: go,fp,lang
 published: 2024-08-30T00:00:00
 updated: 2025-02-16T00:00:00
 ---

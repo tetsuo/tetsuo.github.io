@@ -1,8 +1,8 @@
 ---
 title: Recreating Manfred Mohr's Cubic Limit Series with Effect
 cover_title: Recreating Manfred Mohr's Cubic Limit Series with Effect
-description: Functional Remake of Cubic Limit Series by Manfred Mohr
-tags: typescript,effect,fp,art
+description: Recreating Manfred Mohr's iconic artwork Cubic Limit, P-161 with TypeScript and Effect using a fully functional rendering pipeline
+tags: typescript,fp
 published: 2025-02-08T14:55:00
 updated: 2025-02-08T14:55:00
 ---

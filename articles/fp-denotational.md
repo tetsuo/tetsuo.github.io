@@ -1,8 +1,8 @@
 ---
 title: Why is Haskell the Way It is?
-description: Why is Haskell the Way It is?
-cover_title: Understanding FP semantics
-tags: haskell,fp,language
+description: This article delves into Haskell's use of denotational semantics, a mathematical approach to defining program logic
+cover_title: Why is Haskell the Way It is?
+tags: haskell,fp,lang
 published: 2023-05-30T12:41:00
 updated: 2024-11-13T00:00:00
 ---
