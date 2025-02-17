@@ -1,13 +1,13 @@
 ---
-title: Why is Haskell the Way It is?
-description: This article delves into Haskell's use of denotational semantics, a mathematical approach to defining program logic
-cover_title: Why is Haskell the Way It is?
+title: Thinking in Haskell
+description: This post explores the basics of Haskell's denotational semantics and how it gives functions a precise mathematical meaning to reason about program correctness
+cover_title: Thinking in Haskell
 tags: haskell,fp,lang
 published: 2023-05-30T12:41:00
-updated: 2024-11-13T00:00:00
+updated: 2025-02-16T00:00:00
 ---
 
-> This article delves into Haskell's use of denotational semantics, a mathematical approach to defining program logic.
+> This post introduces the basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell.
 
 In Haskell, a **function** is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example demonstrating the Fibonacci sequence.
 
@@ -20,17 +20,13 @@ fib n = fib (n-1) + fib (n-2)
 
 This defines `fib` as a function that takes an integer `n` and returns the nth Fibonacci number. Each case acts as an equation, establishing the relationship between input and output. `fib n` runs recursively until the base case is reached and a sum is returned.
 
-This view of a function is called [denotational](https://en.wikipedia.org/wiki/Denotational_semantics). We define its "meaning" by describing the relationships between inputs and outputs. This contrasts with [operational semantics](https://en.wikipedia.org/wiki/Operational_semantics), where functions are seen as sequences of _operations_ executed over time.
+This view of a function is called **denotational**. We define its "meaning" by describing the relationships between inputs and outputs, as opposed to **operational semantics**, where functions are seen as sequences of _operations_ executed over time.
 
-Each expression in Haskell has a meaning rooted in its mathematical equivalent. For example, `fib 1` and `5-4` both represent the integer 1 in the program. We say they _denote_ the same value.
+In this framework, every expression in Haskell corresponds to a mathematical object. For instance, both `fib 1` and `5-4` _denote_ the same integer value, 1. This property is a cornerstone of **referential transparency**, meaning that any expression can be replaced by its corresponding value without altering the overall behavior of the program.
 
-> The collection of such mathematical objects is called the **semantic domain**. Broadly speaking, denotational semantics is concerned with finding domains that represent what programs do; it aims to provide a mathematical foundation for understanding program behavior.
+# Referential Transparency
 
-Notice that the meaning of `fib 2` is derived from the meanings of `fib 1` and `fib 0`. This **compositional** property is essential for building formal proofs of program correctness within denotational semantics.
-
-To maintain compositionality, an expression must be [referentially transparent](https://en.wikipedia.org/wiki/Referential_transparency), meaning it can be replaced with its equivalent value without altering the program's outcome.
-
-For example, a function that adds two numbers is referentially transparent. In contrast, a function that divides a number by another is not, as the divisor could be zero.
+To illustrate referential transparency, consider a simple addition function. It is fully referentially transparent because it always returns a value based solely on its inputs. Contrast this with a division function:
 
 ```haskell
 > 10 `div` 2
@@ -39,40 +35,33 @@ For example, a function that adds two numbers is referentially transparent. In c
 *** Exception: divide by zero
 ```
 
-Dividing by zero is undefined and results in an exception—a side effect.
+Here, division by zero causes an exception. The function itself is referentially transparent only when it is total—that is, defined for every possible input. In the case of division, the operation is **partial** (it does not provide an output for every input), which is why we see an exception when the divisor is zero.
 
-### Dealing with Side Effects
-
-To handle division by zero, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. It can either hold a value (`Just a`) or indicate no value (`Nothing`). This ensures a _total_ division function that always returns a result, avoiding exceptions.
+To address partiality, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. This type can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`), ensuring that functions like division become total functions:
 
 ```haskell
 data Maybe a = Just a | Nothing
-```
 
-> This type is also known as an [Algebraic Data Type](https://en.wikipedia.org/wiki/Algebraic_data_type) (ADT):
->
-> * [Sum types](https://en.wikipedia.org/wiki/Tagged_union) represent _alternation_: `A | B` means `A` or `B` but not both.
-> * [Product types](https://en.wikipedia.org/wiki/Product_type) represent _combination_: `A B` means `A` and `B` together.
-
-The improved division function avoids side effects, returning a result based solely on its inputs:
-
-```haskell
 safeDiv :: Integral a => a -> a -> Maybe a
-safeDiv a 0 = Nothing
+safeDiv _ 0 = Nothing
 safeDiv a b = Just (a `div` b)
 ```
 
-By eliminating side effects and state mutations, functional languages like Haskell, PureScript, and Scala create environments where function behavior is fully predictable and [_pure_](https://en.wikipedia.org/wiki/Pure_function), ensuring referential transparency.
+By eliminating exceptions and other side effects, languages like Haskell ensure that every function has a well-defined mathematical meaning, which brings us to the heart of our discussion.
 
-# Denotational semantics
+# Denotational Semantics in a Nutshell
 
-Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any **expression** inside, and the box gives you its corresponding **value**.
+Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
 
-This can be represented as `⟦E⟧ : V`, where `E` represents an expression (syntactic object) and `V` is the abstract value (e.g., a number or function).
+```
+⟦E⟧ : V
+```
 
-#### Example: Calculator syntax
+this means that the **expression** `E` is assigned a **value** in the semantic domain `V` (which could be numbers, functions, etc.).
 
-Consider some arithmetic expressions in prefix notation:
+### Example: A Calculator in Prefix Notation
+
+Consider arithmetic expressions written in prefix notation:
 
 ```
 ⟦add 1 2⟧ = 1 + 2
@@ -81,7 +70,7 @@ Consider some arithmetic expressions in prefix notation:
  ⟦neg 42⟧ = -42
 ```
 
-We can define the **abstract syntax** of these expressions using [Backus-Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form):
+We can define the **abstract syntax** for these expressions using Backus-Naur Form (BNF):
 
 ```
 n ∈ Int ::= ... | -1 | 0 | 1 | 2 | ...
@@ -91,41 +80,42 @@ e ∈ Exp ::= add e e
          |  n
 ```
 
-Here, all expressions evaluate to integers, making the **semantic domain** the set of all integers (ℤ). This definition aligns with how Haskell's [numerals-base](https://hackage.haskell.org/package/numerals-base-0.3/docs/Text-Numeral-Exp.html) package encodes numerals using the `data` keyword.
-
+Here, every expression evaluates to an integer, so the semantic domain is ℤ (the set of all integers). In Haskell, we might denote this with:
 
 ```haskell
 type ℤ = Integer
 
--- | An expression that represents the structure of a numeral.
+-- | An expression representing a numeral structure.
 data Exp = Lit ℤ
          | Neg Exp
          | Add Exp Exp
          | Mul Exp Exp
 ```
 
-While the specifics of evaluating these expressions are beyond our scope, the goal is to assign a value from the domain (ℤ) to every possible expression this syntax can generate. This function that assigns values is called a **valuation function**.
+The evaluation function, or **valuation function**, assigns a mathematical meaning to each expression:
 
 ```
-      ⟦Exp⟧ : Int
+      ⟦Exp⟧ : ℤ
 ⟦add e1 e2⟧ = ⟦e1⟧ + ⟦e2⟧
 ⟦mul e1 e2⟧ = ⟦e1⟧ × ⟦e2⟧
     ⟦neg e⟧ = -⟦e⟧
         ⟦n⟧ = n
 ```
 
-# Move language
+# The Move Language
 
-> Move language specification is adapted from [Eric Walkingshaw](https://web.engr.oregonstate.edu/~walkiner/)'s [CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20).
+Having seen how denotational semantics formalizes the behavior of mathematical expressions, let's examine its application in another domain. Consider a simple domain-specific language (DSL) for controlling a robot, called **Move**.
 
-This example introduces a simple robot language called "Move", where commands like `go E 3` instruct a robot to move a specified number of steps in a direction.
+The Move language specifies commands such as `go E 3`, which instruct a robot to move a given number of steps in a specified direction:
 
 ```
 go E 3; go N 4; go S 1;
 ```
 
-* Each `go` command constructs a new **Step**, an n-unit movement horizontally or vertically.
-* A **Move** consists of steps separated by semicolons.
+- Each `go` command constructs a **Step**, representing an n-unit movement in one of the cardinal directions.
+- A **Move** is a sequence of steps separated by semicolons.
+
+The abstract syntax for Move might be defined as:
 
 ```
 n ∈ Nat  ::= 0 | 1 | 2 | ...
@@ -134,13 +124,13 @@ s ∈ Step ::= go d n
 m ∈ Move ::= ε | s ; m
 ```
 
-(Epsilon denotes an empty string.)
+(Epsilon (ε) denotes an empty command sequence.)
 
-Let's explore two ways to interpret Move programs.
+We can explore two interpretations (semantic domains) for Move programs:
 
-### Total Distance Calculation
+## 1. Total Distance Calculation
 
-Here, the semantic domain is the set of natural numbers (ℕ), representing the total distance traveled.
+In this interpretation, the semantic domain is ℕ (the natural numbers), representing the total distance traveled.
 
 For Step expressions:
 
@@ -153,19 +143,17 @@ For Move expressions:
 
 ```
   M⟦Move⟧ : Nat
-     M⟦ε⟧ = 0
-   M⟦s;m⟧ = S⟦s⟧ + M⟦m⟧
+   M⟦ε⟧ = 0
+ M⟦s;m⟧ = S⟦s⟧ + M⟦m⟧
 ```
 
-### Target Position Calculation
+## 2. Target Position Calculation
 
-Here, the semantic domain is the set of **functions** that map a starting position (x, y) to a final position after executing the Move program.
+Here, the semantic domain is the set of functions that map a starting position `(x, y)` to a final position. We denote this using lambda calculus (λ-calculus):
 
 ```
 ⟦Expr⟧ : Pos → Pos
 ```
-
-We use [Lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus) (λ-calculus) to express these functions. Lambda abstractions take the form `λx.y`, where `x` is a variable and `y` is the function body.
 
 For each Step:
 
@@ -177,10 +165,16 @@ S⟦go E k⟧ = λ(x,y).(x+k,y)
 S⟦go W k⟧ = λ(x,y).(x−k,y)
 ```
 
-A Move expression, as a sequence of steps, can be viewed as a pipeline where each Step processes the preceding output. An empty Move, represented by `ε`, returns the input position unchanged.
+A Move expression composes these functions in sequence. For an empty Move, the function simply returns the starting position:
 
 ```
 M⟦Move⟧ : Pos → Pos
    M⟦ε⟧ = λp.p
- M⟦s;m⟧ = M⟦m⟧ ◦ S⟦s⟧
+ M⟦s;m⟧ = M⟦m⟧ ∘ S⟦s⟧
 ```
+
+# Further Reading
+
+- [Haskell/Denotational semantics](https://en.wikibooks.org/wiki/Haskell/Denotational_semantics)
+- [Peyton Jones, S. The implementation of functional programming languages](https://simon.peytonjones.org/slpj-book-1987/)
+- [Eric Walkingshaw's CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20).
