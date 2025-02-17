@@ -1108,21 +1108,9 @@ const renderTo = (f: (size: Size) => Drawing, canvasId: string): void =>
   ).pipe(runSync) // 5. Perform the side-effect on the canvas.
 ```
 
-### Rendering P-161
+## Rendering P-161
 
 ```ts
 const renderP161 = (canvasId: string, bgColor: string) =>
   renderTo(size => drawP161(size, hex(bgColor)), canvasId)
 ```
-
----
-
-## Further Reading
-
-- [Manfred Mohr's Official Website](http://www.emohr.com/)
-- [Mohr's *Cubic Limit* Series @ DAM.org](https://dam.org/museum/artists_ui/artists/mohr-manfred/cubic-limit-i/)
-- [OEIS A023688](https://oeis.org/A023688) (Numbers with exactly 6 bits set)
-- [Stanford Bit-Twiddling Hacks](https://graphics.stanford.edu/~seander/bithacks.html)
-- [Effect-TS on GitHub](https://github.com/Effect-TS/effect)
-- [graphics-ts (gcanti)](https://github.com/gcanti/graphics-ts)
-- [purescript-drawing (paf31)](https://github.com/paf31/purescript-drawing)
