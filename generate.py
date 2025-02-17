@@ -18,6 +18,7 @@ import json
 import glob
 import sys
 import datetime
+import unicodedata
 
 
 @dataclass
@@ -78,8 +79,6 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         extras=["footnotes", "fenced-code-blocks",
                 "tables", "metadata", "highlightjs-lang",]
     )
-
-    slug = os.path.splitext(os.path.basename(filename))[0].lower()
 
     soup_body_feed = BeautifulSoup(body_feed, features="html.parser")
     soup_body = BeautifulSoup(body, features="html.parser")
@@ -232,6 +231,13 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
             blockquote.parent.replace_with(blockquote)
             blockquote.attrs['class'] = "note"
 
+    title = body.metadata['title']
+
+    slug = unicodedata.normalize("NFKD", title)
+    slug = re.sub(r"[^\w]+", " ", slug)
+    slug = "-".join(slug.lower().strip().split())
+    slug = slug.encode("ascii", "ignore").decode("ascii")
+
     return Entry(
         slug=slug,
         body=str(soup_body),
@@ -241,7 +247,7 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         short_description=body.metadata['description'],
         images=images,
         tags=body.metadata['tags'].split(','),
-        title=body.metadata['title'],
+        title=title,
         cover_title=cover_title,
         published=datetime.datetime.fromisoformat(body.metadata['published']),
         updated=datetime.datetime.fromisoformat(body.metadata['updated']),
