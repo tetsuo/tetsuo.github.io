@@ -1,19 +1,19 @@
 ---
-title: Custom Binary Protocols with Multiplexing in Go
-cover_title: binproto
-description: Custom Binary Protocols with Multiplexing in Go
+title: Wire-safe framing for multiplexed binary streams
+cover_title: Wire-safe framing for multiplexed binary streams
+description: Message parsing for applications that require structured, channel-aware transmission over continuous byte input
 tags: go,net
 published: 2023-01-07T21:25:00
-updated: 2024-11-30T00:00:00
+updated: 2025-03-30T13:37:00
 ---
 
-> [**binproto**](https://github.com/tetsuo/binproto) provides generic support for binary communication protocols. Ideal for applications like game networking or file transfer, it enables low-latency data exchange.
+> [**binproto**](https://github.com/tetsuo/binproto) simplifies message parsing for applications that require structured, channel-aware transmission over continuous byte input.
 
 The Transmission Control Protocol (TCP) ensures reliable delivery of byte streams between devices, but interpreting this data stream (whether text or binary) and converting it into meaningful messages is left to application-level protocols.
 
 While Go's standard library offers a convenient framework for handling text-based protocols (like HTTP and SMTP) with [net/textproto](https://pkg.go.dev/net/textproto), there's no widely agreed-upon approach for dividing a long stream of bytes into discrete messages.
 
-## Length-Prefix Framing
+## Length-prefix framing
 
 Internally, binproto leverages a streaming state machine inspired by the [hypercore wire protocol](https://dat-ecosystem-archive.github.io/how-dat-works/#wire-protocol). Over the wire each message is packed in the following format:
 
@@ -26,7 +26,7 @@ Internally, binproto leverages a streaming state machine inspired by the [hyperc
 
 This simple structure prefaces each message with its size, enabling binproto to efficiently determine message boundaries within a continuous byte stream.
 
-## Message Structure
+## Message structure
 
 Each message includes a header, which is a variable-length encoded (varint) unsigned 64-bit integer, containing:
 
@@ -35,7 +35,7 @@ Each message includes a header, which is a variable-length encoded (varint) unsi
 
 Header is followed by the message payload.
 
-## Configurable Buffer Size
+## Configurable buffer size
 
 binproto operates with a default internal buffer size of 4096 bytes, meaning data is processed as long as it meets or exceeds this buffer size—an effective default for many applications. You can adjust this value to better suit protocols dealing with larger or smaller data chunks, optimizing performance as needed.
 

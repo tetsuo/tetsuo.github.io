@@ -1,17 +1,17 @@
 ---
-title: Batch Processing Account Lifecycle Events from PostgreSQL
-cover_title: Batch Processing Account Lifecycle Events from PostgreSQL
+title: Event-driven email delivery for user lifecycle flows
+cover_title: Event-driven email delivery for user lifecycle flows
 description: Manage account lifecycles and batch-process operations—such as activation and password resets—using PostgreSQL triggers and notifications
 tags: database,c,sql,rust
 published: 2024-11-17T00:00:00
-updated: 2025-02-11T13:37:00
+updated: 2025-03-30T13:37:00
 ---
 
-> [**mailroom**](https://github.com/tetsuo/mailroom/) demonstrates how to manage account lifecycles and batch-process operations—such as activation and password resets—using PostgreSQL triggers and notifications.
+> [**mailroom**](https://github.com/tetsuo/mailroom/) manages activation, recovery, and other lifecycle emails using PostgreSQL triggers and real-time batching.
 
 We'll begin with the database **schema** and **triggers** to automatically manage user accounts and track their lifecycle changes using a poor man's job queue built on PostgreSQL. Next, we'll leverage **notification events** and develop a **collector** service (using **libpq**) to efficiently process the accumulated action data (e.g., tokens) in batches. Let's dive in.
 
-# Schema Overview
+# Schema overview
 
 The system comprises two main actors:
 
@@ -78,7 +78,7 @@ CREATE TABLE tokens (
 );
 ```
 
-### Key Columns:
+### Key columns:
 
 - `action` – Specifies the token type (`activation` or `password recovery`).
 - `secret` – A unique and secure token string.
@@ -87,11 +87,11 @@ CREATE TABLE tokens (
 
 This table complements the `accounts` table by managing token-based actions, with relationships maintained through the foreign key `account`.
 
-# Trigger Definitions
+# Trigger definitions
 
 PostgreSQL triggers allow us to automate processes in response to data changes. Below are the triggers to ensure seamless management of account status transitions, token consumption, and notifications.
 
-## 1. **Before Account Insert**
+## 1. **Before account insert**
 
 - **Event**: Before an account is inserted into the `accounts` table.
 - **Purpose**: Automatically creates an activation token when a new account is provisioned.
@@ -125,7 +125,7 @@ The `BEFORE` trigger ensures that token creation and account insertion are part 
 
 This is why the `DEFERRABLE INITIALLY DEFERRED` constraint is applied to the `tokens` table. It allows a token to be inserted even before the associated account is created, provided both operations occur within the same transaction.
 
-## 2. **Before Account Status Change**
+## 2. **Before account status change**
 
 - **Event**: Before an account's `status` is updated.
 - **Purpose**: Updates timestamps for key status changes (e.g., activated, suspended, unsuspended).
@@ -169,7 +169,7 @@ CREATE TRIGGER before_account_status_change
     EXECUTE FUNCTION trg_before_account_status_change ();
 ```
 
-## 3. **After Token Consumed**
+## 3. **After token consumed**
 
 - **Event**: After a token's `consumed_at` field in `tokens` is updated.
 - **Purpose**: Activates the associated account when an activation token is consumed.
@@ -202,7 +202,7 @@ CREATE TRIGGER after_token_consumed
     EXECUTE FUNCTION trg_after_token_consumed ();
 ```
 
-## 4. **After Token Inserted**
+## 4. **After token inserted**
 
 - **Event**: After a token is inserted into the `tokens` table.
 - **Purpose**: Notifies external services that a new token has been created.
@@ -224,13 +224,13 @@ CREATE TRIGGER after_token_inserted
     EXECUTE FUNCTION trg_after_token_inserted ();
 ```
 
-# Let's Try It Out!
+# Let's try it out!
 
 Follow these steps to test the triggers and notifications in action:
 
 ---
 
-### Setting Your Environment
+### Setting your environment
 
 _(Skip this section if you've already set up the tables and triggers.)_
 
@@ -256,7 +256,7 @@ Alternatively, you can use [go-migrate](https://github.com/golang-migrate/) whic
 
 ---
 
-### Inspect the Initial State
+### Inspect the initial state
 
 Before adding any data, let's take a look at the initial state of the `jobs` table:
 
@@ -275,7 +275,7 @@ You should see one row with `job_type` set to `mailroom` and `last_seq` set to z
 
 ---
 
-### Create a New Account
+### Create a new account
 
 Insert a new account into the `accounts` table. This should automatically generate an activation token.
 
@@ -291,7 +291,7 @@ printf "%.0sINSERT INTO accounts (email, login) VALUES ('user' || md5(random()::
     psql -d mailroom
 ```
 
-**Expected Outcome**:
+**Expected outcome**:
 
 - A new account with `status = 'provisioned'` is added to `accounts`.
 - An activation token is automatically inserted into the `tokens` table, linked to the account.
@@ -334,7 +334,7 @@ created_at  | 1735709763
 
 ---
 
-### Consume the Activation Token
+### Consume the activation token
 
 Simulate token consumption by updating the `consumed_at` field in the `tokens` table.
 
@@ -348,7 +348,7 @@ WHERE
 	AND action = 'activation';
 ```
 
-**Expected Outcome**:
+**Expected outcome**:
 
 - The account's `status` in `accounts` should change to `active`.
 - The `activated_at` timestamp should be updated in `accounts`.
@@ -362,7 +362,7 @@ SELECT * FROM tokens WHERE account = 1;
 
 ---
 
-### Suspend the Account
+### Suspend the account
 
 Change the account's status to `suspended` to test the suspension flow.
 
@@ -370,7 +370,7 @@ Change the account's status to `suspended` to test the suspension flow.
 UPDATE accounts SET status = 'suspended' WHERE id = 1;
 ```
 
-**Expected Outcome**:
+**Expected outcome**:
 
 - The account's `suspended_at` timestamp is updated.
 - The `unsuspended_at` field is cleared.
@@ -383,7 +383,7 @@ SELECT * FROM accounts WHERE id = 1;
 
 ---
 
-### Unsuspend the Account
+### Unsuspend the account
 
 Restore the account's status to `active`.
 
@@ -391,7 +391,7 @@ Restore the account's status to `active`.
 UPDATE accounts SET status = 'active' WHERE id = 1;
 ```
 
-**Expected Outcome**:
+**Expected outcome**:
 
 - The account's `unsuspended_at` timestamp is updated.
 - The `suspended_at` field is cleared.
@@ -404,7 +404,7 @@ SELECT * FROM accounts WHERE id = 1;
 
 ---
 
-### Observe Notifications
+### Observe notifications
 
 Listen for token creation notifications on the `token_insert` channel using `LISTEN`:
 
@@ -414,7 +414,7 @@ LISTEN token_insert;
 
 Next, insert some dummy data into the `accounts` table (or directly into `tokens`).
 
-**Expected Outcome**:
+**Expected outcome**:
 
 The `LISTEN` session should immediately display a notification like:
 
@@ -437,7 +437,7 @@ _These notifications signal that new tokens have arrived—it's time to start pr
 
 ---
 
-# Poor Man's Job Queue
+# Poor man's job queue
 
 Next, we'll build a mechanism to retrieve new tokens and define a query that manages their progression through a database-driven queue.
 
@@ -466,7 +466,7 @@ VALUES
     (0, 'mailroom');
 ```
 
-## Retrieving Pending Jobs
+## Retrieving pending jobs
 
 The following query retrieves relevant job data (tokens and account details), ensuring only valid, unexpired, and unprocessed tokens are selected, with accounts in the correct status for the intended action.
 
@@ -500,20 +500,20 @@ ORDER BY
 LIMIT 10
 ```
 
-**Joins & Filters Explained:**
+**Joins & filters explained:**
 
-- **Jobs Table:** We filter for rows where `job_type` is `mailroom`.
-- **Tokens Table:**
+- **Jobs table:** We filter for rows where `job_type` is `mailroom`.
+- **Tokens table:**
   - We join tokens with jobs using the condition `tokens.id > jobs.last_seq`, which ensures we only process tokens that haven't been handled yet.
   - We further filter tokens to include only those that are not expired (`expires_at` is in the future), have not been consumed (`consumed_at` is NULL), and have an action of either `activation` or `password_recovery`.
-- **Accounts Table:**
+- **Accounts table:**
   - We join accounts on `accounts.id = tokens.account`.
   - For tokens with the `activation` action, the account must be in the `provisioned` state.
   - For tokens with the `password_recovery` action, the account must be `active`.
 
-## Dequeueing and Advancing the Cursor
+## Dequeueing and advancing the cursor
 
-Next, we integrate this query into a **common table expression (CTE)** that simultaneously **fetches mailer data** and **updates the job cursor** to prevent duplicate processing:
+Next, we integrate this query into a common table expression:
 
 ```sql
 WITH token_data AS (
@@ -543,7 +543,7 @@ This accomplishes two key tasks:
 1. **Retrieves tokens** generated after the current `last_seq` along with the corresponding user data.
 2. **Updates the `last_seq` value** to prevent processing the same tokens again.
 
-**Output Example:**
+**Output example:**
 
 ```
 -[ RECORD 1 ]--------------------------------------------------------------
@@ -566,7 +566,7 @@ secret | \xa9763eec727835bd97b79018b308613268d9ea0db70493fd212771c9b7c3bcb2
 code   | 31620
 ```
 
-### Index Recommendations
+### Index recommendations
 
 To optimize the query performance, the following composite indexes are recommended:
 
@@ -582,7 +582,7 @@ Indexing Strategy:
 - **Equality Conditions First**: Since columns used in equality conditions (`=` or `IN`) are typically the most selective, they should come first.
 - **Range Conditions Next**: Columns used in range conditions (`>`, `<`, `BETWEEN`) should follow.
 
-# Notification-driven Job Collection
+# Notification-driven job collection
 
 Rather than polling the database for new batches, we'll build a lightweight worker that subscribes to a notification channel, tracks incoming events, and triggers the job retrieval query when either a specified **row limit** (based on received notifications) or a **timeout** is reached.
 
@@ -590,13 +590,13 @@ Rather than polling the database for new batches, we'll build a lightweight work
 
 Here's how **the job retrieval and batch execution** are controlled:
 
-### Batch Limit
+### Batch limit
 
 > The maximum number of email destinations in a single batch.
 
 The collector queries the database for at most **N** tokens at a time (where **N** is the **batch limit**). Even if 500 tokens are waiting in the database, the collector will only take, say, 10 at a time. This imposes a hard cap on the throughput of tokens that can leave the database at once.
 
-### Batch Timeout
+### Batch timeout
 
 > The time to wait for accumulating enough notifications to fill a batch.
 
@@ -616,11 +616,11 @@ This means:
 
 >> **Keep in mind that the collector doesn't impose rate limiting; it primarily controls database roundtrips and batch size.** A large influx of notifications will keep triggering the batch limit, effectively bypassing the timeout—so the overall token throughput downstream remains largely unaffected.
 
-# Collector Implementation
+# Collector implementation
 
 The collector is written in **C** and interacts with PostgreSQL via [**libpq**](https://www.postgresql.org/docs/current/libpq.html).
 
-## Connecting to the Database and Listening for Events
+## Connecting to the database and listening for events
 
 The query we defined earlier is located in [`db.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/db.c#L20), alongside other database-related functions. When the collector first connects, it issues a `LISTEN` command on the specified channel and creates the prepared statements for subsequent queries.
 
@@ -642,7 +642,7 @@ bool db_connect(PGconn **conn, const char *conninfo, const char *channel)
 }
 ```
 
-## Fetching and Formatting Email Payloads
+## Fetching and formatting email payloads
 
 When notifications arrive, the collector **fetches tokens in batches** and writes the results directly to `stdout`. Processing continues until all queued tokens are exhausted or an error occurs. The [`db_dequeue()`](https://github.com/tetsuo/mailroom/blob/master/collector/src/db.c#L234C1-L252C2) function handles this logic.
 
@@ -660,7 +660,7 @@ Each batch is represented as a single line, where every row follows this schema:
 - `secret` – A base64 URL-encoded string containing the signed token.
 - `code` – (Optional) Numeric code (e.g., for password recovery).
 
-#### Example Output
+#### Example output
 
 In this example, the first line contains a batch of three jobs, including both password recovery and account activation. The second line contains a single activation job:
 
@@ -669,7 +669,7 @@ In this example, the first line contains a batch of three jobs, including both p
 1,sarah.connor999@unreal.mail,resistance1234,zwhCIthd12DqpQSGB57S9Ky-OXV_8H0e8aHOv_kWoggIuAZ2sc-aQVpIoQ-M--PjwVfdIIxiXkv_WjRjGI57zA,38022
 ```
 
-## Signing and Validating Tokens
+## Signing and validating tokens
 
 During the dequeue operation, the token's secret is signed with **HMAC-SHA256** and encoded in **URL-safe Base64** format.
 
@@ -710,19 +710,19 @@ static size_t construct_signature_data(char *output, const char *action,
 
 >> This process allows the frontend to **verify authenticity without an immediate database lookup**. If you'd like to see how verification works on the backend, check out the [`verifyHmac.js`](https://github.com/tetsuo/mailroom/blob/master/etc/verifyHmac.js) script in the repo.
 
-### Security Considerations
+### Security considerations
 
 🔹 **Handle expired tokens properly** – One approach is to include `expires_at` in the payload so expiration can be checked without a DB call. However, for stronger protection, **cache consumed tokens** until they naturally expire, preventing reuse within their validity window.
 
 🔹 **Regularly rotate your signing key**
 
-# Putting It All Together
+# Putting it all together
 
-### Environment Variables
+### Environment variables
 
 In [`main.c`](https://github.com/tetsuo/mailroom/blob/master/collector/src/main.c), you'll find references to environment variables such as `MAILROOM_BATCH_TIMEOUT`, `MAILROOM_BATCH_LIMIT`, and `MAILROOM_SECRET_KEY` (a 32-byte random value, represented as a 64-character hex string). Refer to the [`README`](https://github.com/tetsuo/mailroom/blob/master/README.md#environment-variables) file for the full list.
 
-### Loop Overview
+### Loop overview
 
 At a high level, the main loop continuously:
 
@@ -976,19 +976,19 @@ In this code, `select()` is used to:
 - 🛎️ **Monitor the socket** for new notifications.
 - ⏳ **Enforce a timeout** for batch processing.
 
-### **Handling Data with `PQconsumeInput` and `PQnotifies`**
+### **Handling data with `PQconsumeInput` and `PQnotifies`**
 
 Once `select()` signals that data is available, the collector calls `PQconsumeInput` to read incoming data into **libpq's internal buffers**. It then invokes `PQnotifies` to retrieve any pending notifications and update the counter.
 
 > 📖 **Learn more:** [libpq's async API](https://www.postgresql.org/docs/current/libpq-async.html)
 
-# Compile & Run
+# Compile & run
 
 To compile, verify that you have `openssl@3` and `libpq@5` installed, then use the provided `Makefile`.
 
 ---
 
-### Run the Collector
+### Run the collector
 
 Use the following command to build and run the `collector` executable with example configuration variables:
 
@@ -1011,7 +1011,7 @@ Once configured and started, it will log its activity:
 
 ---
 
-### Insert Accounts and Observe Batching
+### Insert accounts and observe batching
 
 In another terminal, insert 5 accounts:
 
@@ -1033,7 +1033,7 @@ You'll observe the `collector` immediately process the first batch of three item
 
 ---
 
-### Testing Reconnect Behavior
+### Testing reconnect behavior
 
 To simulate a dropped connection, open another terminal, connect to `mailroom` via `psql`, and run:
 
@@ -1058,13 +1058,13 @@ After the connection is killed, `select()` wakes up, causing `PQconsumeInput()` 
 
 ---
 
-# Further Improvements
+# Further improvements
 
 Building on this foundation, you can extend your triggers to handle more complex workflows and further fine-tune the collector to operate under stricter constraints—all while keeping the database at the core of your event processing.
 
 That said, the **mailroom** system outlined here is deliberately simple—a budget-friendly single-producer, single-consumer design. More advanced streaming solutions often incorporate **priority queues** and **adaptive batching** to manage varying workloads more gracefully.
 
-## Multi-Consumer Queues
+## Multi-consumer queues
 
 When you update `last_seq`, PostgreSQL locks the `jobs` row being updated, preventing other processes from modifying it until the transaction is complete. However, PostgreSQL **does not prevent multiple processes from attempting to read the same cursor** before one updates it. This can lead to duplicate processing if you're not careful.
 
@@ -1080,7 +1080,7 @@ If there's any chance of concurrent execution, using `FOR UPDATE` is essential:
 ...
 ```
 
-#### Without Locking:
+#### Without locking:
    - Consumer A reads `jobs.last_seq = 100`.
    - Consumer B also reads `jobs.last_seq = 100` before A updates it.
    - Both consumers select tokens where `t.id > 100`, potentially processing the same tokens.
@@ -1095,11 +1095,11 @@ Alternatively, to efficiently handle **multiple consumers**, you might consider 
 
 > However, if you're certain that only a single consumer runs this query at any given time, I recommend sticking with the `jobs` table as a single point of reference. This approach avoids the need for complex locking mechanisms, and you can further enhance the `jobs` table to keep a history of job executions, parameters, and statuses, which can be valuable for auditing purposes.
 
-## Priority Queues
+## Priority queues
 
 Our current queueing mechanism processes tokens without distinguishing between their types and lacks the ability to prioritize critical ones, such as password recovery, over less urgent emails like account activations. At present, '10 emails per second' could mean 10 emails of the same type or a mix, depending on the batch. While effective, this design leaves room for improvement, such as introducing prioritization or smarter batching strategies.
 
-## Adaptive Batching
+## Adaptive batching
 
 User activity is rarely consistent—there are bursts of high traffic that may far exceed daily or hourly quotas, followed by periods of minimal activity.
 

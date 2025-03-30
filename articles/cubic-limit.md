@@ -1,10 +1,10 @@
 ---
-title: Recreating Manfred Mohr's Cubic Limit Series with Effect
-cover_title: Recreating Manfred Mohr's Cubic Limit Series with Effect
+title: Cubic Limit reimplemented with Effect
+cover_title: Cubic Limit reimplemented with Effect
 description: Recreating Manfred Mohr's iconic artwork Cubic Limit, P-161 with TypeScript and Effect using a fully functional rendering pipeline
 tags: typescript,fp
 published: 2025-02-08T14:55:00
-updated: 2025-02-08T14:55:00
+updated: 2025-03-30T13:37:00
 ---
 
 > This post walks through the process of recreating Manfred Mohr's iconic artwork **Cubic Limit, P-161** with **TypeScript** and [**Effect**](https://effect.website/) using a fully functional rendering pipeline.
@@ -13,7 +13,7 @@ Shown below is a replica of [**P-161**](http://www.emohr.com/mohr_cube1_161.html
 
 [![mohr-p161](./cubiclimit.jpg)](https://ogu.nz/f/cubiclimit.html)
 
-### Clone the Repository
+### Clone the repository
 
 The full source code that produces this image is available [here](https://github.com/tetsuo/cubic-limit). It is an Effect-based adaptation of [**graphics-ts**](https://github.com/gcanti/graphics-ts) with support for 3D rendering. Clone it with:
 
@@ -25,7 +25,7 @@ The repository also includes a version of **P-197**, but this post will focus so
 
 ---
 
-# Cube Vertices & Edges
+# Cube vertices & edges
 
 We'll work with a type `Vec` to hold `[x, y, z]` coordinates.
 
@@ -61,7 +61,7 @@ const getEdges = (i: number): NonEmptyReadonlyArray<Vec> => [
 
 Combining all `i` values yields 12 edges. Each edge is a pair of indices into `cubePoints`.
 
-# Cube Configurations
+# Cube configurations
 
 Mohr's piece shows a 31×31 grid of partially drawn cubes. Each cube is unique and displayed with exactly six edges (`n = 6`). To represent this mathematically:
 
@@ -83,7 +83,7 @@ These numbers correspond to [**OEIS sequence A023688**](https://oeis.org/A023688
 4032  -- 111111000000
 ```
 
-### Generating All 12-Bit Numbers with Six 1s
+### Generating all 12-bit numbers with six 1s
 
 To iterate through all 12-bit integers that have exactly six bits set, I turned to a classic resource: [Bit Twiddling Hacks](https://graphics.stanford.edu/~seander/bithacks.html). At the bottom of that page is the code to compute the [**lexicographically next bit permutation**](https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation):
 
@@ -114,7 +114,7 @@ Each integer in `seq` encodes a unique cube with exactly 6 edges, totaling 924 c
 
 ---
 
-# Representing Geometry
+# Representing geometry
 
 ## Shape
 
@@ -214,7 +214,7 @@ const composite = (shapes: ReadonlyArray<Shape>): Composite => ({
 })
 ```
 
-# Constructing a Full Cube
+# Constructing a full cube
 
 Bringing it all together, here's how we can define a full cube (all 12 edges visible) as a `Composite` of 12 paths:
 
@@ -247,7 +247,7 @@ const cubeShape = S.composite(
 )
 ```
 
-### Cube as a Composite of Paths
+### Cube as a composite of paths
 
 The `cubeShape` structure represents the cube's 12 edges as pairs of points in 3D space. Each point is a 3D vector` [x, y, z]`, and each edge is defined by two such points:
 
@@ -269,7 +269,7 @@ The `cubeShape` structure represents the cube's 12 edges as pairs of points in 3
 - Each array containing point tuples describes a `Path`, which corresponds to a single edge of the cube.
 - 12 paths are grouped together into a `Composite`.
 
-# Toggling Edges to Form Partial Cubes
+# Toggling edges to form partial cubes
 
 Since Mohr's P-161 selectively displays only 6 edges of the cube, we need a way to **toggle** edges (paths) on/off. We can do that by passing in a _predicate_ that checks if an edge is active.
 
@@ -318,7 +318,7 @@ If `n` has bits 3, 5, 8, 10, etc., turned on, only those edges of the cube are v
 
 For example, calling `cubeFromNumber(63)` (binary `000000111111`) will omit edges 0 through 5 and include edges 6 through 11, producing a half-formed cube.
 
-# Generating All Cube Shapes
+# Generating all cube shapes
 
 Finally, we can list all **924** cube shapes corresponding to `n = 6` by:
 
@@ -339,7 +339,7 @@ const cubes: Composite[] = pipe(
 
 ---
 
-# Representing Styles & Transformations
+# Representing styles & transformations
 
 # Drawing
 
@@ -372,7 +372,7 @@ const outline: (shape: Shape, style: OutlineStyle) => Drawing = (shape, style) =
 })
 ```
 
-**Applying Outlines to Cubes:**
+**Applying outlines to cubes:**
 
 ```ts
 import * as D from './Drawing'
@@ -399,7 +399,7 @@ const fill: (shape: Shape, style: FillStyle) => Drawing = (shape, style) => ({
 })
 ```
 
-**Drawing Background:**
+**Drawing background:**
 
 ```ts
 import { Foldable } from '@effect/typeclass/data/Array'
@@ -432,7 +432,7 @@ const many: (drawings: ReadonlyArray<Drawing>) => Drawing = drawings => ({
 })
 ```
 
-**Drawing a Grid Of Lines:**
+**Drawing a grid of lines:**
 
 ```ts
 import { map, range } from 'effect/Array'
@@ -469,7 +469,7 @@ const drawLines = (n: number, height: number, vertical: boolean): D.Drawing => {
 }
 ```
 
-## Translate / Scale / Rotate
+## Translate/Scale/Rotate
 
 The each of the following constructors wraps a `Drawing` and includes X, Y, Z parameters to translate, rotate, or scale whatever is inside.
 
@@ -496,7 +496,7 @@ const rotate = (
 ): Drawing => ({ _tag: 'Rotate', rotateX, rotateY, rotateZ, drawing })
 ```
 
-**Rotating, Scaling, and Positioning Cubes:**
+**Rotating, scaling, and positioning cubes:**
 
 ```ts
 import { map, unfold } from 'effect/Array'
@@ -561,7 +561,7 @@ const drawP161 = (size: Size, bgColor: Color): D.Drawing => {
 
 ---
 
-# The Art of Rendering Cubes and Generating Side Effects
+# The art of rendering cubes and generating side effects
 
 Today's technology lets us render 3D shapes with a few lines of code, but Mohr's process was far more hands-on. The Cubic Limit series was originally drawn using a **Benson 1284 flatbed plotter**.
 
@@ -612,7 +612,7 @@ Modern techniques, especially in **functional programming**, explicitly enforce 
 
 The `Drawing` sum type describes the semantics of a **domain specific language (DSL)** for creating vector graphics, keeping the model separate from side effects. This separation allows the same underlying logic to be used for **rendering** to a canvas, **exporting** to PostScript, or even **controlling** a physical plotter. Our plan is to eventually integrate it with the Canvas API, and ultimately generate canvas commands as a side effect.
 
-# Interpreting Geometry
+# Interpreting geometry
 
 Before we proceed, we must address a key limitation: the Canvas API only supports 2D coordinates (i.e., **X** and **Y**), not 3D.
 
@@ -659,7 +659,7 @@ For a `Composite`, `fromShape` simply calls `fromShape` on each sub-shape and co
 
 For a `Path`, `fromShape` breaks the `points` into line segments (via `moveTo` and `lineTo`). If `closed` is true, it calls `closePath`, making the last point connect to the first.
 
-### Path3D Combinators: moveTo, lineTo, closePath
+### Path3D combinators: moveTo, lineTo, closePath
 
 These functions implement the path-drawing algorithm:
 
@@ -722,7 +722,7 @@ const closePath = (path: Path3D): Path3D => {
 }
 ```
 
-## Transformation Matrices
+## Transformation matrices
 
 Rendering a 3D scene onto a 2D canvas typically involves a series of steps—applying **model**, **view**, and **projection** matrices, performing perspective division, etc. In our case, however, we only require model transformations—positioning, scaling, and rotating each individual cube.
 
@@ -734,7 +734,7 @@ These transformations are typically encoded in **4×4 matrices** when dealing wi
 type Mat = NonEmptyReadonlyArray<Vec>
 ```
 
-### Common 3D Transforms
+### Common 3D transforms
 
 A standard 4×4 **transform** matrix looks like this:
 
@@ -774,7 +774,7 @@ const rotateX = (angle: number): Mat => [
 ]
 ```
 
-### Combining Multiple Transforms
+### Combining multiple transforms
 
 Often we need to **combine** several transformations (e.g. translate first, then rotate, then scale). In matrix math, combining transformations is done by **matrix multiplication**:
 
@@ -794,7 +794,7 @@ The final result is a single 4×4 matrix encoding all these operations in the co
 
 > **Reminder**: Matrix multiplication is **not** _commutative_. The order you multiply matters.
 
-### Semigroup & Monoid for Matrices
+### Semigroup & Monoid for matrices
 
 Because matrix multiplication is _associative_, we can define a **Semigroup** for `Mat`:
 
@@ -830,7 +830,7 @@ const combined = monoidMat.combineAll([
 ])
 ```
 
-> **Dot Products & Matrix Multiplication**
+> **Dot products & matrix multiplication**
 >
 > Under the hood, matrix multiplication boils down to computing **dot products** between **rows** of the first matrix and **columns** of the second:
 >
@@ -858,7 +858,7 @@ const combined = monoidMat.combineAll([
 >
 > When multiplying `C=A×B`, each entry `(i,j)` in `C` is the **dot product** of row `i` from `A` with column `j` from `B`.
 
-### Applying 3D Transformations
+### Applying 3D transformations
 
 The `toCoords` helper function takes a `Shape`, extracts its constituent subpaths, applies a transformation matrix, and outputs the final coordinates to be sent to the Canvas API.
 
@@ -878,7 +878,7 @@ const toCoords = (shape: Shape, transform: Mat): ReadonlyArray<ReadonlyArray<Poi
   )
 ```
 
-# The Render Service
+# Render service
 
 Now that everything is in place, let's define the **Render** [service](https://effect.website/docs/requirements-management/services/) as a tagged interface that encapsulates methods mirroring those of the native `CanvasRenderingContext2D` (e.g. `lineTo`, `moveTo`, `fill`, `stroke`, etc.).
 
@@ -906,7 +906,7 @@ class Render extends Tag('Render')<
 >() {}
 ```
 
-# Producing Render Effect
+# Producing render effect
 
 The function `renderDrawing` is our core interpreter for the Drawing DSL. It takes a `Drawing` and recursively transforms it into a series of **canvas commands**, while internally maintaining a transformation matrix that accumulates and applies all transformations.
 
@@ -997,19 +997,19 @@ const renderDrawing = (d: D.Drawing): Micro<void, never, Render> =>
   )
 ```
 
-### Transformation Composition
+### Transformation composition
 
 The recursive function `go` walks through a `Drawing`, updating the transform matrix (with operations like `Scale`, `Rotate`, and `Translate`) as it recurses through nested drawings.
 
-### Style and Context Management
+### Style and context management
 
 For instructions like `Outline` and `Fill`, the function saves the canvas state, applies style settings, begins a new path, renders the shape, executes the appropriate drawing command (stroke or fill), and finally restores the canvas state.
 
-### Sub-Path Rendering
+### Sub-path rendering
 
 The helper `renderSubPath` converts a sub-path (a list of 3D points) into the corresponding canvas calls (`moveTo` for the first point, followed by `lineTo` for subsequent points).
 
-# Wiring Up the Real Canvas
+# Wiring up the real canvas
 
 The final step is the `render` function, which "plugs in" a real `CanvasRenderingContext2D` implementation by providing a concrete instance of the **Render** service. This function builds the effect (from `renderDrawing`) and then supplies a real implementation that calls the actual Canvas API:
 
@@ -1075,7 +1075,7 @@ const render = (d: D.Drawing, ctx: CanvasRenderingContext2D): Micro<void, never,
   })
 ```
 
-# Putting It All Together
+# Putting it all together
 
 Finally, the `renderTo` function ties everything together. It retrieves the canvas element, adjusts its size for the device pixel ratio, gets the 2D context, and runs the rendering effect:
 

@@ -1,10 +1,10 @@
 ---
-title: Querying CouchDB with Human-Readable Syntax
-cover_title: Tango Textual syntax for Mango
-description: Filter and select CouchDB with C-like expressions
+title: Querying CouchDB with human-readable syntax
+cover_title: Querying CouchDB with human-readable syntax
+description: Tango provides a textual syntax for logical and relational expressions compatible with Mango selectors
 tags: javascript,couchdb,lang,database
 published: 2023-01-02T16:20:00
-updated: 2024-11-30T00:00:00
+updated: 2025-03-30T13:37:00
 ---
 
 > [**tango**](https://github.com/tetsuo/tango) provides a textual syntax for logical and relational expressions compatible with [Mango selectors](https://docs.couchdb.org/en/stable/api/database/find.html).

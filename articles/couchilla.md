@@ -1,13 +1,13 @@
 ---
-title: CommonJS Support for CouchDB Design Documents
-cover_title: couchilla
-description: CommonJS Support for CouchDB Design Documents
+title: CouchDB design document bundler
+cover_title: CouchDB design document bundler
+description: Couchilla is a bundler for packing design documents for CouchDB with CommonJS support
 tags: javascript,couchdb,database
 published: 2023-01-02T14:55:00
-updated: 2024-11-30T00:00:00
+updated: 2025-03-30T13:37:00
 ---
 
-> [**couchilla**](https://github.com/tetsuo/couchilla) is a bundler for packing design documents for CouchDB.
+> [**couchilla**](https://github.com/tetsuo/couchilla) is a bundler for packing design documents for CouchDB with CommonJS support.
 
 In [CouchDB](https://couchdb.apache.org/), [design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are special database entries that contain JavaScript functions, such as _views_ and _updates_. These functions, executed on demand, generate secondary indexes, often termed MapReduce views.
 

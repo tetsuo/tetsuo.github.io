@@ -1,13 +1,13 @@
 ---
-title: Experimenting with Functional Abstractions in Go
-cover_title: Experimenting with Functional Abstractions in Go
-description: Experimenting with Functional Abstractions in Go
+title: Experimenting with functional abstractions in Go
+cover_title: Experimenting with functional abstractions in Go
+description: Experimenting with Go's generics and their effectiveness in modeling functional abstractions
 tags: go,fp,lang
 published: 2024-08-30T00:00:00
-updated: 2025-02-16T00:00:00
+updated: 2025-03-30T13:37:00
 ---
 
-> [**warp**](https://github.com/tetsuo/warp) is a collection of functional data types built to experiment with Go's generics and their effectiveness in modeling functional abstractions.
+> [**warp**](https://github.com/tetsuo/warp) is a tiny collection of functional data types built to experiment with Go's generics and their effectiveness in modeling functional abstractions.
 
 The introduction of [**generics**](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling parametric polymorphism—has greatly expanded the language's potential for unlocking new functional paradigms, offering an exciting new playground for nerds like myself to explore.
 
@@ -79,7 +79,7 @@ func Equals[T comparable](x, y T) bool
 
 Unlike Haskell, Go does not natively support higher-kinded types (HKTs), which enable parameterization over type constructors. However, with the introduction of generics, we can achieve similar abstractions by leveraging [first-class function types](https://en.wikipedia.org/wiki/First-class_function) as an alternative.
 
-# How Generics Help
+# How generics help
 
 Generics in Go allow us to write functions and data structures that can work with a range of types without having to write separate versions for each type.  This addresses a major pain point that existed before generics.
 
@@ -97,11 +97,11 @@ func mapList[T, U any](l List[T], f func(T) U) List[U] {
 
 This `List` type and `mapList` function can now work with lists of any type. We can have` List[int]`, `List[string]`, `List[MyStruct]`, etc., and the same `mapList` function can operate on all of them.
 
-# Where Generics Fall Short for HTKs
+# Where generics fall short for HTKs
 
 The key difference lies in what generics can _abstract over_.
 
-- **Go Generics** – Can abstract over _concrete types_ (like `int`, `string`, `MyStruct`).  They can also abstract over _type parameters_ (like `T` and `U` in the example above).
+- **Go generics** – Can abstract over _concrete types_ (like `int`, `string`, `MyStruct`).  They can also abstract over _type parameters_ (like `T` and `U` in the example above).
 - **HKTs** – Can abstract over _type constructors_ (like `List`, `Maybe`, `IO`). This allows us to create generic functions that work with a variety of _data structures_ themselves.
 
 For example, a `Functor` is something we can map over (like our `mapList` example).  In Haskell, we can define a `Functor` type class:
@@ -115,7 +115,7 @@ This says "anything that implements Functor must provide an fmap function."  `f`
 
 In Go, even with generics, we can't express this level of abstraction. We can write a generic `mapList` for `List[T]`, but we'd have to write separate mapping functions for other data structures (e.g., if we had a `Maybe[T]` type). We can't write a single function that works for _any type that can be mapped over_ in the same way it's possible in Haskell with the `Functor` type class.
 
-# Representing Monads in Go
+# Representing monads in Go
 
 In Haskell, a `Result` type might look like this:
 

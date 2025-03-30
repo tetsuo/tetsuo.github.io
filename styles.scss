@@ -731,6 +731,9 @@ $single-col-centered-width: 74%;
       font-family: var(--font-family-heading);
       font-size: 1.3em;
       font-weight: bold;
+      a img {
+        height: 40px;
+      }
     }
 
     .nav {

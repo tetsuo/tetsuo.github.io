@@ -1,10 +1,10 @@
 ---
 title: Thinking in Haskell
-description: This post explores the basics of Haskell's denotational semantics and how it gives functions a precise mathematical meaning to reason about program correctness
+description: The basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell
 cover_title: Thinking in Haskell
 tags: haskell,fp,lang
 published: 2023-05-30T12:41:00
-updated: 2025-02-16T00:00:00
+updated: 2025-03-30T13:37:00
 ---
 
 > This post introduces the basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell.
@@ -24,7 +24,7 @@ This view of a function is called **denotational**. We define its "meaning" by d
 
 In this framework, every expression in Haskell corresponds to a mathematical object. For instance, both `fib 1` and `5-4` _denote_ the same integer value, 1. This property is a cornerstone of **referential transparency**, meaning that any expression can be replaced by its corresponding value without altering the overall behavior of the program.
 
-# Referential Transparency
+# Referential transparency
 
 To illustrate referential transparency, consider a simple addition function. It is fully referentially transparent because it always returns a value based solely on its inputs. Contrast this with a division function:
 
@@ -49,7 +49,7 @@ safeDiv a b = Just (a `div` b)
 
 By eliminating exceptions and other side effects, languages like Haskell ensure that every function has a well-defined mathematical meaning, which brings us to the heart of our discussion.
 
-# Denotational Semantics in a Nutshell
+# Denotational semantics in a nutshell
 
 Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
 
@@ -59,7 +59,7 @@ Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You pl
 
 this means that the **expression** `E` is assigned a **value** in the semantic domain `V` (which could be numbers, functions, etc.).
 
-### Example: A Calculator in Prefix Notation
+### Example: Calculator in prefix notation
 
 Consider arithmetic expressions written in prefix notation:
 
@@ -102,7 +102,7 @@ The evaluation function, or **valuation function**, assigns a mathematical meani
         ⟦n⟧ = n
 ```
 
-# The Move Language
+# Move language
 
 Having seen how denotational semantics formalizes the behavior of mathematical expressions, let's examine its application in another domain. Consider a simple domain-specific language (DSL) for controlling a robot, called **Move**.
 
@@ -128,7 +128,7 @@ m ∈ Move ::= ε | s ; m
 
 We can explore two interpretations (semantic domains) for Move programs:
 
-## 1. Total Distance Calculation
+## 1. Total distance calculation
 
 In this interpretation, the semantic domain is ℕ (the natural numbers), representing the total distance traveled.
 
@@ -147,7 +147,7 @@ For Move expressions:
  M⟦s;m⟧ = S⟦s⟧ + M⟦m⟧
 ```
 
-## 2. Target Position Calculation
+## 2. Target position calculation
 
 Here, the semantic domain is the set of functions that map a starting position `(x, y)` to a final position. We denote this using lambda calculus (λ-calculus):
 
@@ -173,8 +173,8 @@ M⟦Move⟧ : Pos → Pos
  M⟦s;m⟧ = M⟦m⟧ ∘ S⟦s⟧
 ```
 
-# Further Reading
+# Further reading
 
 - [Haskell/Denotational semantics](https://en.wikibooks.org/wiki/Haskell/Denotational_semantics)
 - [Peyton Jones, S. The implementation of functional programming languages](https://simon.peytonjones.org/slpj-book-1987/)
-- [Eric Walkingshaw's CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20).
+- [Eric Walkingshaw's CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20)
