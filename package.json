@@ -6,7 +6,8 @@
   "repository": "git@github.com:tetsuo/website.git",
   "license": "MIT",
   "scripts": {
-    "sass": "sass styles.scss > public/assets/styles.css",
+    "sass": "suffix=$(sha1sum styles.scss | cut -c1-4) && sass styles.scss public/assets/styles-$suffix.css",
+    "watch-sass": "sass -w styles.scss public/assets/styles.css",
     "clean": "rm -f public/* public/assets/styles.css templates/manifest.webmanifest templates/favicons.html"
   },
   "dependencies": {
