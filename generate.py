@@ -19,6 +19,7 @@ import glob
 import sys
 import datetime
 import unicodedata
+import hashlib
 
 
 @dataclass
@@ -268,6 +269,7 @@ class Settings:
     images: bool
     comments: bool
     links: list[str]
+    styles_id: str
 
 
 @dataclass
@@ -477,6 +479,13 @@ def main(args=None):
     ]
     entries.sort(key=lambda e: e.published, reverse=True)
 
+    styles_id = ""
+    if c['debug'] != True:
+        with open("styles.scss", "r") as f:
+            data = f.read()
+            styles_id = get_hex_digest_short(data)
+            f.close()
+
     Generator(
         debug=c['debug'],
         locale=locale.get(c['locale']),
@@ -495,6 +504,7 @@ def main(args=None):
             comments=c['showComments'],
             images=c['buildImages'],
             links=c['links'],
+            styles_id=styles_id,
         )
     ).run()
 
@@ -558,6 +568,11 @@ def word_wrap(image, ctx, text, roi_width, roi_height):
         raise RuntimeError("Unable to calculate word_wrap for " + text)
 
     return mutable_message
+
+
+def get_hex_digest_short(text: str) -> str:
+    hex_digest = hashlib.sha1(text.encode()).hexdigest()
+    return hex_digest[:4]
 
 
 if __name__ == "__main__":
