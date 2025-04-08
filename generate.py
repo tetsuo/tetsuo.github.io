@@ -441,12 +441,12 @@ class Generator:
         with open("public/robots.txt", "w") as f:
             f.write("User-agent: *\nAllow: /\n")
 
-        t = self.template_loader.load("about.html")
+        t = self.template_loader.load("resume.html")
 
         b = t.generate(**dict({"keywords": keywords},
                        **self._get_template_args()))
 
-        with open("public/about.html", "wb") as f:
+        with open("public/resume.html", "wb") as f:
             f.write(b)
 
         if self.settings.images:

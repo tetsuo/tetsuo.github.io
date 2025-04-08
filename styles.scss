@@ -727,24 +727,29 @@ $single-col-centered-width: 74%;
       }
     }
 
-    .title {
-      font-family: var(--font-family-heading);
-      font-size: 1.3em;
-      font-weight: bold;
-      a img {
-        height: 40px;
-      }
+    .logo {
+      width: 42px;
+      height: 42px;
+      overflow: hidden;
     }
 
-    .nav {
-      ul {
-        display: flex;
-        gap: 20px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
+    .logo.screen-only {
+      display: inline-block;
+      background-image: url(/assets/og-logo.svg);
     }
+
+    .logo.print-only {
+      display: none;
+    }
+  }
+}
+
+@media print {
+  .screen-only {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
   }
 }
 
@@ -842,8 +847,43 @@ blockquote.note {
   border-radius: 6px;
 }
 
-@media print {
-  .no-print {
-      display: none;
+.intro {
+  hr {
+    margin: 2.75rem 0 1.5rem 0;
+  }
+}
+
+.resume {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  h2, h4, p {
+    margin: 0;
+    padding: 0;
+  }
+  h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 0;
+  }
+  h4 {
+    font-weight: normal;
+    margin-bottom: 1rem;
+  }
+  h4 > span {
+    font-style: italic;
+  }
+}
+
+.intro .middot::before {
+  content: " · ";
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .intro a {
+    display: block;
+  }
+  .intro .middot::before {
+    display: none;
   }
 }

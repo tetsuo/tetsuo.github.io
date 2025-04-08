@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
+	<div class="single-col-grid intro">
+		<div class="col">
+			<div class="centered entry" style="font-size: 120%;">
+				<h1 style="border-bottom: 0">Hello, I'm Onur</h1>
+				<p>I write about the tools I use and the things I build.</p>
+				<p>
+					<a href="/resume.html">Resume</a> · <a href="https://www.github.com/tetsuo" target="_blank">GitHub</a>
+				</p>
+				<hr />
+			</div>
+		</div>
+	</div>
 	<div class="single-col-grid content index">
 		<div class="col">
 			{% for entry in entries %}
