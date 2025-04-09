@@ -1,9 +1,9 @@
 {
-  "debug": true,
+  "debug": false,
   "locale": "en_US",
-  "entriesPerPage": 8,
+  "entriesPerPage": 100,
   "templatePath": "templates",
-  "articlesPath": "articles/fortune.md",
+  "articlesPath": "articles/*.md",
   "siteName": "Onur Gündüz",
   "title": "Onur Gündüz",
   "authorName": "Onur Gündüz",
