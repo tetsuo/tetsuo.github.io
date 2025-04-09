@@ -760,8 +760,10 @@ $single-col-centered-width: 74%;
     border-bottom: 0;
   }
   .entry {
+    page-break-inside: avoid;
+    break-inside: avoid;
     margin-bottom: 2.5rem !important;
-    .info a {
+    .meta a {
       color: var(--secondary-text-color);
     }
     .body {
@@ -778,7 +780,13 @@ $single-col-centered-width: 74%;
       border-bottom: 0;
     }
   }
-  .info, .info a {
+  .meta li {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  .meta, .meta a {
     color: var(--secondary-text-color);
   }
   .body {
@@ -847,13 +855,7 @@ blockquote.note {
   border-radius: 6px;
 }
 
-.intro {
-  hr {
-    margin: 2.75rem 0 1.5rem 0;
-  }
-}
-
-.resume {
+.resume-entry {
   page-break-inside: avoid;
   break-inside: avoid;
   h2, h4, p {
@@ -874,16 +876,43 @@ blockquote.note {
   }
 }
 
-.intro .middot::before {
-  content: " · ";
-  white-space: nowrap;
+.hero {
+  font-size: 120%;
+  hr {
+    margin: 2.75rem 0 1.5rem 0;
+  }
+}
+
+ul.h-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    display: inline;
+    white-space: nowrap;
+  }
+  li:not(:last-child)::after {
+    content: " · ";
+    color: var(--secondary-text-color);
+    white-space: nowrap;
+    margin-left: .2rem;
+    margin-right: .2rem;
+  }
+}
+
+@media print {
+  .resume .hero ul li:not(:last-child)::after {
+    content: " ";
+    margin-left: .5rem;
+    margin-right: .5rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .intro a {
+  .resume .hero ul li {
     display: block;
   }
-  .intro .middot::before {
-    display: none;
+  .resume .hero ul li:not(:last-child)::after {
+    content: none;
   }
 }

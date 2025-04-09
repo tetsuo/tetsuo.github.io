@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div class="single-col-grid intro">
+	<div class="single-col-grid hero">
 		<div class="col">
-			<div class="centered entry" style="font-size: 120%;">
+			<div class="centered entry">
 				<h1 style="border-bottom: 0">Hello, I'm Onur</h1>
 				<p>I write about the tools I use and the things I build.</p>
-				<p>
-					<a href="/resume.html">Resume</a> · <a href="https://www.github.com/tetsuo" target="_blank">GitHub</a>
-				</p>
+				<ul class="h-list">
+					<li><a href="/resume.html">Resume</a></li>
+					<li><a href="https://www.github.com/tetsuo" target="_blank">GitHub</a></li>
+				</ul>
 				<hr />
 			</div>
 		</div>
@@ -18,7 +19,10 @@
 			{% for entry in entries %}
 				<div class="centered entry" id="e-{{ entry.slug }}">
 					<h1><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
-					<div class="info">{{ locale.format_date(entry.published, full_format=True, shorter=True) }}{% if entry.tags %} &middot; {{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}{% end %}</div>
+					<ul class="h-list meta">
+						<li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
+						{% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
+					</ul>
 					<div class="body">
 						<p>{{ entry.description }} <a href="/{{ entry.slug }}.html">&rarr;</a></p>
 					</div>
