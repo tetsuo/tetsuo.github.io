@@ -8,14 +8,9 @@ public/*
 public/assets/*
 !public/*/
 !public/images
-!public/assets/og.svg
-!public/assets/og-logo.svg
+!public/404.html
 !public/assets/og-circle.svg
 !public/assets/tango.css
-!public/assets/fontello
-!public/assets/Code_Pro_Demo-webfont.ttf
 templates/manifest.webmanifest
 templates/favicons.html
 * copy.*
-!public/assets/meslo.css
-!public/assets/Meslo*.ttf
