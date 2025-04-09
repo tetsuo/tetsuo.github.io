@@ -1,9 +1,9 @@
 {
-  "debug": false,
+  "debug": true,
   "locale": "en_US",
-  "entriesPerPage": 100,
+  "entriesPerPage": 8,
   "templatePath": "templates",
-  "articlesPath": "articles/*.md",
+  "articlesPath": "articles/fortune.md",
   "siteName": "Onur Gündüz",
   "title": "Onur Gündüz",
   "authorName": "Onur Gündüz",
@@ -13,17 +13,5 @@
   "email": "ogunduz@gmail.com",
   "analyticsId": "UA-1238030-3",
   "showComments": false,
-  "buildImages": false,
-  "links": [
-    {
-      "url": "https://github.com/tetsuo",
-      "icon": "icon-github-circled",
-      "label": "GitHub"
-    },
-    {
-      "url": "https://twitter.com/xxy998",
-      "icon": "icon-twitter",
-      "label": "Twitter"
-    }
-  ]
+  "buildImages": false
 }

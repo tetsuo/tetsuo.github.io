@@ -268,7 +268,6 @@ class Settings:
     ga_id: str
     images: bool
     comments: bool
-    links: list[str]
     styles_id: str
 
 
@@ -503,7 +502,6 @@ def main(args=None):
             ga_id=c['analyticsId'],
             comments=c['showComments'],
             images=c['buildImages'],
-            links=c['links'],
             styles_id=styles_id,
         )
     ).run()
