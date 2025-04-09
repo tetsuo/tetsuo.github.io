@@ -10,6 +10,7 @@ public/assets/*
 !public/images
 !public/assets/og.svg
 !public/assets/og-logo.svg
+!public/assets/og-circle.svg
 !public/assets/tango.css
 !public/assets/fontello
 !public/assets/Code_Pro_Demo-webfont.ttf
