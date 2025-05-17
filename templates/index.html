@@ -24,7 +24,7 @@
 						{% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
 					</ul>
 					<div class="body">
-						<p>{{ entry.description }} <a href="/{{ entry.slug }}.html">&rarr;</a></p>
+						<p>{{ entry.description }}</p>
 					</div>
 				</div>
 			{% end %}
