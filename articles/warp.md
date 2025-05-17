@@ -2,9 +2,9 @@
 title: Experimenting with functional abstractions in Go
 cover_title: Experimenting with functional abstractions in Go
 description: Experimenting with Go's generics and their effectiveness in modeling functional abstractions
-tags: go,fp,lang
+tags: go,tutorial
 published: 2024-08-30T00:00:00
-updated: 2025-03-30T13:37:00
+updated: 2025-05-17T13:37:00
 ---
 
 > [**warp**](https://github.com/tetsuo/warp) is a tiny collection of functional data types built to experiment with Go's generics and their effectiveness in modeling functional abstractions.

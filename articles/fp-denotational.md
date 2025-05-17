@@ -2,9 +2,9 @@
 title: Thinking in Haskell
 description: The basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell
 cover_title: Thinking in Haskell
-tags: haskell,fp,lang
+tags: haskell,tutorial
 published: 2023-05-30T12:41:00
-updated: 2025-03-30T13:37:00
+updated: 2025-05-17T13:37:00
 ---
 
 > This post introduces the basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell.

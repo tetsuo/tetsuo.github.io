@@ -2,9 +2,9 @@
 title: Building a full-stack web app with fp-ts
 description: Full-stack client/server web app interacting with the TheMovieDB API
 cover_title: Building a full-stack web app with fp-ts
-tags: typescript,fp
+tags: typescript,tutorial
 published: 2023-01-25T12:41:00
-updated: 2025-03-30T13:37:00
+updated: 2025-05-17T13:37:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)

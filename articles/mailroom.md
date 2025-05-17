@@ -2,9 +2,9 @@
 title: Event-driven email delivery for user lifecycle flows
 cover_title: Event-driven email delivery for user lifecycle flows
 description: Manage account lifecycles and batch-process operations—such as activation and password resets—using PostgreSQL triggers and notifications
-tags: database,c,sql,rust
+tags: sql,c,rust,tutorial
 published: 2024-11-17T00:00:00
-updated: 2025-03-30T13:37:00
+updated: 2025-05-17T13:37:00
 ---
 
 > [**mailroom**](https://github.com/tetsuo/mailroom/) manages activation, recovery, and other lifecycle emails using PostgreSQL triggers and real-time batching.

@@ -2,9 +2,9 @@
 title: Wire-safe framing for multiplexed binary streams
 cover_title: Wire-safe framing for multiplexed binary streams
 description: Message parsing for applications that require structured, channel-aware transmission over continuous byte input
-tags: go,net
+tags: go,tool
 published: 2023-01-07T21:25:00
-updated: 2025-03-30T13:37:00
+updated: 2025-05-17T13:37:00
 ---
 
 > [**binproto**](https://github.com/tetsuo/binproto) simplifies message parsing for applications that require structured, channel-aware transmission over continuous byte input.

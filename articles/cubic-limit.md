@@ -2,9 +2,9 @@
 title: Cubic Limit reimplemented with Effect
 cover_title: Cubic Limit reimplemented with Effect
 description: Recreating Manfred Mohr's iconic artwork Cubic Limit, P-161 with TypeScript and Effect using a fully functional rendering pipeline
-tags: typescript,fp
+tags: typescript,tutorial
 published: 2025-02-08T14:55:00
-updated: 2025-03-30T13:37:00
+updated: 2025-05-17T13:37:00
 ---
 
 > This post walks through the process of recreating Manfred Mohr's iconic artwork **Cubic Limit, P-161** with **TypeScript** and [**Effect**](https://effect.website/) using a fully functional rendering pipeline.

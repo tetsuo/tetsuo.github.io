@@ -2,9 +2,9 @@
 title: CouchDB design document bundler
 cover_title: CouchDB design document bundler
 description: Couchilla is a bundler for packing design documents for CouchDB with CommonJS support
-tags: javascript,couchdb,database
+tags: javascript,couchdb,tool
 published: 2023-01-02T14:55:00
-updated: 2025-03-30T13:37:00
+updated: 2025-05-17T13:37:00
 ---
 
 > [**couchilla**](https://github.com/tetsuo/couchilla) is a bundler for packing design documents for CouchDB with CommonJS support.
