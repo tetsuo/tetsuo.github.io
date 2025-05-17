@@ -1,6 +1,6 @@
 ---
-title: Wire-safe framing for multiplexed binary streams
-cover_title: Wire-safe framing for multiplexed binary streams
+title: Wire-safe framing protocol for multiplexed binary streams
+cover_title: Wire-safe framing protocol for multiplexed binary streams
 description: Message parsing for applications that require structured, channel-aware transmission over continuous byte input
 tags: go,tool
 published: 2023-01-07T21:25:00
@@ -15,7 +15,7 @@ While Go's standard library offers a convenient framework for handling text-base
 
 ## Length-prefix framing
 
-Internally, binproto leverages a streaming state machine inspired by the [hypercore wire protocol](https://dat-ecosystem-archive.github.io/how-dat-works/#wire-protocol). Over the wire each message is packed in the following format:
+Internally, binproto leverages a streaming state machine inspired by the [hypercore wire protocol](https://dat-ecosystem-archive.github.io/how-dat-works/#wire-protocol). Each message is packed in the following format:
 
 ```
 ╔──────────────────────────────────────────────╗
@@ -24,7 +24,7 @@ Internally, binproto leverages a streaming state machine inspired by the [hyperc
            └─ 60-bits   └─ 4-bits
 ```
 
-This simple structure prefaces each message with its size, enabling binproto to efficiently determine message boundaries within a continuous byte stream.
+_Length-prefix framing_ is a technique that prepends each message with its length, allowing the receiver to efficiently determine message boundaries within a continuous byte stream.
 
 ## Message structure
 

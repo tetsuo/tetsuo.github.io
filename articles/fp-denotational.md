@@ -173,6 +173,71 @@ M⟦Move⟧ : Pos → Pos
  M⟦s;m⟧ = M⟦m⟧ ∘ S⟦s⟧
 ```
 
+# Implementing Move in Haskell
+
+The Move language can be implemented directly in Haskell by mirroring its BNF grammar with algebraic data types and defining its semantics as pure functions.
+
+```haskell
+-- Abstract syntax
+data Dir = N | S | E | W
+
+data Step = Go Dir Int
+
+data Move
+  = Empty
+  | Seq Step Move
+
+-- Semantics: total distance
+stepDist :: Step -> Int
+stepDist (Go _ k) = k
+
+moveDist :: Move -> Int
+moveDist Empty       = 0
+moveDist (Seq s m)   = stepDist s + moveDist m
+
+-- Semantics: final position
+type Pos = (Int, Int)
+
+stepPos :: Step -> Pos -> Pos
+stepPos (Go N k) (x, y) = (x    , y + k)
+stepPos (Go S k) (x, y) = (x    , y - k)
+stepPos (Go E k) (x, y) = (x + k, y    )
+stepPos (Go W k) (x, y) = (x - k, y    )
+
+movePos :: Move -> Pos -> Pos
+movePos Empty       p = p
+movePos (Seq s m)   p = movePos m (stepPos s p)
+```
+
+To test it, save the code as `Move.hs` and run `ghci Move.hs`.
+
+Then define a program:
+
+```haskell
+let prog = Seq (Go E 3) (Seq (Go N 4) (Seq (Go S 1) Empty))
+```
+
+Total distance traveled:
+
+```haskell
+moveDist prog
+-- 8
+```
+
+Final position from the origin:
+
+```haskell
+movePos prog (0, 0)
+-- (3, 3)
+```
+
+Final position from an arbitrary point:
+
+```haskell
+movePos prog (10, -2)
+-- (13, 1)
+```
+
 # Further reading
 
 - [Haskell/Denotational semantics](https://en.wikibooks.org/wiki/Haskell/Denotational_semantics)
