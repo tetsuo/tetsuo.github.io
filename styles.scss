@@ -892,11 +892,18 @@ ul.h-list {
     white-space: nowrap;
   }
   li:not(:last-child)::after {
-    content: " · ";
+    content: " ";
     color: var(--secondary-text-color);
     white-space: nowrap;
-    margin-left: .2rem;
-    margin-right: .2rem;
+    margin-left: .35rem;
+    margin-right: .35rem;
+  }
+  &.meta {
+    li:not(:last-child)::after {
+      content: " · ";
+      margin-left: .2rem;
+      margin-right: .2rem;
+    }
   }
 }
 
