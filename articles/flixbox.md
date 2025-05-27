@@ -4,20 +4,18 @@ description: Full-stack client/server web app interacting with the TheMovieDB AP
 cover_title: Building a full-stack web app with fp-ts
 tags: typescript,starter
 published: 2023-01-25T12:41:00
-updated: 2025-05-17T13:37:00
+updated: 2025-05-27T13:37:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
 
-> [**flixbox**](https://www.github.com/tetsuo/flixbox) showcases a full-stack client/server web application interacting with the [TheMovieDB](https://www.themoviedb.org/) API. It leverages the functional programming library [fp-ts](https://gcanti.github.io/fp-ts/) and its [module ecosystem](https://gcanti.github.io/fp-ts/ecosystem/).
+> [**flixbox**](https://www.github.com/tetsuo/flixbox) showcases a full-stack web application and API that interacts with [TheMovieDB](https://www.themoviedb.org/). It's built entirely using [fp-ts](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of libraries.
 
-[fp-ts](https://gcanti.github.io/fp-ts/) brings [typeclasses](https://en.wikipedia.org/wiki/Type_class) and [higher kinded types](https://en.wikipedia.org/wiki/Kind_(type_theory)), concepts from functional programming languages like [Haskell](https://www.haskell.org/) and [PureScript](https://www.purescript.org/), to [TypeScript](https://www.typescriptlang.org/). The entire flixbox application, including the server-side API, is built using libraries from the [fp-ts module ecosystem](https://gcanti.github.io/fp-ts/ecosystem/).
-
-## Overview of the HTTP API
+# API overview
 
 #### Requests and data formats
 
-All flixbox API requests are HTTP GET requests, and responses are exclusively in JSON format. No authentication is required.
+All flixbox API requests are HTTP GET requests, and responses are in JSON format.
 
 #### Errors
 

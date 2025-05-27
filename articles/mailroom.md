@@ -1,15 +1,17 @@
 ---
-title: Event-driven email delivery for user lifecycle flows
-cover_title: Event-driven email delivery for user lifecycle flows
+title: Handling user email flows with database events
+cover_title: Handling user email flows with database events
 description: Manage account lifecycles and batch-process operations—such as activation and password resets—using PostgreSQL triggers and notifications
 tags: sql,c,rust,tutorial
 published: 2024-11-17T00:00:00
-updated: 2025-05-17T13:37:00
+updated: 2025-05-27T13:37:00
 ---
 
-> [**mailroom**](https://github.com/tetsuo/mailroom/) manages activation, recovery, and other lifecycle emails using PostgreSQL triggers and real-time batching.
+> [**mailroom**](https://github.com/tetsuo/mailroom/) is a lifecycle email service that listens to PostgreSQL triggers and batches transactional messages in response to data changes.
 
-We'll begin with the database **schema** and **triggers** to automatically manage user accounts and track their lifecycle changes using a poor man's job queue built on PostgreSQL. Next, we'll leverage **notification events** and develop a **collector** service (using **libpq**) to efficiently process the accumulated action data (e.g., tokens) in batches. Let's dive in.
+In this post, I walk through how it's built, the problems it solves, and the trade-offs that come with the approach.
+
+First, we'll set up the schema and triggers to track user lifecycle changes using a simple PostgreSQL-backed queue. Then, we'll build a collector with libpq to consume notification events and process action tokens in batches. Let's dive in.
 
 # Schema overview
 

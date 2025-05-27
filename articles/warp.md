@@ -1,19 +1,21 @@
 ---
 title: Experimenting with functional abstractions in Go
 cover_title: Experimenting with functional abstractions in Go
-description: Experimenting with Go's generics and their effectiveness in modeling functional abstractions
+description: Experimenting with Go's generics and their practicality in modeling common FP patterns without higher-kinded types.
 tags: go,tutorial
 published: 2024-08-30T00:00:00
-updated: 2025-05-17T13:37:00
+updated: 2025-05-27T13:37:00
 ---
 
-> [**warp**](https://github.com/tetsuo/warp) is a tiny collection of functional data types built to experiment with Go's generics and their effectiveness in modeling functional abstractions.
+> [**warp**](https://github.com/tetsuo/warp) is a collection of functional data types built to explore Go 1.18 [generics](https://go.dev/blog/intro-generics) and their practicality in modeling common FP patterns without higher-kinded types.
 
 The introduction of [**generics**](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling parametric polymorphism—has greatly expanded the language's potential for unlocking new functional paradigms, offering an exciting new playground for nerds like myself to explore.
 
-I built this library to experiment with functional patterns in Go, particularly around generics and type-safe composition. At the time, Go lacked native support for function-based iteration, but that changed in Go 1.23 with the introduction of [**range over function types**](https://go.dev/blog/range-functions), providing a built-in alternative to the approach used here. Furthermore, a recent [proposal](https://github.com/golang/go/issues/61898) aims to introduce the `golang.org/x/exp/xiter` package, which appears to include a set of combinators similar to those implemented in `warp`. Naturally, these advancements render libraries like this obsolete, as Go now provides a more idiomatic and significantly more performant solution.
+Let's begin by comparing polymorphism in Haskell and Go.
 
-Nevertheless, let's begin by comparing polymorphism in Haskell and Go.
+#### ⚠️ Go 1.23 update
+
+At the time I wrote this post, Go lacked native support for function-based iteration, but that changed in Go 1.23 with the introduction of [**range over function types**](https://go.dev/blog/range-functions), providing a built-in alternative to the approach used here. In addition, a recent [proposal](https://github.com/golang/go/issues/61898) aims to introduce the `golang.org/x/exp/xiter` package, which appears to include a set of combinators similar to those in `warp`. Naturally, these advancements render libraries like this obsolete, as Go now provides a more idiomatic and significantly more performant solution.
 
 # Polymorphism in Haskell
 

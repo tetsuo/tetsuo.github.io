@@ -1,13 +1,13 @@
 ---
-title: Lightweight Go backend on GCP with built-in observability
-cover_title: Lightweight Go backend on GCP with built-in observability
+title: Fortunes as a service
+cover_title: Fortunes as a service
 description: Intentionally boring, production-ready Go service that serves up random fortune cookies
 tags: go,starter
 published: 2025-03-31T00:00:00
-updated: 2025-05-17T13:37:00
+updated: 2025-05-27T13:37:00
 ---
 
-> [**fortune**](https://github.com/tetsuo/fortune) is an intentionally boring, production-ready Go service that serves random fortune cookies over HTTP.
+> [**fortune**](https://github.com/tetsuo/fortune) is a lightweight, ops-ready Go service that delivers random fortune cookies over HTTP.
 
 It's built with minimal dependencies and reuses internals from [**pkgsite**](https://go.googlesource.com/pkgsite/) (the Go package index), adapted to work with MySQL. The service runs on a lean, GCP-native stack with full observability—logging, metrics, tracing, and profiling included. The goal is to show what a Go backend can look like when it's easy to understand, straightforward to deploy, and ready for real use.
 

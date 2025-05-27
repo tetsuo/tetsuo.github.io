@@ -1,21 +1,17 @@
 ---
-title: Wire-safe framing protocol for multiplexed binary streams
-cover_title: Wire-safe framing protocol for multiplexed binary streams
+title: Multiplexed binary protocol in Go
+cover_title: Multiplexed binary protocol in Go
 description: Message parsing for applications that require structured, channel-aware transmission over continuous byte input
 tags: go,tool
 published: 2023-01-07T21:25:00
-updated: 2025-05-17T13:37:00
+updated: 2025-05-27T13:37:00
 ---
 
-> [**binproto**](https://github.com/tetsuo/binproto) simplifies message parsing for applications that require structured, channel-aware transmission over continuous byte input.
+> [**binproto**](https://github.com/tetsuo/binproto) implements binary message framing using a length-prefixed format with support for multiplexed streams.
 
-The Transmission Control Protocol (TCP) ensures reliable delivery of byte streams between devices, but interpreting this data stream (whether text or binary) and converting it into meaningful messages is left to application-level protocols.
+## Message structure
 
-While Go's standard library offers a convenient framework for handling text-based protocols (like HTTP and SMTP) with [net/textproto](https://pkg.go.dev/net/textproto), there's no widely agreed-upon approach for dividing a long stream of bytes into discrete messages.
-
-## Length-prefix framing
-
-Internally, binproto leverages a streaming state machine inspired by the [hypercore wire protocol](https://dat-ecosystem-archive.github.io/how-dat-works/#wire-protocol). Each message is packed in the following format:
+It encodes each message with a 64-bit header: a length prefix followed by a packed channel ID and type.
 
 ```
 ╔──────────────────────────────────────────────╗
@@ -24,16 +20,8 @@ Internally, binproto leverages a streaming state machine inspired by the [hyperc
            └─ 60-bits   └─ 4-bits
 ```
 
-_Length-prefix framing_ is a technique that prepends each message with its length, allowing the receiver to efficiently determine message boundaries within a continuous byte stream.
-
-## Message structure
-
-Each message includes a header, which is a variable-length encoded (varint) unsigned 64-bit integer, containing:
-
 * **Channel ID (first 60 bits)**: Identifies the specific channel for the message.
 * **Channel Type (last 4 bits)**: Specifies the type of data in the message.
-
-Header is followed by the message payload.
 
 ## Configurable buffer size
 
