@@ -153,9 +153,16 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
             continue
         img['src'] = "https://" + domain_name + "/images/" + img_filename
 
-        img_path = "public/images/" + img_filename
+        img_path = os.path.join("public", "images", img_filename)
+
         if not os.path.exists(img_path):
             raise FileNotFoundError(f"Image not found: {img_path}")
+
+        print(f"Found image: {img_path}")
+        print(f"Size: {os.path.getsize(img_path)} bytes")
+        print(f"Is symlink? {os.path.islink(img_path)}")
+        print(f"Magic file info:")
+        os.system(f"file '{img_path}'")
 
         with Image(filename=img_path) as f:
             width = f.width
