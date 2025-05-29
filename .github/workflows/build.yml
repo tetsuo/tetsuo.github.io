@@ -42,6 +42,17 @@ jobs:
             ${{ runner.OS }}-node${{ matrix.node-version }}-build-
             ${{ runner.OS }}-node${{ matrix.node-version }}-
 
+      - name: Install system dependencies for ImageMagick and SVG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            imagemagick \
+            librsvg2-bin \
+            libmagickwand-dev
+
+      - name: Verify ImageMagick SVG support
+        run: convert -list format | grep SVG
+
       - name: Install python requirements
         run: pip install -r requirements.txt
 
