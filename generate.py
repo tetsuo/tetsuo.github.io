@@ -152,7 +152,12 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
         if '.' == dirname:
             continue
         img['src'] = "https://" + domain_name + "/images/" + img_filename
-        with Image(filename="public/images/" + img_filename) as f:
+
+        img_path = "public/images/" + img_filename
+        if not os.path.exists(img_path):
+            raise FileNotFoundError(f"Image not found: {img_path}")
+
+        with Image(filename=img_path) as f:
             width = f.width
             height = f.height
             mimetype = f.mimetype
