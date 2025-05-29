@@ -11,7 +11,7 @@ updated: 2025-05-27T13:37:00
 
 Shown below is a replica of [**P-161**](http://www.emohr.com/mohr_cube1_161.html) (six edges), originally part of a 13-piece plotter drawing series from 1975, which is widely recognized as a pioneering work in algorithmic art.
 
-[![mohr-p161](./cubiclimit.jpg)](https://ogu.nz/f/cubiclimit.html)
+[![mohr-p161](./cubiclimit.jpg)](https://tetsuo.github.io/f/cubiclimit.html)
 
 ### Clone the repository
 

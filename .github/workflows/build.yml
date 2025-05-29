@@ -1,144 +1,65 @@
 name: build
 
-on: [push]
+concurrency:
+  group: build-${{ github.head_ref }}
+  cancel-in-progress: true
+on:
+  workflow_dispatch:
+
 
 jobs:
-
   linux:
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-      GANDI_API_KEY: ${{ secrets.GANDI_API_KEY }}
-      PUBLIC_S3_BUCKET_NAME: ${{ secrets.DOMAIN_NAME }}-public
-      TF_S3_BUCKET_NAME: ${{ secrets.DOMAIN_NAME }}-tfstate
-      TF_VAR_domain_name: ${{ secrets.DOMAIN_NAME }}
-      TF_VAR_region: ${{ secrets.AWS_DEFAULT_REGION }}
-      TF_VAR_gandi_api_key: ${{ secrets.GANDI_API_KEY }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.16.0]
-        python-version: [3.9]
+        node-version: [22.14.0]
+        python-version: [3.10]
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Check out code
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.2.3
-        terraform_wrapper: false # https://github.com/hashicorp/setup-terraform/issues/20
+      - name: Set up NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Set up NodeJS
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Set up node modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-node${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node${{ matrix.node-version }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-node${{ matrix.node-version }}-build-
+            ${{ runner.OS }}-node${{ matrix.node-version }}-
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+      - name: Install python requirements
+        run: pip install -r requirements.txt
 
-    - name: Setup node modules cache
-      uses: actions/cache@v2
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-node${{ matrix.node-version }}-build-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node${{ matrix.node-version }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-node${{ matrix.node-version }}-build-
-          ${{ runner.OS }}-node${{ matrix.node-version }}-
+      - name: Install modules
+        run: npm install && npm install --save-dev @rollup/rollup-linux-x64-gnu
 
-    - name: Setup Terraform cache
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-terraform-providers
-      with:
-        path: ${{ github.workspace }}/terraform/.terraform
-        key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
-        restore-keys: |
-          ${{ runner.os }}-terraform-${{ env.cache-name }}-
-          ${{ runner.os }}-terraform-
+      - name: Build favicons
+        run: |
+          ./generate-favicons.js favicon.svg
 
-    - name: Install python requirements
-      run: pip install -r requirements.txt
+      - name: Build pages
+        run: python generate.py config.json
 
-    - name: Install node modules
-      run: npm install
+      - name: Build styles
+        run: npm run sass
 
-    - name: Build favicons
-      run: |
-        mkdir -p tmp
-        convert -size 2049x2049 "xc:rgba(0,0,0,0)" \
-          -set colorspace RGB \
-          -fill none -stroke '#666666' -strokewidth 175 \
-          -draw "line 100,424 1949,424" \
-          -draw "line 100,824 1949,824" \
-          -draw "line 100,1224 1949,1224" \
-          -draw "line 100,1624 1500,1624" \
-          tmp/favicon.png
-        ./generate-favicons.js tmp/favicon.png
-
-    - name: Build pages
-      run: python generate.py config.json
-
-    - name: Build styles
-      run: npm run sass
-
-    - name: Verify Terraform S3 backend
-      run: |
-        aws s3 ls "s3://$TF_S3_BUCKET_NAME" || \
-          aws s3api create-bucket \
-            --bucket "$TF_S3_BUCKET_NAME" \
-            --region "$AWS_DEFAULT_REGION" \
-            --create-bucket-configuration LocationConstraint="$AWS_DEFAULT_REGION"
-
-    - name: Terraform Init
-      run: |
-        (cd terraform && terraform init \
-          -backend=true \
-          -backend-config="bucket=$TF_S3_BUCKET_NAME" \
-          -backend-config="region=$AWS_DEFAULT_REGION")
-
-    - name: Terraform Validate
-      run: (cd terraform && terraform validate -no-color)
-
-    - name: Terraform Fmt
-      run: (cd terraform && terraform fmt -check)
-
-    - name: Terraform Plan
-      run: |
-        mkdir -p priv
-        cd terraform
-        terraform plan \
-          -var domain_name=$TF_VAR_domain_name \
-          -var aws_region=$TF_VAR_region \
-          -var gandi_api_key=$TF_VAR_gandi_api_key \
-          -out=../priv/tf-plan
-
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: (cd terraform && terraform apply ../priv/tf-plan)
-
-    - name: Sync public S3 bucket # https://github.com/terraform-providers/terraform-provider-aws/issues/13393
-      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: |
-        YES=1 ./sync-public-bucket .
-        # DISTRIBUTION_ID=$(aws cloudfront list-distributions | jq -r --arg NAME "$DOMAIN_NAME" '(.DistributionList.Items[] | select(.Aliases.Items[0] == $NAME)).Id')
-        # aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*"
-
-    - name: Clean artifacts
-      run: rm -fr priv public_bucket_policy.json
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: public
-        path: public/**/*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: public
+          path: public/**/*

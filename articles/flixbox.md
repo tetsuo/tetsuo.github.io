@@ -7,7 +7,7 @@ published: 2023-01-25T12:41:00
 updated: 2025-05-27T13:37:00
 ---
 
-[![flixbox - Search movie trailers](./flixbox.jpg)](https://ogu.nz/wr/flixbox.html)
+[![flixbox - Search movie trailers](./flixbox.jpg)](https://tetsuo.github.io/wr/flixbox.html)
 
 > [**flixbox**](https://www.github.com/tetsuo/flixbox) showcases a full-stack web application and API that interacts with [TheMovieDB](https://www.themoviedb.org/). It's built entirely using [fp-ts](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of libraries.
 
