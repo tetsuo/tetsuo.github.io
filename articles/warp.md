@@ -1,21 +1,15 @@
 ---
-title: Experimenting with functional abstractions in Go
-cover_title: Experimenting with functional abstractions in Go
-description: Experimenting with Go's generics and their practicality in modeling common FP patterns without higher-kinded types.
+title: Functional abstractions in Go
+cover_title: Functional abstractions in Go
+description: Experimenting with Go's generics and their practicality in modeling common FP patterns
 tags: go,tutorial
 published: 2024-08-30T00:00:00
-updated: 2025-05-27T13:37:00
+updated: 2025-05-30T13:37:00
 ---
 
-> [**warp**](https://github.com/tetsuo/warp) is a collection of functional data types built to explore Go 1.18 [generics](https://go.dev/blog/intro-generics) and their practicality in modeling common FP patterns without higher-kinded types.
-
-The introduction of [**generics**](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling parametric polymorphism—has greatly expanded the language's potential for unlocking new functional paradigms, offering an exciting new playground for nerds like myself to explore.
+> The introduction of [**generics**](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling parametric polymorphism—has greatly expanded the language's potential for unlocking functional paradigms, offering an exciting new playground for nerds like myself to explore.
 
 Let's begin by comparing polymorphism in Haskell and Go.
-
-#### ⚠️ Go 1.23 update
-
-At the time I wrote this post, Go lacked native support for function-based iteration, but that changed in Go 1.23 with the introduction of [**range over function types**](https://go.dev/blog/range-functions), providing a built-in alternative to the approach used here. In addition, a recent [proposal](https://github.com/golang/go/issues/61898) aims to introduce the `golang.org/x/exp/xiter` package, which appears to include a set of combinators similar to those in `warp`. Naturally, these advancements render libraries like this obsolete, as Go now provides a more idiomatic and significantly more performant solution.
 
 # Polymorphism in Haskell
 
@@ -119,39 +113,47 @@ In Go, even with generics, we can't express this level of abstraction. We can wr
 
 # Representing monads in Go
 
-In Haskell, a `Result` type might look like this:
+Monads in Haskell are typically defined using algebraic data types that encapsulate computations, like:
 
 ```haskell
 data Result a = Ok a | Error String
 ```
 
-In Go, since type constructors are not directly expressible, `Result[A]` is instead modeled as a **function type**:
-
-```go
-type Result[A any] func(context.Context) (A, error)
-```
-
-This function-based approach provides **lazy evaluation**, since computations are only executed when the function is called with a `context.Context`.
-
-Similarly, in Haskell, an **event stream** could be modeled as:
+which represent computations that may succeed or fail, or
 
 ```haskell
 data Event a = Event (IO a)
 ```
 
-Whereas in Go, an `Event[A]` is again represented as a **function** that takes a context and a channel:
+which represent asynchronous computations or event streams.
+
+Go doesn't have native support for type constructors or ADTs like Haskell does. Instead, the closest approximation is to use **function types** that encapsulate computations. This lets us represent monadic computations as first-class functions carrying the context and data flow.
+
+For a `Result[A]` monad (similar to Haskell’s `Result a`), we model it as:
+
+```go
+type Result[A any] func(context.Context) (A, error)
+```
+
+This is a function that, given a `context.Context`, returns either a value of type `A` or an error.
+
+Similarly, for an event stream monad, we can represent it as a function that takes a context and a channel to push results to:
 
 ```go
 type Event[A any] func(context.Context, chan<- A)
 ```
 
-# Types
+# warp
 
-These are the types provided by `warp`. See the full documentation at [pkg.go.dev](https://pkg.go.dev/github.com/tetsuo/warp).
+To see how this works in practice, I implemented a small set of monads in Go. These are the types provided by [**warp**](https://github.com/tetsuo/warp).
+
+>> #### ⚠️ Go 1.23 Update
+>>
+>> **warp** explores functional patterns in Go from the perspective of the language's capabilities **prior to Go 1.23**. With that release, native support for function-based iteration became available through [**range over function types**](https://go.dev/blog/range-functions). Additionally, a [proposal](https://github.com/golang/go/issues/61898) is underway for `golang.org/x/exp/xiter` to introduce similar combinators as part of the standard package. These advancements mean the straightforward first-class function approach demonstrated in this package has now been superseded by more idiomatic and performant Go solutions.
 
 ### `IO[A]`
 
-An `IO` represents a computation that never fails and yields a value of type `A`.
+An [`IO`](https://github.com/tetsuo/warp/blob/master/io/io.go) represents a computation that never fails and yields a value of type `A`.
 
 It encapsulates a delayed computation, ensuring that side effects (such as I/O operations) are only executed when the function is invoked.
 
@@ -161,7 +163,7 @@ type IO[A any] func() A
 
 ### `Result[A]`
 
-A `Result` represents a computation that either yields a value of type `A` or an error—in other words, a computation that either succeeds or fails.
+A [`Result`](https://github.com/tetsuo/warp/blob/master/result/result.go) represents a computation that either yields a value of type `A` or an error—in other words, a computation that either succeeds or fails.
 
 This enables safe chaining of operations while handling errors in a functional way.
 
@@ -171,7 +173,7 @@ type Result[A any] func(context.Context) (A, error)
 
 ### `Event[A]`
 
-An `Event` represents a collection of discrete occurrences of values over time.
+An [`Event`](https://github.com/tetsuo/warp/blob/master/event/event.go) represents a collection of discrete occurrences of values over time.
 
 It models asynchronous data streams and allows functional composition of event-driven logic.
 
@@ -181,11 +183,13 @@ type Event[A any] func(context.Context, chan<- A)
 
 ### `Future[A]`
 
-A `Future` represents a collection of discrete occurrences of events with associated values or errors.
+A [`Future`](https://github.com/tetsuo/warp/blob/master/future/future.go) represents a collection of discrete occurrences of events with associated values or errors.
 
 ```go
 type Future[A any] Event[Result[A]]
 ```
+
+> 📄 **See the full warp documentation at [pkg.go.dev](https://pkg.go.dev/github.com/tetsuo/warp).**
 
 # Examples
 
