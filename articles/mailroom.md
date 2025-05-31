@@ -1,6 +1,6 @@
 ---
-title: Building a transactional email queue with PostgreSQL triggers
-cover_title: Building a transactional email queue with postgresql triggers
+title: Building a transactional email service with PostgreSQL triggers
+cover_title: Building a transactional email service with PostgreSQL triggers
 description: How PostgreSQL alone can handle your account activation and password reset workflows without relying on a message broker
 tags: sql,c,rust,tutorial
 published: 2024-11-17T00:00:00
@@ -9,7 +9,7 @@ updated: 2025-05-30T13:37:00
 
 > How PostgreSQL alone can handle your account activation and password reset workflows without relying on a message broker.
 
-[**mailroom**](https://github.com/tetsuo/mailroom/) is a transactional email system that leverages PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect changes in account status and batch-process related email notifications.
+[**mailroom**](https://github.com/tetsuo/mailroom/) is a transactional email system designed for user lifecycle communications. It leverages PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect changes in account status and batch-process related email notifications.
 
 In this post, I walk through how it's built, the problems it solves, and the trade-offs that come with the approach.
 
