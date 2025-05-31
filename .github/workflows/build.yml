@@ -26,6 +26,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Workaround for GitHub bug - preload upload-artifact@v3
+      - name: Workaround for upload-artifact v3 resolution issue
+        uses: actions/upload-artifact@v3
+        with:
+          name: noop
+          path: .gitignore
+          if-no-files-found: ignore
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
