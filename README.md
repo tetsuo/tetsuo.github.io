@@ -1,8 +1,8 @@
-# website
+# tetsuo.github.io
 
-Source code for [ogu.nz](https://ogu.nz), a static site generator built with Python, HTML, SCSS, and JavaScript. Infrastructure managed with Terraform.
+Source code for [tetsuo.github.io](https://tetsuo.github.io), a static site generator built with Python, HTML, SCSS, and JavaScript.
 
-## Features
+### Features
 
 - Static site generation with Markdown support.
 - Article and tag management.
@@ -13,7 +13,7 @@ Source code for [ogu.nz](https://ogu.nz), a static site generator built with Pyt
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/tetsuo/website.git
+   git clone https://github.com/tetsuo/tetsuo.github.io.git
    ```
 2. Install dependencies:
    ```sh
@@ -23,18 +23,6 @@ Source code for [ogu.nz](https://ogu.nz), a static site generator built with Pyt
 
 ## Usage
 
-- Generate favicons:
-  ```sh
-  convert -size 2049x2049 "xc:rgba(0,0,0,0)" -set colorspace RGB \
-  -fill '#fff' -stroke '#0000ff' -strokewidth 300 -draw 'circle 1024,1024 1024,153' \
-  -fill 'black' -stroke '#1ba9e4' -strokewidth 290 -draw 'circle 1024,1024 760,760' \
-  -alpha set -background none \
-  -wave 100x1900 \
-  -colorspace sRGB \
-  -distort SRT 8 \
-  tmp/circle_sRGB.png && \
-  ./generate-favicons.js tmp/circle_sRGB.png
-  ```
 - Build pages:
   ```sh
   python generate.py
@@ -43,14 +31,7 @@ Source code for [ogu.nz](https://ogu.nz), a static site generator built with Pyt
   ```sh
   npm run sass
   ```
-- Upload to S3 using the provided sync script:
+- Generate favicons:
   ```sh
-  PUBLIC_S3_BUCKET_NAME="somebucket" \
-  DOMAIN_NAME="example.com" \
-  YES=1 \
-  ./sync-public-bucket .
+  node generate-favicons.js favicon.svg
   ```
-
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.
