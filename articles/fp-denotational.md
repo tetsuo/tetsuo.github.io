@@ -4,12 +4,12 @@ description: The basics of denotational semantics and how it provides a mathemat
 cover_title: Thinking in Haskell
 tags: haskell,tutorial
 published: 2023-05-30T12:41:00
-updated: 2025-05-17T13:37:00
+updated: 2025-05-30T13:37:00
 ---
 
-> This post introduces the basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell.
+> The basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell.
 
-In Haskell, a **function** is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example demonstrating the Fibonacci sequence.
+In Haskell, a function is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example demonstrating the Fibonacci sequence.
 
 ```haskell
 fib :: Integer -> Integer
@@ -22,11 +22,13 @@ This defines `fib` as a function that takes an integer `n` and returns the nth F
 
 This view of a function is called **denotational**. We define its "meaning" by describing the relationships between inputs and outputs, as opposed to **operational semantics**, where functions are seen as sequences of _operations_ executed over time.
 
-In this framework, every expression in Haskell corresponds to a mathematical object. For instance, both `fib 1` and `5-4` _denote_ the same integer value, 1. This property is a cornerstone of **referential transparency**, meaning that any expression can be replaced by its corresponding value without altering the overall behavior of the program.
+## Referential transparency
 
-# Referential transparency
+In this framework, every Haskell expression corresponds to a mathematical object. For example, both `fib 1` and `5 - 4` _denote_ the same value: 1. This may sound simple, but it's actually the cornerstone of something called **referential transparency**, meaning that any expression can be replaced by its corresponding value without altering the overall behavior of the program.
 
-To illustrate referential transparency, consider a simple addition function. It is fully referentially transparent because it always returns a value based solely on its inputs. Contrast this with a division function:
+To illustrate referential transparency, consider a simple addition function first. It is fully referentially transparent because it always returns a value based solely on its inputs.
+
+Contrast this with a division function:
 
 ```haskell
 > 10 `div` 2
@@ -37,7 +39,9 @@ To illustrate referential transparency, consider a simple addition function. It 
 
 Here, division by zero causes an exception. The function itself is referentially transparent only when it is total—that is, defined for every possible input. In the case of division, the operation is **partial** (it does not provide an output for every input), which is why we see an exception when the divisor is zero.
 
-To address partiality, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. This type can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`), ensuring that functions like division become total functions:
+### Maybe maybe maybe
+
+To address partiality such as this one, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. This type can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`), ensuring that functions like division become total functions:
 
 ```haskell
 data Maybe a = Just a | Nothing
@@ -47,11 +51,11 @@ safeDiv _ 0 = Nothing
 safeDiv a b = Just (a `div` b)
 ```
 
-By eliminating exceptions and other side effects, languages like Haskell ensure that every function has a well-defined mathematical meaning, which brings us to the heart of our discussion.
+By eliminating exceptions and other side effects, languages like Haskell guarantee that every function has a precise mathematical meaning, which brings us to the core of our discussion.
 
-# Denotational semantics in a nutshell
+# Denotational semantics
 
-Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
+Now, imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
 
 ```
 ⟦E⟧ : V
@@ -104,7 +108,7 @@ The evaluation function, or **valuation function**, assigns a mathematical meani
 
 # Move language
 
-Having seen how denotational semantics formalizes the behavior of mathematical expressions, let's examine its application in another domain. Consider a simple domain-specific language (DSL) for controlling a robot, called **Move**.
+Having seen how denotational semantics formalizes the behavior of mathematical expressions, let's examine its application in another domain. Consider a simple DSL for controlling a robot, called **Move**.
 
 The Move language specifies commands such as `go E 3`, which instruct a robot to move a given number of steps in a specified direction:
 

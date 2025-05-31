@@ -4,18 +4,16 @@ cover_title: CouchDB design document bundler
 description: Couchilla is a bundler for packing design documents for CouchDB with CommonJS support
 tags: javascript,couchdb,tool
 published: 2023-01-02T14:55:00
-updated: 2025-05-17T13:37:00
+updated: 2025-05-30T13:37:00
 ---
 
 > [**couchilla**](https://github.com/tetsuo/couchilla) is a bundler for packing design documents for CouchDB with CommonJS support.
 
-In [CouchDB](https://couchdb.apache.org/), [design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are special database entries that contain JavaScript functions, such as _views_ and _updates_. These functions, executed on demand, generate secondary indexes, often termed MapReduce views.
+In [CouchDB](https://couchdb.apache.org/), [design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are special database entries that contain JavaScript functions, such as _view_ and _update_ functions. These functions, executed on demand, generate secondary indexes, often termed MapReduce views.
 
-Although CouchDB supports JavaScript and Erlang, design functions themselves are language-independent, which is why CouchDB doesn't include a dedicated tool for creating design documents.
+JavaScript support in CouchDB is based on the Mozilla SpiderMonkey engine (and, starting with version 3.4.1, also QuickJS). However, because design functions are language-independent, CouchDB does not include a dedicated tool for creating design documents.
 
-JavaScript support in CouchDB relies on the Mozilla SpiderMonkey engine, which imposes specific module dependency rules and limitations on design function development.
-
-[couchilla](https://github.com/tetsuo/couchilla) addresses this by providing a convenient way to bundle design documents with CommonJS support. It aggregates view and filter functions from a JavaScript directory and produces a design document in JSON format.
+[couchilla](https://github.com/tetsuo/couchilla) fills this gap by providing an easy way to bundle design documents with CommonJS support. It aggregates view and filter functions from a JavaScript directory and generates a ready-to-use design document in JSON format.
 
 ## Directory structure
 

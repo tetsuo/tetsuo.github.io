@@ -9,13 +9,13 @@ updated: 2025-05-30T13:37:00
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://tetsuo.github.io/wr/flixbox.html)
 
-> This post outlines the architecture and key components of [**flixbox**](https://www.github.com/tetsuo/flixbox), a full-stack web app built in TypeScript with [fp-ts](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of libraries.
+> This post outlines the architecture and key components of [**flixbox**](https://www.github.com/tetsuo/flixbox), a full-stack web app built exclusively with [fp-ts](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
 
 # Server
 
-The server is powered by [**hyper-ts**](https://github.com/DenisFrezzato/hyper-ts), a functional HTTP framework inspired by [Hyper](https://hyper.wickstrom.tech/).
+The flixbox server is powered by [**hyper-ts**](https://github.com/DenisFrezzato/hyper-ts), which is a partial porting of [Hyper](https://hyper.wickstrom.tech/).
 
-Internally, a set of middlewares are defined like `get`, `put`, `movie`, and `results` for interacting with the [TMDb](https://www.themoviedb.org/) API and managing caching. Storage uses [xache](https://github.com/mafintosh/xache), a simple caching library by mafintosh.
+Internally, a set of middlewares are defined like `get`, `put`, `movie`, and `results` for interacting with the [TMDb](https://www.themoviedb.org/) API and managing caching.
 
 ## Middleware architecture
 
@@ -43,17 +43,19 @@ function getMovieMiddleware(
 ): (route: MovieRoute) => H.Middleware<StatusOpen, ResponseEnded, AppError, void> {
   return route =>
     pipe(
-      GET,
+      GET, // ensure this is a GET request
       H.apSecond(
         pipe(
-          get(store, `/movies/${route.id}`),
+          // try to get the movie from the cache
+          get(store, `/movies/${String(route.id)}`),
           H.map(entry => entry.value),
+          // if not found, fetch from TMDb and cache it
           H.orElse(() =>
             pipe(
               movie(tmdb, route.id),
               H.chain(value =>
                 pipe(
-                  put(store, `/movies/${route.id}`, value),
+                  put(store, `/movies/${String(route.id)}`, value),
                   H.map(entry => entry.value)
                 )
               )
@@ -61,6 +63,7 @@ function getMovieMiddleware(
           )
         )
       ),
+      // respond with JSON
       H.ichain(res =>
         pipe(
           H.status<AppError>(200),
@@ -93,7 +96,7 @@ Among these, [**io-ts**](https://github.com/gcanti/io-ts/) is especially valuabl
 
 >> **[io-ts](https://github.com/gcanti/io-ts) is highly recommended even for projects that do not fully adopt fp-ts.**
 
-#### Extending fp-ts modules to new effect types
+### Extending fp-ts modules to new effect types
 
 While these modules integrate smoothly within the fp-ts v2 ecosystem, certain scenarios may require explicit type-level configuration.
 
@@ -134,7 +137,7 @@ type Msg =
 
 > 📄 **See the full implementation in [`app/Effect.ts`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/app/Effect.ts).**
 
-### Optics for immutable state management
+## Optics for immutable state management
 
 The client also uses [**monocle-ts**](https://www.github.com/gcanti/monocle-ts), a port of [Monocle](https://www.optics.dev/Monocle/), allowing composable structures like [`Lens`](https://gcanti.github.io/monocle-ts/modules/Lens.ts.html) and [`Traversal`](https://gcanti.github.io/monocle-ts/modules/Traversal.ts.html) for state updates without mutations.
 

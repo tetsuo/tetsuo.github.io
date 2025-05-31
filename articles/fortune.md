@@ -1,10 +1,10 @@
 ---
-title: Fortunes as a service
-cover_title: Fortunes as a service
+title: Fortune-as-a-Service
+cover_title: Fortune-as-a-Service
 description: Intentionally boring, production-ready Go service that serves up random fortune cookies
 tags: go,starter
 published: 2025-03-31T00:00:00
-updated: 2025-05-27T13:37:00
+updated: 2025-05-30T13:37:00
 ---
 
 > [**fortune**](https://github.com/tetsuo/fortune) is a lightweight, ops-ready Go service that delivers random fortune cookies over HTTP.

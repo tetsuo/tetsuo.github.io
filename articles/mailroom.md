@@ -1,17 +1,21 @@
 ---
-title: Handling user email flows with database events
-cover_title: Handling user email flows with database events
-description: Manage account lifecycles and batch-process operations—such as activation and password resets—using PostgreSQL triggers and notifications
+title: Building a transactional email queue with PostgreSQL triggers
+cover_title: Building a transactional email queue with postgresql triggers
+description: How PostgreSQL alone can handle your account activation and password reset workflows without relying on a message broker
 tags: sql,c,rust,tutorial
 published: 2024-11-17T00:00:00
-updated: 2025-05-27T13:37:00
+updated: 2025-05-30T13:37:00
 ---
 
-> [**mailroom**](https://github.com/tetsuo/mailroom/) is a lifecycle email service that listens to PostgreSQL triggers and batches transactional messages in response to data changes.
+> How PostgreSQL alone can handle your account activation and password reset workflows without relying on a message broker.
+
+[**mailroom**](https://github.com/tetsuo/mailroom/) is a transactional email system that leverages PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect changes in account status and batch-process related email notifications.
 
 In this post, I walk through how it's built, the problems it solves, and the trade-offs that come with the approach.
 
-First, we'll set up the schema and triggers to track user lifecycle changes using a simple PostgreSQL-backed queue. Then, we'll build a collector with libpq to consume notification events and process action tokens in batches. Let's dive in.
+---
+
+First, we'll set up the schema and triggers to track user lifecycle changes using a simple PostgreSQL-backed queue. Then, we'll build a collector service with **libpq** in C to consume notification events and process action tokens in batches. Let's dive in.
 
 # Schema overview
 
@@ -620,7 +624,7 @@ This means:
 
 # Collector implementation
 
-The collector is written in **C** and interacts with PostgreSQL via [**libpq**](https://www.postgresql.org/docs/current/libpq.html).
+The collector is written in C and interacts with PostgreSQL via [**libpq**](https://www.postgresql.org/docs/current/libpq.html).
 
 ## Connecting to the database and listening for events
 
@@ -944,4 +948,4 @@ At this rate, batching **10 emails at a time** would require **buffering for app
 
 # Bonus: Sender
 
-While we haven't covered it in this post, **the email sender**—the downstream process—is also implemented, this time in **Rust**. You can check it out [here](https://github.com/tetsuo/mailroom/tree/master/sender) in the repository.
+While we haven't covered it in this post, **the email sender**—the downstream process—is also implemented, this time in Rust. You can check it out [here](https://github.com/tetsuo/mailroom/tree/master/sender) in the repository.
