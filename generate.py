@@ -173,15 +173,13 @@ def entry_from_markdown(filename: str, domain_name: str) -> Entry:
     anchors_body = soup_body.find_all("a")
 
     for a in anchors_body_feed:
-        if a['href'].startswith("./") and a['href'].endswith(".md"):
-            a['href'] = "https://" + domain_name + \
-                "/" + a['href'][2:-3] + ".html"
+        if a['href'].startswith("/") and a['href'].endswith(".html"):
+            a['href'] = "https://" + domain_name + a['href']
 
     for a in anchors_body:
-        if a['href'].startswith("./") and a['href'].endswith(".md"):
-            a['href'] = "/" + a['href'][2:-3] + ".html"
-        elif not a['href'].startswith("#"):
+        if not (a['href'].startswith("#") or (a['href'].startswith("/") and a['href'].endswith(".html"))):
             a['target'] = "_blank"
+            a['rel'] = "noopener"
 
     headlines = soup_body.find_all(["h1", "h2"])
 
