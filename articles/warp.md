@@ -1,7 +1,7 @@
 ---
-title: Functional abstractions in Go
-cover_title: Functional abstractions in Go
-description: Experimenting with Go's generics and their practicality in modeling common FP patterns
+title: Implementing monads in Go
+cover_title: Implementing monads in Go
+description: Experimenting with Go's generics and their practicality in modeling FP patterns
 tags: go,tutorial
 published: 2024-08-30T00:00:00
 updated: 2025-05-30T13:37:00
@@ -143,7 +143,7 @@ Similarly, for an event stream monad, we can represent it as a function that tak
 type Event[A any] func(context.Context, chan<- A)
 ```
 
-# warp
+# Implementing monads in Go
 
 To see how this works in practice, I implemented a small set of monads in Go. These are the types provided by [**warp**](https://github.com/tetsuo/warp).
 
