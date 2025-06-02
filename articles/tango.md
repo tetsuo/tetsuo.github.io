@@ -4,7 +4,7 @@ cover_title: Querying CouchDB with human-readable syntax
 description: Tango provides a textual syntax for logical and relational expressions, parsing them directly into Mango selectors
 tags: javascript,couchdb,tool
 published: 2023-01-02T16:20:00
-updated: 2025-05-30T13:37:00
+updated: 2025-06-02T13:37:00
 ---
 
 > [**tango**](https://github.com/tetsuo/tango) provides a C-like syntax for logical and relational expressions, parsing them directly into [Mango selectors](https://docs.couchdb.org/en/stable/api/database/find.html).
@@ -30,7 +30,9 @@ For instance, in Mango, you'd express a query for "movies directed by Roy Anders
 }
 ```
 
-... which is, as you can see, a hand-written AST. With tango, you could write this instead:
+... which is, as you can see, a hand-written AST!
+
+With tango, you could write this instead:
 
 ```c
 director == "Roy Andersson" && year > 2007
@@ -42,6 +44,6 @@ This syntax includes standard C operators and supports parentheses to specify ex
 
 ### To parse Tango is to turn it into Mango
 
-The [shunting yard algorithm](https://en.wikipedia.org/wiki/Shunting_yard_algorithm) is a linear-time method for parsing expressions using [operator precedence parsing](https://en.wikipedia.org/wiki/Operator-precedence_parser). It employs a stack to manage operators and a queue to construct an abstract syntax tree—which, in this context, becomes a Mango expression.
+The [shunting yard algorithm](https://en.wikipedia.org/wiki/Shunting_yard_algorithm) is a linear-time algorithm for parsing expressions using [operator precedence parsing](https://en.wikipedia.org/wiki/Operator-precedence_parser). It employs a stack to manage operators and a queue to construct an abstract syntax tree, which, in this context, becomes a Mango expression.
 
 > 📄 **See the parser implementation in [`parse.js`](https://github.com/tetsuo/tango/blob/master/parse.js#L40).**

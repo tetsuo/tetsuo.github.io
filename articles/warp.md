@@ -4,7 +4,7 @@ cover_title: Implementing monads in Go
 description: Experimenting with Go's generics and their practicality in modeling FP patterns
 tags: go,tutorial
 published: 2024-08-30T00:00:00
-updated: 2025-05-30T13:37:00
+updated: 2025-06-02T13:37:00
 ---
 
 > The introduction of [**generics**](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling parametric polymorphism—has greatly expanded the language's potential for unlocking functional paradigms, offering an exciting new playground for nerds like myself to explore.
@@ -129,7 +129,7 @@ which represent asynchronous computations or event streams.
 
 Go doesn't have native support for type constructors or ADTs like Haskell does. Instead, the closest approximation is to use **function types** that encapsulate computations. This lets us represent monadic computations as first-class functions carrying the context and data flow.
 
-For a `Result[A]` monad (similar to Haskell’s `Result a`), we model it as:
+For a `Result[A]` monad (similar to Haskell's `Result a`), we model it as:
 
 ```go
 type Result[A any] func(context.Context) (A, error)

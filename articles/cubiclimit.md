@@ -4,7 +4,7 @@ cover_title: Cubic Limit reimplemented with Effect
 description: Recreating Manfred Mohr's Cubic Limit, P-161 with TypeScript and Effect using a fully functional rendering pipeline
 tags: typescript,tutorial
 published: 2025-02-08T14:55:00
-updated: 2025-05-27T13:37:00
+updated: 2025-06-02T13:37:00
 ---
 
 > This post walks through the process of recreating Manfred Mohr's **Cubic Limit, P-161** with **TypeScript** and [**Effect**](https://effect.website/).
@@ -343,7 +343,7 @@ const cubes: Composite[] = pipe(
 
 # Drawing
 
-Next, we define a new type that captures *what* we want to do with shapes—whether to fill them, outline them, apply transformations, or clip:
+Next, we define a new type that captures *what* we want to do with shapes, whether to fill them, outline them, apply transformations, or clip:
 
 ```ts
 type Drawing =
@@ -790,7 +790,7 @@ pipe(
 )
 ```
 
-The final result is a single 4×4 matrix encoding all these operations in the correct order. When you apply that matrix to a point `[x, y, z, 1]`, it performs the entire sequence of transformations—translation, then rotation on X, then rotation on Y, then scaling.
+The final result is a single 4×4 matrix encoding all these operations in the correct order. When you apply that matrix to a point `[x, y, z, 1]`, it performs the entire sequence of transformations-translation, then rotation on X, then rotation on Y, then scaling.
 
 > **Reminder**: Matrix multiplication is **not** _commutative_. The order you multiply matters.
 

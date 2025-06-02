@@ -4,18 +4,14 @@ cover_title: Building a transactional email service with PostgreSQL triggers
 description: How PostgreSQL alone can handle your account activation and password reset workflows without relying on a message broker
 tags: sql,c,rust,tutorial
 published: 2024-11-17T00:00:00
-updated: 2025-05-30T13:37:00
+updated: 2025-06-02T13:37:00
 ---
 
 > How PostgreSQL alone can handle your account activation and password reset workflows without relying on a message broker.
 
-[**mailroom**](https://github.com/tetsuo/mailroom/) is a transactional email system designed for user lifecycle communications. It leverages PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect changes in account status and batch-process related email notifications.
+[**mailroom**](https://github.com/tetsuo/mailroom/) is a budget-friendly system for managing account lifecycle communications. It uses PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect changes in account status and batch-process related email notifications.
 
-In this post, I walk through how it's built, the problems it solves, and the trade-offs that come with the approach.
-
----
-
-First, we'll set up the schema and triggers to track user lifecycle changes using a simple PostgreSQL-backed queue. Then, we'll build a collector service with **libpq** in C to consume notification events and process action tokens in batches. Let's dive in.
+This post will demonstrate mailroom's architecture and key components through the implementation of a real-world account onboarding workflow. First, we'll set up the schema and triggers to track changes on accounts using a simple PostgreSQL-backed queue. Next, we'll build a collector service with libpq in C to consume notification events and process action tokens in batches. Let's dive in.
 
 # Schema overview
 
@@ -443,7 +439,7 @@ _These notifications signal that new tokens have arrived—it's time to start pr
 
 ---
 
-# Poor man's job queue
+# Job queue
 
 Next, we'll build a mechanism to retrieve new tokens and define a query that manages their progression through a database-driven queue.
 
@@ -588,13 +584,13 @@ Indexing Strategy:
 - **Equality Conditions First**: Since columns used in equality conditions (`=` or `IN`) are typically the most selective, they should come first.
 - **Range Conditions Next**: Columns used in range conditions (`>`, `<`, `BETWEEN`) should follow.
 
-# Notification-driven job collection
+# Job execution
 
 Rather than polling the database for new batches, we'll build a lightweight worker that subscribes to a notification channel, tracks incoming events, and triggers the job retrieval query when either a specified **row limit** (based on received notifications) or a **timeout** is reached.
 
 ## Collector
 
-Here's how **the job retrieval and batch execution** are controlled:
+Here's how the job retrieval and batch execution are controlled:
 
 ### Batch limit
 
@@ -606,7 +602,7 @@ The collector queries the database for at most **N** tokens at a time (where **N
 
 > The time to wait for accumulating enough notifications to fill a batch.
 
-The collector waits up to **X** milliseconds before processing incoming notifications (where **X** is the **batch timeout**). If fewer than the batch limit have arrived during that period, the collector will still dequeue whatever did arrive—but it won't pull more immediately. In effect, this sets an upper limit on how long new tokens can linger before being handed over to the email sender.
+The collector waits up to **X** milliseconds before processing incoming notifications (where **X** is the **batch timeout**). If fewer than the batch limit have arrived during that period, the collector will still dequeue whatever did arrive, but it won't pull more immediately. In effect, this sets an upper limit on how long new tokens can linger before being handed over to the email sender.
 
 #### Example
 
@@ -620,7 +616,7 @@ This means:
 - If 10 notifications arrive in quick succession, the batch is triggered immediately.
 - If fewer than 10 arrive over 30 seconds, the batch is triggered when the timeout ends.
 
->> **Keep in mind that the collector doesn't impose rate limiting; it primarily controls database roundtrips and batch size.** A large influx of notifications will keep triggering the batch limit, effectively bypassing the timeout—so the overall token throughput downstream remains largely unaffected.
+>> **Keep in mind that the collector doesn't impose rate limiting; it primarily controls database roundtrips and batch size.** A large influx of notifications will keep triggering the batch limit, effectively bypassing the timeout, so the overall token throughput downstream remains largely unaffected.
 
 # Collector implementation
 
@@ -799,7 +795,7 @@ In this code, `select()` is used to:
 
 ### **Handling data with `PQconsumeInput` and `PQnotifies`**
 
-Once `select()` signals that data is available, the collector calls `PQconsumeInput` to read incoming data into **libpq's internal buffers**. It then invokes `PQnotifies` to retrieve any pending notifications and update the counter.
+Once `select()` signals that data is available, the collector calls `PQconsumeInput` to read incoming data into libpq's internal buffers. It then invokes `PQnotifies` to retrieve any pending notifications and update the counter.
 
 > 📖 **Learn more:** [libpq's async API](https://www.postgresql.org/docs/current/libpq-async.html)
 
@@ -879,13 +875,15 @@ After the connection is killed, `select()` wakes up, causing `PQconsumeInput()` 
 
 ---
 
-# Further improvements
+# What's next?
 
-Building on this foundation, you can extend your triggers to handle more complex workflows and further fine-tune the collector to operate under stricter constraints—all while keeping the database at the core of your event processing.
+Building on this foundation, you can extend your triggers to handle more complex workflows and further fine-tune the collector to operate under stricter constraints, all while keeping the database at the core of your event processing.
 
-That said, the **mailroom** system outlined here is deliberately simple—a budget-friendly single-producer, single-consumer design. More advanced streaming solutions often incorporate **priority queues** and **adaptive batching** to manage varying workloads more gracefully.
+That said, the architecture described here uses a basic single-producer, single-consumer pattern. More advanced streaming solutions often incorporate things like _priority queues_ and _adaptive batching_ to manage varying workloads more gracefully.
 
-## Multi-consumer queues
+Before we conclude, let's explore some potential improvements, starting with how to support multiple worker setups.
+
+## 1. Multiple workers
 
 When you update `last_seq`, PostgreSQL locks the `jobs` row being updated, preventing other processes from modifying it until the transaction is complete. However, PostgreSQL **does not prevent multiple processes from attempting to read the same cursor** before one updates it. This can lead to duplicate processing if you're not careful.
 
@@ -916,36 +914,14 @@ Alternatively, to efficiently handle **multiple consumers**, you might consider 
 
 > However, if you're certain that only a single consumer runs this query at any given time, I recommend sticking with the `jobs` table as a single point of reference. This approach avoids the need for complex locking mechanisms, and you can further enhance the `jobs` table to keep a history of job executions, parameters, and statuses, which can be valuable for auditing purposes.
 
-## Priority queues
+## 2. Priority queues
 
-Our current queueing mechanism processes tokens without distinguishing between their types and lacks the ability to prioritize critical ones, such as password recovery, over less urgent emails like account activations. At present, '10 emails per second' could mean 10 emails of the same type or a mix, depending on the batch. While effective, this design leaves room for improvement, such as introducing prioritization or smarter batching strategies.
+The current queueing mechanism processes tokens without distinguishing between their types and lacks the ability to prioritize critical ones, such as password recovery, over less urgent emails like account activations. At present, '10 emails per second' could mean 10 emails of the same type or a mix, depending on the batch. While effective, this design leaves room for improvement, such as introducing prioritization or smarter batching strategies.
 
-## Adaptive batching
+## 3. Adaptive batching
 
-User activity is rarely consistent—there are bursts of high traffic that may far exceed daily or hourly quotas, followed by periods of minimal activity.
+User activity is rarely consistent—there are bursts of high traffic that may far exceed daily or hourly quotas, followed by periods of minimal activity. Rather than using fixed limits and timeouts, batch size and timeout values can be dynamically adjusted based on real-time conditions. During low-traffic periods, the batch size can be increased to improve efficiency. During peak hours, it can be reduced to minimize delays.
 
-Rather than using **fixed limits** and **timeouts**, batch size and timeout values can be **dynamically adjusted** based on real-time conditions. During low-traffic periods, the batch size can be increased to improve efficiency. During peak hours, it can be reduced to minimize delays.
+---
 
-## Cost-aware delivery
-
-While these adjustments optimize performance, **they must also align with cost constraints**. Sending emails too quickly might not just trigger rate limits—it could also trigger bankruptcy 😅
-
-For example, with Amazon SES charging **$0.10 per 1,000 emails**, a monthly budget of **$100** translates to:
-
-- **1,000,000 emails per month**
-- **33,333 emails per day**
-- **1,389 emails per hour**
-- **23 emails per minute**
-- **0.38 emails per second**
-
-At this rate, batching **10 emails at a time** would require **buffering for approximately 27 seconds** to stay within the **0.38 emails per second** limit:
-
-```
-10 emails / 0.38 emails per second ≈ 26.32 seconds
-```
-
-... assuming we are operating at full capacity within our budget.
-
-# Bonus: Sender
-
-While we haven't covered it in this post, **the email sender**—the downstream process—is also implemented, this time in Rust. You can check it out [here](https://github.com/tetsuo/mailroom/tree/master/sender) in the repository.
+>> **While not covered in this post, an example AWS SES email sender, which takes the collector's output and sends bulk emails, is implemented in Rust. You can check it out [here](https://github.com/tetsuo/mailroom/tree/master/sender) in the repository.**

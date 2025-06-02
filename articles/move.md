@@ -4,7 +4,7 @@ description: The basics of denotational semantics and how it provides a mathemat
 cover_title: Thinking in Haskell
 tags: haskell,tutorial
 published: 2023-05-30T12:41:00
-updated: 2025-05-30T13:37:00
+updated: 2025-06-02T13:37:00
 ---
 
 > The basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell.
@@ -24,11 +24,11 @@ This view of a function is called **denotational**. We define its "meaning" by d
 
 ## Referential transparency
 
-In this framework, every Haskell expression corresponds to a mathematical object. For example, both `fib 1` and `5 - 4` _denote_ the same value: 1. This may sound simple, but it's actually the cornerstone of something called **referential transparency**, meaning that any expression can be replaced by its corresponding value without altering the overall behavior of the program.
+In this framework, every Haskell expression corresponds to a mathematical object. For example, both `fib 1` and `5 - 4` _denote_ the same value: 1. While it sounds simple, this is the cornerstone of **referential transparency**, meaning that any expression can be replaced by its corresponding value without altering the overall behavior of the program.
 
-To illustrate referential transparency, consider a simple addition function first. It is fully referentially transparent because it always returns a value based solely on its inputs.
+To illustrate referential transparency, consider a simple addition function first.
 
-Contrast this with a division function:
+It is fully referentially transparent because it always returns a value based solely on its inputs. Contrast this with a division function:
 
 ```haskell
 > 10 `div` 2
@@ -37,11 +37,11 @@ Contrast this with a division function:
 *** Exception: divide by zero
 ```
 
-Here, division by zero causes an exception. The function itself is referentially transparent only when it is total—that is, defined for every possible input. In the case of division, the operation is **partial** (it does not provide an output for every input), which is why we see an exception when the divisor is zero.
+Here, division by zero causes an exception. The function itself is referentially transparent only when it is **total**—that is, defined for every possible input. In the case of division, the operation is **partial** (it does not provide an output for every input), which is why we see an exception when the divisor is zero.
 
 ### Maybe maybe maybe
 
-To address partiality such as this one, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type. This type can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`), ensuring that functions like division become total functions:
+In such cases, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type for side-effect-free computation. This type can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`), ensuring that functions like division become total functions:
 
 ```haskell
 data Maybe a = Just a | Nothing
@@ -51,11 +51,11 @@ safeDiv _ 0 = Nothing
 safeDiv a b = Just (a `div` b)
 ```
 
-By eliminating exceptions and other side effects, languages like Haskell guarantee that every function has a precise mathematical meaning, which brings us to the core of our discussion.
+The point is, languages like Haskell guarantee that every function has a precise mathematical meaning, and for a good reason.
 
 # Denotational semantics
 
-Now, imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
+Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
 
 ```
 ⟦E⟧ : V
