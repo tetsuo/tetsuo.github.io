@@ -4,9 +4,6 @@ from bs4 import BeautifulSoup
 from dataclasses import dataclass, replace
 from markdown2 import markdown
 from wand.image import Image
-from wand.drawing import Drawing
-from wand.color import Color
-from textwrap import wrap
 from tornado import template, locale
 from tornado.locale import Locale
 from tornado.template import Loader, Template
@@ -449,15 +446,7 @@ class Generator:
         with open("public/resume.html", "wb") as f:
             f.write(b)
 
-        if self.settings.images:
-            for entry in self.entries:
-                create_cover_image(entry.cover_title, entry.short_description,
-                                   "public/" + entry.slug + ".png")
-
-            create_cover_image(
-                "ogunz", self.settings.description, "public/index.png"
-            )
-
+        # TODO: create cover images if settings.images == True
 
 def main(args=None):
     if args is None:
@@ -506,68 +495,6 @@ def main(args=None):
             styles_id=styles_id,
         )
     ).run()
-
-
-def create_cover_image(title: str, desc: str, outfile: str):
-    with Drawing() as ctx:
-        with Image(width=940, height=529, background=Color("#aaa")) as img:
-            ctx.fill_color = "#0000ff"
-            ctx.font = "public/assets/Code_Pro_Demo-webfont.ttf"
-            ctx.font_size = 50
-            ctx.text(40, 142, title)
-            ctx.fill_color = "#fff"
-            ctx.font_size = 50
-            mutable_message = word_wrap(img, ctx, desc, 880, 300)
-            ctx.text(40, 240, mutable_message)  # + "."
-            ctx.fill_color = "#0000ff"
-            ctx.circle((68, 450), (68, 476))
-            ctx.fill_color = "#fff"
-            ctx.circle((133, 450), (133, 476))
-            ctx.fill_color = "orange"
-            ctx.circle((198, 450), (198, 476))
-            ctx.font_size = 80
-            ctx.draw(img)
-            img.save(filename=outfile)
-
-
-def word_wrap(image, ctx, text, roi_width, roi_height):
-    """Break long text to multiple lines, and reduce point size
-    until all text fits within a bounding box."""
-    mutable_message = text
-    iteration_attempts = 100
-
-    def eval_metrics(txt):
-        """Quick helper function to calculate width/height of text."""
-        metrics = ctx.get_font_metrics(image, txt, True)
-        return (metrics.text_width, metrics.text_height)
-
-    def shrink_text():
-        """Reduce point-size & restore original text"""
-        ctx.font_size = ctx.font_size - 0.75
-        mutable_message = text
-
-    while ctx.font_size > 0 and iteration_attempts:
-        iteration_attempts -= 1
-        width, height = eval_metrics(mutable_message)
-        if height > roi_height:
-            shrink_text()
-        elif width > roi_width:
-            columns = len(mutable_message)
-            while columns > 0:
-                columns -= 1
-                mutable_message = '\n'.join(wrap(mutable_message, columns))
-                wrapped_width, _ = eval_metrics(mutable_message)
-                if wrapped_width <= roi_width:
-                    break
-            if columns < 1:
-                shrink_text()
-        else:
-            break
-    if iteration_attempts < 1:
-        raise RuntimeError("Unable to calculate word_wrap for " + text)
-
-    return mutable_message
-
 
 def get_hex_digest_short(text: str) -> str:
     hex_digest = hashlib.sha1(text.encode()).hexdigest()
