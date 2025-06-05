@@ -326,7 +326,7 @@ def entry_from_markdown(filename: str, domain: str, settings: Settings) -> Entry
     bq = soup.find("blockquote", recursive=False)
     if not bq:
         raise RuntimeError("must have a blockquote")
-    description = bq.get_text(strip=True)
+    description = bq.get_text().strip()
 
     # Check playground blocks
     has_pg, runtime = _convert_playground_blocks(soup, is_feed=False)
