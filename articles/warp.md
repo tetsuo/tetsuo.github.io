@@ -4,10 +4,10 @@ cover_title: Implementing monads in Go
 description: Experimenting with Go's generics and their practicality in modeling FP patterns
 tags: go,tutorial
 published: 2024-08-30T00:00:00
-updated: 2025-06-02T13:37:00
+updated: 2025-06-05T13:37:00
 ---
 
-> The introduction of [**generics**](https://go.dev/blog/intro-generics) in Go 1.18—a long-awaited feature enabling parametric polymorphism—has greatly expanded the language's potential for unlocking functional paradigms, offering an exciting new playground for nerds like myself to explore.
+> This post explores using Go's generics to structure and compose computations in a functional style.
 
 Let's begin by comparing polymorphism in Haskell and Go.
 
@@ -77,7 +77,7 @@ Unlike Haskell, Go does not natively support higher-kinded types (HKTs), which e
 
 # How generics help
 
-Generics in Go allow us to write functions and data structures that can work with a range of types without having to write separate versions for each type.  This addresses a major pain point that existed before generics.
+Generics in Go allow us to write functions and data structures that can work with a range of types without having to write separate versions for each type.
 
 For example, before generics, if we wanted a `List` (or slice) that could hold integers, we'd have `[]int`. For strings, we'd have `[]string`.  And if we wanted a function to operate on either, we'd have to write separate versions.
 
