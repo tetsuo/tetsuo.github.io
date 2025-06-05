@@ -11,7 +11,7 @@
   <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="{{ settings.domain }} Search"/>
   <link rel="me" href="https://twitter.com/{{ settings.author }}">
   <meta property="og:site_name" content="{{ settings.site_name }}" />
-  {% if settings.images == True %}
+  {% if settings.cover_images == True %}
   <meta name="twitter:card" content="summary_large_image" />
   {% else %}
   <meta name="twitter:card" content="summary" />
@@ -35,7 +35,7 @@
   {% end %}
 
   {% block head_image %}
-  {% if settings.images == True %}
+  {% if settings.cover_images == True %}
   <meta property="og:image" content="https://{{ settings.domain }}/index.png" />
   <meta property="og:image:alt" content="{{ settings.description }}" />
   <meta name="twitter:image:src" content="https://{{ settings.domain }}/index.png" />
@@ -43,7 +43,7 @@
   {% end %}
   {% end %}
 
-  {% if settings.images == True %}
+  {% if settings.cover_images == True %}
   <meta property="og:image:width" content="940" />
   <meta property="og:image:height" content="529" />
   <meta property="og:image:type" content="image/png" />
@@ -68,10 +68,7 @@
   {% end %}
 
   {% block head_extras %}{% end %}
-
   {% include "favicons.html" %}
-
-  <link href="/assets/tango.css" type="text/css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" media="all" href="/assets/styles{{ '-' + settings.styles_id if settings.styles_id else '' }}.css" />
 </head>
 

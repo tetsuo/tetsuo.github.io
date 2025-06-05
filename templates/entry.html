@@ -62,11 +62,17 @@
 	}
 </script>
 {% if len(resizable_ids) > 0 %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.17/interact.min.js" integrity="sha512-XcVj3UAxYb1bcxemjAU6ncOu6lhnuRz98icTuL+jrJE+2SCWFMZFc+5FaFsNikLKujDfL71c4LK5OBz1lsAKag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.27/interact.min.js" integrity="sha512-U7pxMz47PpFp2XkN2CrzPoILVGEwb6dN0o0/gcz6wserNSwnprr4YoVd5QHHWHVVSA+5gCxeh0yZDVy28T91nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% end %}
+{% if entries[0].has_code %}
+<link href="/assets/tango.css" type="text/css" rel="stylesheet">
+{% end %}
+{% if entries[0].has_playground %}
+<link href="/assets/playground.css" type="text/css" rel="stylesheet">
 {% end %}
 {% end %}
 {% block head_image %}
-{% if settings.images == True %}
+{% if settings.cover_images == True %}
 <meta property="og:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
 <meta property="og:image:alt" content="{{ entries[0].short_description }}" />
 <meta name="twitter:image:src" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
@@ -205,6 +211,19 @@
 				iframeDiv.style.height = iframeDiv.clientWidth + "px"
 			}
 			window.addEventListener('message', onResizeMessage)
+		</script>
+		{% end %}
+
+		{% if entries[0].has_playground %}
+		<script src="/assets/wasm_exec.js"></script>
+		<script type="module">
+			import { initPlaygrounds } from '/assets/playground.js'
+			const go = new Go();
+
+			WebAssembly.instantiateStreaming(fetch("/assets/{{ entries[0].playground_runtime }}"), go.importObject).then(result => {
+				go.run(result.instance);
+				initPlaygrounds();
+			});
 		</script>
 		{% end %}
 

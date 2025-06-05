@@ -2,8 +2,10 @@
 
 from bs4 import BeautifulSoup
 from dataclasses import dataclass, replace
+from concurrent.futures import ThreadPoolExecutor
 from markdown2 import markdown
 from wand.image import Image
+from wand.exceptions import BlobError
 from tornado import template, locale
 from tornado.locale import Locale
 from tornado.template import Loader, Template
@@ -20,6 +22,24 @@ import hashlib
 
 
 @dataclass
+class Settings:
+    site_name: str
+    title: str
+    description: str
+    domain: str
+    author: str
+    author_name: str
+    email: str
+    ga_id: str
+    cover_images: bool
+    comments: bool
+    styles_id: str
+    skip_feeds: bool
+    skip_json: bool
+    skip_images: bool
+
+
+@dataclass
 class Entry:
     title: str
     cover_title: str
@@ -33,6 +53,9 @@ class Entry:
     published: datetime.datetime
     updated: datetime.datetime
     link: str
+    has_playground: bool
+    has_code: bool
+    playground_runtime: str
 
     metadata: list[list[str]]
 
@@ -54,219 +77,347 @@ class Entry:
         return value
 
 
-def entry_from_markdown(filename: str, domain_name: str) -> Entry:
-    with open(filename, "r") as f:
-        data = f.read()
-        f.close()
+def add_example_details(soup_root, title, button_label, button_title, body, open_attr=True, autorun=False):
+    details = soup_root.new_tag("details", **{
+        "class": "Playground-Details js-exampleContainer"
+    })
+    if open_attr:
+        details.attrs["open"] = ""
+    if autorun:
+        details.attrs["data-autorun"] = ""
 
-    body = markdown(
-        data,
-        extras=[
-            "header-ids",
-            "footnotes",
-            "fenced-code-blocks",
-            "tables",
-            "metadata"
-        ]
-    )
+    summary = soup_root.new_tag("summary", **{
+        "class": "Playground-DetailsHeader"
+    })
+    summary.append(title)
+
+    toolbar = soup_root.new_tag("div", **{"class": "Playground-DetailsToolbar"})
+    buttons_container = soup_root.new_tag("div", **{"class": "Playground-ButtonsContainer"})
+
+    error_p = soup_root.new_tag("p", **{
+        "class": "Playground-Error",
+        "role": "alert",
+        "aria-atomic": "true"
+    })
+    buttons_container.append(error_p)
+
+    button = soup_root.new_tag("button", **{
+        "class": "Playground-RunButton",
+        "aria-label": button_label,
+        "title": button_title
+    })
+    button.string = button_label
+    buttons_container.append(button)
+
+    toolbar.append(buttons_container)
+    summary.append(toolbar)
+    details.append(summary)
+
+    body_div = soup_root.new_tag("div", **{"class": "Playground-DetailsBody"})
+
+    textarea = soup_root.new_tag("textarea", **{
+        "class": "Playground-Code code",
+        "spellcheck": "false",
+        "style": "height: 15.875rem;"
+    })
+    textarea.string = body
+    body_div.append(textarea)
+
+    pre = soup_root.new_tag("pre")
+    output_label = soup_root.new_tag("span", **{"class": "Playground-OutputLabel"})
+    output_label.string = "Output:"
+    output_span = soup_root.new_tag("span", **{"class": "Playground-Output"})
+    pre.append(output_label)
+    pre.append(output_span)
+    body_div.append(pre)
+
+    details.append(body_div)
+
+    return details
+
+
+def _convert_playground_blocks(soup: BeautifulSoup, is_feed: bool = False):
+    has_playground = False
+    runtime = ""
+
+    for bq in soup.find_all("blockquote"):
+        text = bq.get_text(strip=True)
+        if not text.lower().startswith("playground:"):
+            continue
+
+        has_playground = True
+
+        param_str = text[len("playground:"):].strip()
+        params = dict(
+            part.strip().split("=", 1)
+            for part in param_str.split(";")
+            if "=" in part
+        )
+
+        runtime = params.get("runtime", runtime)
+        title = params.get("title", "Playground")
+        button = params.get("button", "Run")
+        title_attr = params.get("title_attr", button)
+        autorun = params.get("autorun", "false").lower() in ("true", "1", "yes")
+
+        next_el = bq.find_next_sibling()
+        if not (next_el and next_el.name == "pre" and next_el.code):
+            continue  # No code block found after
+
+        code = next_el.code.get_text()
+
+        if is_feed:
+            # Replace blockquote with <p>title</p>, keep code
+            p = soup.new_tag("p")
+            p.string = title
+            bq.replace_with(p)
+        else:
+            placeholder = soup.new_tag("div")
+            bq.insert_before(placeholder)
+
+            details_tag = add_example_details(
+                soup_root=soup,
+                title=title,
+                button_label=button,
+                button_title=title_attr,
+                body=code,
+                open_attr=True,
+                autorun=autorun,
+            )
+            placeholder.append(details_tag)
+
+            next_el.decompose()
+            bq.decompose()
+
+    return has_playground, runtime
+
+
+def _cleanup_blockquotes(soup: BeautifulSoup, is_feed: bool):
+    for bq in soup.find_all("blockquote"):
+        if bq.parent.name == "blockquote":
+            if is_feed:
+                # In feed: unwrap outer blockquote
+                bq.parent.replace_with(bq)
+            else:
+                # In HTML: convert to .note
+                bq.parent.replace_with(bq)
+                bq["class"] = "note"
+
+
+def _embed_iframe_from_path(soup: BeautifulSoup, img, path: str) -> None:
+    parts = path.strip("/").split("/")
+    if len(parts) != 2:
+        return
+    flag_str, filename = parts
+    base, ext = os.path.splitext(filename)
+    if ext != ".html":
+        return
+
+    iframe = soup.new_tag("iframe", attrs={
+        "id": f"{base}-iframe",
+        "name": base,
+        "frameborder": "0",
+        "title": img.get("alt"),
+        "src": path
+    })
+
+    container = soup.new_tag("div", attrs={"id": base})
+
+    if "w" in flag_str:
+        container["data-routable"] = ""
+    if "r" in flag_str:
+        container["data-resizable"] = ""
+        container["class"] = "resizeable-widget"
+    if "f" in flag_str:
+        container["data-fullsize"] = ""
+        container["style"] = iframe["style"] = "width: 100%"
+
+    container.append(iframe)
+    img.parent.parent.replace_with(container)
+
+
+def _process_body_images(soup: BeautifulSoup, domain: str) -> None:
+    for img in soup.find_all("img"):
+        src = img.get("src", "")
+        filename = os.path.basename(src)
+        dirname = os.path.dirname(src)
+
+        if img.parent.name == "p":
+            img.parent["class"] = "ta-center"
+
+        # Handle image wrapped in a link to .html on own domain
+        elif img.parent.name == "a" and img.parent.parent.name == "p":
+            href = img.parent.get("href", "")
+            parsed = urlparse(href)
+
+            if dirname == "./images" and not parsed.hostname:
+                if match := re.search(r"-(\\d{1,3})$", os.path.splitext(src)[0]):
+                    img["class"] = f"i-{match.group(1)}"
+                img.parent.parent["class"] = "ta-center"
+
+            elif dirname == "." and parsed.hostname == domain:
+                _embed_iframe_from_path(soup, img, parsed.path)
+
+        # Always rewrite src to /images/
+        img["src"] = f"/images/{filename}"
+        if img.parent.name == "a":
+            img.parent["href"] = img["src"]
+
+
+def _process_feed_images(soup: BeautifulSoup, domain: str) -> list[dict[str, Any]]:
+    images = []
+
+    for img in soup.find_all("img"):
+        src = img.get("src", "")
+        dirname = os.path.dirname(src)
+        if dirname == ".":
+            filename = os.path.basename(src)
+            img["src"] = f"https://{domain}/images/{filename}"
+            continue  # placeholder images are not added as media content
+
+        filename = os.path.basename(src)
+        img["src"] = f"https://{domain}/images/{filename}"
+
+        img_path = os.path.join("public", "images", filename)
+        if not os.path.exists(img_path):
+            print(f"image not found: {img_path}; skipping")
+            continue
+
+        try:
+            with Image(filename=img_path) as im:
+                images.append({
+                    "filename": filename,
+                    "title": img.get("title", img.get("alt", "")),
+                    "width": im.width,
+                    "height": im.height,
+                    "mimetype": im.mimetype,
+                    "filesize": im.length_of_bytes,
+                })
+        except BlobError as e:
+            print(f"unable to read image: {img_path}: {e}")
+
+    return images
+
+
+MD_EXTRAS = ["footnotes", "fenced-code-blocks", "tables", "metadata"]
+
+def entry_from_markdown(filename: str, domain: str, settings: Settings) -> Entry:
+    with open(filename, "r") as f:
+        raw = f.read()
+
+    html = markdown(raw, extras=["header-ids"] + MD_EXTRAS)
 
     # highlightjs-lang disables pygments which is needed for
     # preserving spaces in <code> blocks for atom feeds
-    body_feed = markdown(
-        data,
-        extras=["footnotes", "fenced-code-blocks",
-                "tables", "metadata", "highlightjs-lang",]
-    )
+    html_feed = markdown(raw, extras=MD_EXTRAS + ["highlightjs-lang"])
 
-    soup_body_feed = BeautifulSoup(body_feed, features="html.parser")
-    soup_body = BeautifulSoup(body, features="html.parser")
+    soup = BeautifulSoup(html, "html.parser")
+    soup_feed = BeautifulSoup(html_feed, "html.parser")
 
-    description = body.metadata['description']
+    metadata = html.metadata
+    title = metadata["title"]
+    cover_title = metadata.get("cover_title", title)
+    short_desc = metadata["description"]
+    published = datetime.datetime.fromisoformat(metadata["published"])
+    updated = datetime.datetime.fromisoformat(metadata["updated"])
+    tags = [tag.strip() for tag in metadata["tags"].split(",")]
 
-    first_blockquote = soup_body.find("blockquote", recursive=False)
-    if first_blockquote.name == "blockquote":
-        description = first_blockquote.get_text().strip()
-    else:
+    # Required blockquote
+    bq = soup.find("blockquote", recursive=False)
+    if not bq:
         raise RuntimeError("must have a blockquote")
+    description = bq.get_text(strip=True)
 
-    imgs_body_feed = soup_body_feed.find_all("img")
-    imgs_body = soup_body.find_all("img")
+    # Check playground blocks
+    has_pg, runtime = _convert_playground_blocks(soup, is_feed=False)
+    _convert_playground_blocks(soup_feed, is_feed=True)
 
-    for img in imgs_body:
-        img_src = img.get('src')
-        img_filename = os.path.basename(img_src)
-        dirname = os.path.dirname(img_src)
-        if img.parent.name == "p":
-            img.parent['class'] = 'ta-center'
-        elif img.parent.name == "a" and img.parent.parent.name == "p":
-            anchor_url = urlparse(img.parent.get('href'))
+    # Process images
+    _process_body_images(soup, domain)
+    images = [] if settings.skip_images else _process_feed_images(soup_feed, domain)
 
-            if './images' == dirname and anchor_url.hostname == None:
-                img_w = re.findall('-(\d{1,3})$', os.path.splitext(img_src)[0])
-                img.parent.parent['class'] = 'ta-center'
-                if len(img_w) > 0:
-                    img['class'] = 'i-' + img_w[0]
-            if '.' == dirname and anchor_url.hostname == domain_name:
-                url_parts = anchor_url.path[1:].split('/')
-                if len(url_parts) != 2:
-                    continue
-                url_type = url_parts[0]
-                url_filename = os.path.splitext(url_parts[1])
-                if url_filename[1] != ".html":
-                    continue
-                url_id = url_filename[0]
+    # Configure links
+    _fix_anchors(soup_feed, domain, feed=True)
+    _fix_anchors(soup, domain, feed=False)
 
-                iframe_tag = soup_body.new_tag("iframe")
-                iframe_tag.attrs['id'] = url_id + "-iframe"
-                iframe_tag.attrs['name'] = url_id
-                iframe_tag.attrs['frameborder'] = "0"
-                iframe_tag.attrs['title'] = img.get('alt')
-                iframe_tag.attrs['src'] = anchor_url.path
+    # Extract metadata
+    metadata_flags = _extract_metadata_and_widgets(soup)
 
-                div_tag = soup_body.new_tag("div")
-                div_tag.attrs['id'] = url_id
-                if 'w' in url_type:
-                    div_tag.attrs['data-routable'] = ""
-                if 'r' in url_type:
-                    div_tag.attrs['data-resizable'] = ""
-                    div_tag.attrs['class'] = "resizeable-widget"
-                if 'f' in url_type:
-                    div_tag.attrs['data-fullsize'] = ""
-                    iframe_tag.attrs['style'] = "width: 100%"
-                    div_tag.attrs['style'] = "width: 100%"
+    # Clean up blockquotes inside blockquotes
+    _cleanup_blockquotes(soup_feed, True)
+    _cleanup_blockquotes(soup, False)
 
-                div_tag.append(iframe_tag)
+    slug = re.sub(r"[^\w]+", "-", unicodedata.normalize("NFKD", title)).strip("-").lower()
 
-                img.parent.parent.replaceWith(div_tag)
-
-        img['src'] = '/images/' + img_filename
-        img.parent['href'] = img['src']
-
-    images: list[dict[str, Any]] = []
-    for img in imgs_body_feed:
-        img_filename = os.path.basename(img['src'])
-        dirname = os.path.dirname(img.get('src'))
-        if '.' == dirname:
-            continue
-        img['src'] = "https://" + domain_name + "/images/" + img_filename
-
-        img_path = os.path.join("public", "images", img_filename)
-
-        with Image(filename=img_path) as f:
-            width = f.width
-            height = f.height
-            mimetype = f.mimetype
-            filesize = f.length_of_bytes
-        images.append({
-            "filename": img_filename,
-            "title": img.get("title", img.get("alt", "")),
-            "width": width,
-            "height": height,
-            "mimetype": mimetype,
-            "filesize": filesize
-        })
-
-    anchors_body_feed = soup_body_feed.find_all("a")
-    anchors_body = soup_body.find_all("a")
-
-    for a in anchors_body_feed:
-        if a['href'].startswith("/") and a['href'].endswith(".html"):
-            a['href'] = "https://" + domain_name + a['href']
-
-    for a in anchors_body:
-        if not (a['href'].startswith("#") or (a['href'].startswith("/") and a['href'].endswith(".html"))):
-            a['target'] = "_blank"
-            a['rel'] = "noopener"
-
-    headlines = soup_body.find_all(["h1", "h2"])
-
-    for h in headlines:
-        if h['id'] is not None:
-            headline_a = soup_body.new_tag("a")
-            headline_a.attrs['class'] = 'bookmark'
-            h['id'] = "/" + h['id']
-            headline_a.attrs['href'] = '#' + h['id']
-            h.append(headline_a)
-
-    for h in soup_body.find_all(["h3", "h4", "h5"]):
-        del h['id']
-
-    for h in soup_body_feed.find_all(["h1", "h2", "h3", "h4", "h5"]):
-        del h['id']
-
-    div_containers_body = soup_body.find_all("div", recursive=False)
-
-    def get_div_container_metadata(el):
-        if el.get('id') is None:
-            return []
-
-        metadata: list[str] = [el.get('id')]
-
-        if el.get('data-resizable') is not None:
-            metadata.append("resize")
-        if el.get('data-routable') is not None:
-            metadata.append("route")
-        if el.get('data-fullsize') is not None:
-            metadata.append("full-size")
-
-        return metadata
-
-    mm = list(map(get_div_container_metadata, div_containers_body))
-
-    for div in div_containers_body:
-        if div.get('data-resizable') is not None:
-            resize_tag = soup_body.new_tag("div")
-            resize_tag.attrs['class'] = 'resize-handle'
-            div.insert_after(resize_tag)
-
-    cover_title = body.metadata['title']
-    if 'cover_title' in body.metadata:
-        cover_title = body.metadata['cover_title']
-
-    blockquotes = soup_body.find_all("blockquote")
-
-    for blockquote in blockquotes:
-        if blockquote.parent.name == "blockquote":
-            blockquote.parent.replace_with(blockquote)
-            blockquote.attrs['class'] = "note"
-
-    title = body.metadata['title']
-
-    slug = unicodedata.normalize("NFKD", title)
-    slug = re.sub(r"[^\w]+", " ", slug)
-    slug = "-".join(slug.lower().strip().split())
-    slug = slug.encode("ascii", "ignore").decode("ascii")
+    # Count <pre><code> blocks that were not playgrounds
+    has_code = any(
+        pre.find("code") for pre in soup.find_all("pre")
+    )
 
     return Entry(
         slug=slug,
-        body=str(soup_body),
-        body_feed=str(soup_body_feed),
-        description=description,
-        metadata=mm,
-        short_description=body.metadata['description'],
-        images=images,
-        tags=body.metadata['tags'].split(','),
         title=title,
         cover_title=cover_title,
-        published=datetime.datetime.fromisoformat(body.metadata['published']),
-        updated=datetime.datetime.fromisoformat(body.metadata['updated']),
-        link="https://" + domain_name + "/" + slug + ".html",
+        description=description,
+        short_description=short_desc,
+        body=str(soup),
+        body_feed=str(soup_feed),
+        images=images,
+        tags=tags,
+        published=published,
+        updated=updated,
+        link=f"https://{domain}/{slug}.html",
+        metadata=metadata_flags,
+        has_playground=has_pg,
+        has_code=has_code,
+        playground_runtime=runtime,
     )
 
 
-@dataclass
-class Settings:
-    site_name: str
-    title: str
-    description: str
-    domain: str
-    author: str
-    author_name: str
-    email: str
-    ga_id: str
-    images: bool
-    comments: bool
-    styles_id: str
+def _fix_anchors(soup: BeautifulSoup, domain: str, feed: bool):
+    if feed:
+        for a in soup.find_all("a", href=True):
+            if a["href"].startswith("/") and a["href"].endswith(".html"):
+                a["href"] = f"https://{domain}{a['href']}"
+    else:
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if not (href.startswith("#") or href.endswith(".html")):
+                a["rel"] = "noopener"
+
+        for h in soup.find_all(["h1", "h2"]):
+            if h.get("id"):
+                h["id"] = f"/{h['id']}"
+                link = soup.new_tag("a", href="#" + h["id"], **{"class": "bookmark"})
+                h.append(link)
+
+        for tag in ["h3", "h4", "h5"]:
+            for h in soup.find_all(tag):
+                h.attrs.pop("id", None)
+
+
+def _extract_metadata_and_widgets(soup: BeautifulSoup) -> list[list[str]]:
+    metadata = []
+    for div in soup.find_all("div", recursive=False):
+        if not div.get("id"):
+            continue
+        meta = [div["id"]]
+        if div.get("data-resizable") is not None:
+            meta.append("resize")
+            handle = soup.new_tag("div", **{"class": "resize-handle"})
+            div.insert_after(handle)
+        if div.get("data-routable") is not None:
+            meta.append("route")
+        if div.get("data-fullsize") is not None:
+            meta.append("full-size")
+        metadata.append(meta)
+
+    for bq in soup.find_all("blockquote"):
+        if bq.parent.name == "blockquote":
+            bq.parent.replace_with(bq)
+            bq["class"] = "note"
+
+    return metadata
 
 
 @dataclass
@@ -302,14 +453,29 @@ class Generator:
         with open("public/%s.html" % name, "wb") as f:
             f.write(b)
 
-        json_obj = {"entries": [
-            entry.to_json(include_body=include_json_body) for entry in entries
-        ]}
+        if not self.settings.skip_json:
+            json_obj = {
+                "entries": [
+                    entry.to_json(include_body=include_json_body)
+                    for entry in entries
+                ]
+            }
 
-        with open("public/%s.json" % name, "w") as f:
-            json.dump(json_obj, f)
+            with open("public/%s.json" % name, "w") as f:
+                json.dump(json_obj, f)
 
     def run(self) -> None:
+        templates = {
+            "entry": self.template_loader.load("entry.html"),
+            "index": self.template_loader.load("index.html"),
+            "tag": self.template_loader.load("tag.html"),
+            "atom": self.template_loader.load("atom.xml"),
+            "sitemap": self.template_loader.load("sitemap.xml"),
+            "opensearch": self.template_loader.load("opensearch.xml"),
+            "manifest": self.template_loader.load("manifest.webmanifest"),
+            "resume": self.template_loader.load("resume.html"),
+        }
+
         entries_by_tag: dict[str, list[Entry]] = {}
 
         for entry in self.entries:
@@ -337,7 +503,7 @@ class Generator:
         keywords = sorted(list(entries_by_tag.keys()),
                           key=lambda key: len(entries_by_tag[key]))[:20]
 
-        t = self.template_loader.load("entry.html")
+        t = templates["entry"]
 
         for entry in self.entries:
             resizable_ids: list[str] = []
@@ -362,7 +528,7 @@ class Generator:
                 "fullsize_ids": fullsize_ids,
             })
 
-        t = self.template_loader.load("index.html")
+        t = templates["index"]
 
         for i, page in enumerate(pages):
             page_num = i + 1
@@ -381,7 +547,7 @@ class Generator:
             }
         )
 
-        t = self.template_loader.load("tag.html")
+        t = templates["tag"]
 
         for tag in entries_by_tag:
             self._generate(
@@ -392,35 +558,36 @@ class Generator:
                 }
             )
 
-        t = self.template_loader.load("atom.xml")
+        if not self.settings.skip_feeds:
+            t = templates["atom"]
 
-        b = t.generate(**{
-            "entries": [replace(e, body=e.body_feed) for e in index_entries],
-            "settings": self.settings,
-            "_tag": None
-        })
-
-        with open("public/feed.xml", "wb") as f:
-            f.write(b)
-
-        for tag in entries_by_tag:
             b = t.generate(**{
-                "entries": [replace(e, body=e.body_feed) for e in entries_by_tag[tag]],
+                "entries": [replace(e, body=e.body_feed) for e in index_entries],
                 "settings": self.settings,
-                "_tag": tag
+                "_tag": None
             })
 
-            with open("public/%s.xml" % tag, "wb") as f:
+            with open("public/feed.xml", "wb") as f:
                 f.write(b)
 
-        t = self.template_loader.load("opensearch.xml")
+            for tag in entries_by_tag:
+                b = t.generate(**{
+                    "entries": [replace(e, body=e.body_feed) for e in entries_by_tag[tag]],
+                    "settings": self.settings,
+                    "_tag": tag
+                })
+
+                with open(f"public/{tag}.xml", "wb") as f:
+                    f.write(b)
+
+        t = templates["opensearch"]
 
         b = t.generate(**{"settings": self.settings})
 
         with open("public/opensearch.xml", "wb") as f:
             f.write(b)
 
-        t = self.template_loader.load("sitemap.xml")
+        t = templates["sitemap"]
 
         b = t.generate(**{"settings": self.settings,
                        "entries": sitemap_entries})
@@ -428,7 +595,7 @@ class Generator:
         with open("public/sitemap.xml", "wb") as f:
             f.write(b)
 
-        t = self.template_loader.load("manifest.webmanifest")
+        t = templates["manifest"]
 
         b = t.generate(**{"settings": self.settings})
 
@@ -438,7 +605,7 @@ class Generator:
         with open("public/robots.txt", "w") as f:
             f.write("User-agent: *\nAllow: /\n")
 
-        t = self.template_loader.load("resume.html")
+        t = templates["resume"]
 
         b = t.generate(**dict({"keywords": keywords},
                        **self._get_template_args()))
@@ -446,7 +613,13 @@ class Generator:
         with open("public/resume.html", "wb") as f:
             f.write(b)
 
-        # TODO: create cover images if settings.images == True
+        # TODO: create cover images here if settings.cover_images == True
+
+
+def get_hex_digest_short(text: str) -> str:
+    hex_digest = hashlib.sha1(text.encode()).hexdigest()
+    return hex_digest[:4]
+
 
 def main(args=None):
     if args is None:
@@ -462,18 +635,38 @@ def main(args=None):
     with open(config_file) as f:
         c = json.load(f)
 
-    entries = [
-        entry_from_markdown(f, c['domain'])
-        for f in glob.glob(c['articlesPath'])
-    ]
-    entries.sort(key=lambda e: e.published, reverse=True)
-
     styles_id = ""
     if c['debug'] != True:
         with open("styles.scss", "r") as f:
             data = f.read()
             styles_id = get_hex_digest_short(data)
-            f.close()
+
+    settings = Settings(
+        site_name=c["siteName"],
+        domain=c["domain"],
+        title=c["title"],
+        description=c["description"],
+        author="@" + c["twitterId"],
+        author_name=c["authorName"],
+        email=c["email"],
+        ga_id=c["analyticsId"],
+        comments=c["showComments"],
+        cover_images=c["coverImages"],
+        styles_id=styles_id,
+        skip_feeds=c.get("skipFeeds", False),
+        skip_json=c.get("skipJSON", False),
+        skip_images=c.get("skipImages", False), # skip processing images for feeds
+    )
+
+    files = glob.glob(c["contentPath"])
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        entries = list(executor.map(
+            lambda f: entry_from_markdown(f, c["domain"], settings),
+            files
+        ))
+
+    entries.sort(key=lambda e: e.published, reverse=True)
 
     Generator(
         debug=c['debug'],
@@ -481,24 +674,8 @@ def main(args=None):
         entries_per_page=c['entriesPerPage'],
         entries=entries,
         template_loader=template.Loader(c['templatePath'], autoescape=None),
-        settings=Settings(
-            site_name=c['siteName'],
-            domain=c['domain'],
-            title=c['title'],
-            description=c['description'],
-            author='@'+c['twitterId'],
-            author_name=c['authorName'],
-            email=c['email'],
-            ga_id=c['analyticsId'],
-            comments=c['showComments'],
-            images=c['buildImages'],
-            styles_id=styles_id,
-        )
+        settings=settings,
     ).run()
-
-def get_hex_digest_short(text: str) -> str:
-    hex_digest = hashlib.sha1(text.encode()).hexdigest()
-    return hex_digest[:4]
 
 
 if __name__ == "__main__":

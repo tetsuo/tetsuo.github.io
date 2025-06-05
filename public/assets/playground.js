@@ -1,0 +1,102 @@
+const PlayExampleClassName = {
+  PLAY_CONTAINER: '.js-exampleContainer',
+  EXAMPLE_INPUT: '.Playground-Code',
+  EXAMPLE_OUTPUT: '.Playground-Output',
+  RUN_BUTTON: '.Playground-RunButton',
+};
+
+export class PlaygroundExampleController {
+  constructor(exampleEl) {
+    this.exampleEl = exampleEl;
+    this.runButtonEl = exampleEl.querySelector(PlayExampleClassName.RUN_BUTTON);
+    this.inputEl = this.makeTextArea(exampleEl.querySelector(PlayExampleClassName.EXAMPLE_INPUT));
+    this.outputEl = exampleEl.querySelector(PlayExampleClassName.EXAMPLE_OUTPUT);
+
+    if (!this.inputEl) {
+      return;
+    }
+
+    this.resize();
+    this.inputEl.addEventListener('keyup', () => this.resize());
+    this.inputEl.addEventListener('keydown', e => this.onKeydown(e));
+
+    this.runButtonEl?.addEventListener('click', () => this.handleRunButtonClick());
+
+    if (exampleEl.hasAttribute('data-autorun')) {
+      this.handleRunButtonClick();
+    }
+  }
+
+  makeTextArea(el) {
+    const t = document.createElement('textarea');
+    t.classList.add('Playground-Code', 'code');
+    t.spellcheck = false;
+    t.value = el?.textContent.trim() ?? '';
+    el?.parentElement?.replaceChild(t, el);
+    return t;
+  }
+
+  resize() {
+    if (this.inputEl?.value) {
+      const numLineBreaks = (this.inputEl.value.match(/\n/g) || []).length;
+      this.inputEl.style.height = 'auto';
+      if (numLineBreaks >= 1) {
+        this.inputEl.style.height = this.inputEl.scrollHeight + 2 + 'px';
+      } else {
+        this.inputEl.style.height = "51px";
+      }
+    }
+  }
+
+  onKeydown(e) {
+    if (e.key === 'Tab') {
+      document.execCommand('insertText', false, '\t');
+      e.preventDefault();
+    }
+
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      this.handleRunButtonClick();
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.inputEl.blur();
+    }
+  }
+
+  setOutputText(output) {
+    if (this.outputEl) {
+      if (output.startsWith("export default function ($0) {return ")) {
+        output = output.slice(15)
+      }
+      this.outputEl.textContent = output;
+    }
+  }
+
+  appendToOutputText(output) {
+    if (this.outputEl) {
+      this.outputEl.textContent += output;
+    }
+  }
+
+  handleRunButtonClick() {
+    const code = this.inputEl?.value ?? '';
+    try {
+      const result = renderTemplate(code);
+      if (result.error) {
+        this.setOutputText('Error: ' + result.error);
+      } else {
+        this.setOutputText(result.output);
+      }
+    } catch (err) {
+      this.setOutputText('Exception: ' + err.message);
+    }
+  }
+}
+
+export function initPlaygrounds() {
+  for (const el of document.querySelectorAll(PlayExampleClassName.PLAY_CONTAINER)) {
+    new PlaygroundExampleController(el);
+  }
+}

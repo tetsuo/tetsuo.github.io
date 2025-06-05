@@ -3,7 +3,7 @@
   "locale": "en_US",
   "entriesPerPage": 100,
   "templatePath": "templates",
-  "articlesPath": "articles/*.md",
+  "contentPath": "articles/*.md",
   "siteName": "Onur Gündüz",
   "title": "Onur Gündüz",
   "authorName": "Onur Gündüz",
@@ -13,5 +13,8 @@
   "email": "ogunduz@gmail.com",
   "analyticsId": "UA-1238030-3",
   "showComments": false,
-  "buildImages": false
+  "coverImages": false,
+  "skipFeeds": false,
+  "skipImages": false,
+  "skipJSON": false
 }
