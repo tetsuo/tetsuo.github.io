@@ -29,7 +29,7 @@ Source code for [tetsuo.github.io](https://tetsuo.github.io), a static site gene
   ```
 - Generate favicons:
   ```sh
-  node generate-favicons.js favicon.svg
+  npm run favicons
   ```
 - Build pages:
   ```sh
