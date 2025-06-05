@@ -1,0 +1,15 @@
+import { initPlaygrounds } from '/assets/playground.mjs'
+
+export default function(runtime) {
+  const go = new Go();
+  WebAssembly.instantiateStreaming(fetch("/assets/" + runtime), go.importObject).then(result => {
+    go.run(result.instance);
+    initPlaygrounds(input => {
+      const result = runExampleCode(input);
+      if (runtime.startsWith("restache") && result.output?.startsWith("export default function ($0) {return ")) {
+        result.output = result.output.slice(15)
+      }
+      return result
+    });
+  });
+}

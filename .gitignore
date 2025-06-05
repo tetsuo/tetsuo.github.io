@@ -12,7 +12,8 @@ public/assets/*
 !public/assets/og-circle.svg
 !public/assets/tango.css
 !public/assets/playground.css
-!public/assets/playground.js
+!public/assets/playground.mjs
+!public/assets/load-*-playground.mjs
 !public/assets/wasm_exec.js
 !public/assets/restache-0.2.0.wasm
 templates/manifest.webmanifest

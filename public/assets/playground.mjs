@@ -6,11 +6,12 @@ const PlayExampleClassName = {
 };
 
 export class PlaygroundExampleController {
-  constructor(exampleEl) {
+  constructor(exampleEl, run) {
     this.exampleEl = exampleEl;
     this.runButtonEl = exampleEl.querySelector(PlayExampleClassName.RUN_BUTTON);
     this.inputEl = this.makeTextArea(exampleEl.querySelector(PlayExampleClassName.EXAMPLE_INPUT));
     this.outputEl = exampleEl.querySelector(PlayExampleClassName.EXAMPLE_OUTPUT);
+    this.run = run;
 
     if (!this.inputEl) {
       return;
@@ -42,8 +43,10 @@ export class PlaygroundExampleController {
       this.inputEl.style.height = 'auto';
       if (numLineBreaks >= 1) {
         this.inputEl.style.height = this.inputEl.scrollHeight + 2 + 'px';
+        this.inputEl.style.overflow = "auto";
       } else {
         this.inputEl.style.height = "51px";
+        this.inputEl.style.overflow = "hidden";
       }
     }
   }
@@ -67,9 +70,6 @@ export class PlaygroundExampleController {
 
   setOutputText(output) {
     if (this.outputEl) {
-      if (output.startsWith("export default function ($0) {return ")) {
-        output = output.slice(15)
-      }
       this.outputEl.textContent = output;
     }
   }
@@ -83,7 +83,7 @@ export class PlaygroundExampleController {
   handleRunButtonClick() {
     const code = this.inputEl?.value ?? '';
     try {
-      const result = renderTemplate(code);
+      const result = this.run(code);
       if (result.error) {
         this.setOutputText('Error: ' + result.error);
       } else {
@@ -95,8 +95,8 @@ export class PlaygroundExampleController {
   }
 }
 
-export function initPlaygrounds() {
+export function initPlaygrounds(runner) {
   for (const el of document.querySelectorAll(PlayExampleClassName.PLAY_CONTAINER)) {
-    new PlaygroundExampleController(el);
+    new PlaygroundExampleController(el, runner);
   }
 }
