@@ -68,6 +68,7 @@
 <link href="/assets/tango.css" type="text/css" rel="stylesheet">
 {% end %}
 {% if entries[0].has_playground %}
+<script src="/assets/wasm_exec.js"></script>
 <link href="/assets/playground.css" type="text/css" rel="stylesheet">
 {% end %}
 {% end %}
@@ -215,7 +216,6 @@
 		{% end %}
 
 		{% if entries[0].has_playground %}
-		<script src="/assets/wasm_exec.js"></script>
 		<script type="module">
 			import { initPlaygrounds } from '/assets/playground.js'
 			const go = new Go();
