@@ -23,10 +23,6 @@ Source code for [tetsuo.github.io](https://tetsuo.github.io), a static site gene
 
 ## Usage
 
-- Build pages:
-  ```sh
-  python generate.py
-  ```
 - Build styles:
   ```sh
   npm run sass
@@ -34,4 +30,8 @@ Source code for [tetsuo.github.io](https://tetsuo.github.io), a static site gene
 - Generate favicons:
   ```sh
   node generate-favicons.js favicon.svg
+  ```
+- Build pages:
+  ```sh
+  python generate.py
   ```
