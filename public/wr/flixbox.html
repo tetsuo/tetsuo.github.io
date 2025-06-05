@@ -1,49 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>flixbox</title>
-  <script>
-    function onmessage(e) {
-      const parts = e.data.split(':')
-      if (parts.length < 3) {
-        throw new Error("received invalid message: " + e)
-      }
-      const [name, origin, hash] = parts
-      switch (name) {
-        case 'hashchange': {
-          if (origin === 'iframe') {
-            return
-          }
-          if (hash !== window.location.hash) {
-            window.removeEventListener('hashchange', onhashchange)
-						history.replaceState(undefined, undefined, hash)
-            window.dispatchEvent(new HashChangeEvent('hashchange'));
-            window.addEventListener('hashchange', onhashchange)
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>flixbox</title>
+    <script>
+      function onmessage(e) {
+        const parts = e.data.split(':')
+        if (parts.length < 3) {
+          throw new Error("received invalid message: " + e)
+        }
+        const [name, origin, hash] = parts
+        switch (name) {
+          case 'hashchange': {
+            if (origin === 'iframe') {
+              return
+            }
+            if (hash !== window.location.hash) {
+              window.removeEventListener('hashchange', onhashchange)
+              history.replaceState(undefined, undefined, hash)
+              window.dispatchEvent(new HashChangeEvent('hashchange'));
+              window.addEventListener('hashchange', onhashchange)
+            }
           }
         }
       }
-    }
 
-    function onhashchange(e) {
-      window.top.postMessage('hashchange:iframe:' + window.location.hash)
-    }
+      function onhashchange(e) {
+        window.top.postMessage('hashchange:iframe:' + window.location.hash)
+      }
 
-    window.addEventListener('hashchange', onhashchange)
-		window.addEventListener('message', onmessage)
-  </script>
-  <style>
-    html, body, .content {
-      height: calc(100% - 36px);
-    }
-  </style>
-</head>
-<body>
-  <div id="content" class="content"></div>
-  <script src="https://cdn.jsdelivr.net/gh/tetsuo/flixbox@latest/dist/flixbox.min.js"></script>
-  <script>
-    flixbox('https://onurgunduz.com/flixbox', 'content')
-  </script>
-</body>
+      window.addEventListener('hashchange', onhashchange)
+      window.addEventListener('message', onmessage)
+    </script>
+    <style>
+      html,
+      body,
+      .content {
+        height: calc(100% - 36px);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content" class="content"></div>
+    <script src="https://cdn.jsdelivr.net/gh/tetsuo/flixbox@latest/dist/flixbox.min.js"></script>
+    <script>
+      flixbox('https://onurgunduz.com/flixbox', 'content')
+    </script>
+  </body>
 </html>
