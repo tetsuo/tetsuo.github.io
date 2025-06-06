@@ -141,7 +141,7 @@ def _convert_playground_blocks(soup: BeautifulSoup, is_feed: bool = False):
     runtime = ""
 
     for bq in soup.find_all("blockquote"):
-        text = bq.get_text(strip=True)
+        text = bq.get_text().strip()
         if not text.lower().startswith("playground:"):
             continue
 
