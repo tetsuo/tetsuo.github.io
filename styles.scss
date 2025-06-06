@@ -18,9 +18,10 @@
   --kbd-border-color: #d1d9e0b3;
   --hr-color: #d1d9e0;
   --blockquote-border-color: #d1d9e0;
-  --table-border-color: #d1d9e0;
+  --table-border-color: #e9ebef;
+  --table-head-border-color: #dadfe4;
   --table-row-background: #ffffff;
-  --table-row-alt-background: #f6f8fa;
+  --table-row-alt-background: #ffffff;
   --code-background: #818b981f;
   --code-border-radius: 6px;
   --pre-background-color: #f6f8fa;
@@ -211,6 +212,7 @@ table {
   border-collapse: collapse;
   display: block;
   width: max-content;
+  table-layout: fixed;
   max-width: 100%;
   overflow: auto;
   font-variant: tabular-nums;
@@ -219,6 +221,12 @@ table {
 td,
 th {
   padding: 0;
+}
+
+thead, tbody, tr {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
 }
 
 details summary {
@@ -485,12 +493,11 @@ dl dd {
 
 table th {
   font-weight: 600;
+  padding: .32rem 0;
 }
 
-table th,
 table td {
-  padding: 6px 13px;
-  border: 1px solid var(--table-border-color);
+  padding: .68rem 0;
 }
 
 table td > :last-child {
@@ -499,11 +506,21 @@ table td > :last-child {
 
 table tr {
   background-color: var(--table-row-background);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--table-border-color);
+}
+
+table tbody tr:first-of-type {
+  border-top: 1px solid var(--table-head-border-color);
 }
 
 table tr:nth-child(2n) {
   background-color: var(--table-row-alt-background);
+}
+
+table thead tr {
+  border-top: 0;
+  text-align: left;
+  font-size: 85%;
 }
 
 table img {
