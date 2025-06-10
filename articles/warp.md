@@ -147,7 +147,7 @@ type Event[A any] func(context.Context, chan<- A)
 
 To see how this works in practice, I implemented a small set of monads in Go. These are the types provided by [**warp**](https://github.com/tetsuo/warp).
 
->> #### ⚠️ Go 1.23 Update
+>> #### ⚠️ Go 1.23 update
 >>
 >> **warp** explores functional patterns in Go from the perspective of the language's capabilities **prior to Go 1.23**. With that release, native support for function-based iteration became available through [**range over function types**](https://go.dev/blog/range-functions). Additionally, a [proposal](https://github.com/golang/go/issues/61898) is underway for `golang.org/x/exp/xiter` to introduce similar combinators as part of the standard package. These advancements mean the straightforward first-class function approach demonstrated in this package has now been superseded by more idiomatic and performant Go solutions.
 
