@@ -1,42 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div class="og-Content index-Content">
-		<div class="og-Logo"><a href="/"></a></div>
-		<div class="og-WelcomeBanner">
-			<h1>Hello, I'm Onur</h1>
-			<p>I write about the tools I use and the things I build.</p>
-			<ul class="h-list">
-				<li><a href="/resume.html">Resume</a></li>
-				<li><a href="https://www.github.com/tetsuo" rel="noopener">GitHub</a></li>
-			</ul>
-			<hr />
-		</div>
-		<div class="og-EntryList">
-			{% for entry in entries %}
-				<div class="og-Entry" id="e-{{ entry.slug }}">
-					<h1 class="og-Entry__title"><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
-					<ul class="h-list og-Entry__metadata">
-						<li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
-						{% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
-					</ul>
-					<div class="og-Entry__body">
-						<p>{{ entry.description }}</p>
-					</div>
-				</div>
-			{% end %}
-			{% if page > 1 or more %}
-			<div class="og-Pagination">
-				{% if page > 1 %}
-					<a href="/{{ (page-1)+'.html' if page!=2 else '' }}">← Newer</a>
-					{% end %}
-					{% if more %}
-					<a href="/{{ page+1 }}.html">Older →</a>
-				{% end %}
-			</div>
-		{% end %}
-		</div>
-	</div>
+  <div class="og-Content index-Content">
+    <div class="og-Logo"><a href="/"></a></div>
+    <div class="og-WelcomeBanner">
+      <h1>Hello, I'm Onur</h1>
+      <p>I write about the tools I use and the things I build.</p>
+      <ul class="h-list">
+        <li><a href="/resume.html">Resume</a></li>
+        <li><a href="https://www.github.com/tetsuo" rel="noopener">GitHub</a></li>
+      </ul>
+      <hr />
+    </div>
+    <div class="og-EntryList">
+      {% for entry in entries %}
+        <div class="og-Entry" id="e-{{ entry.slug }}">
+          <h1 class="og-Entry__title"><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
+          <ul class="h-list og-Entry__metadata">
+            <li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
+            {% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
+          </ul>
+          <div class="og-Entry__body">
+            <p>{{ entry.description }}</p>
+          </div>
+        </div>
+      {% end %}
+      {% if page > 1 or more %}
+      <div class="og-Pagination">
+        {% if page > 1 %}
+          <a href="/{{ (page-1)+'.html' if page!=2 else '' }}">← Newer</a>
+          {% end %}
+          {% if more %}
+          <a href="/{{ page+1 }}.html">Older →</a>
+        {% end %}
+      </div>
+    {% end %}
+    </div>
+  </div>
 {% end %}
 
 {% block title %}{{ str(page)+' - ' if page!=1 else '' }}{{ settings.title }}{% end %}
@@ -51,20 +51,20 @@
 {% block head_extras %}
 <script type="application/ld+json">
 {
-	"@context": "https://schema.org",
-	"@type": "Blog",
-	"url": "https://{{ settings.domain }}",
-	"name": "{{ settings.title }}",
-	"description": "{{ settings.description }}",
-	"author": [
-		{
-			"@type": "Person",
-			"name": "{{ settings.author_name }}",
-			"email": "{{ settings.email }}",
-			"url": "https://{{ settings.domain }}",
-			"sameAs": ["https://twitter.com/{{ settings.author }}"]
-		}
-	]
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "url": "https://{{ settings.domain }}",
+  "name": "{{ settings.title }}",
+  "description": "{{ settings.description }}",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "{{ settings.author_name }}",
+      "email": "{{ settings.email }}",
+      "url": "https://{{ settings.domain }}",
+      "sameAs": ["https://twitter.com/{{ settings.author }}"]
+    }
+  ]
 }
 </script>
 {% end %}
