@@ -1,15 +1,17 @@
 ---
 title: Fortune-as-a-Service
 cover_title: Fortune-as-a-Service
-description: Intentionally boring, production-ready Go service that serves up random fortune cookies
+description: Simple Go service that delivers random fortune cookies over HTTP
 tags: go,starter
 published: 2025-03-31T00:00:00
-updated: 2025-06-02T13:37:00
+updated: 2025-06-09T13:37:00
 ---
 
-> [**fortune**](https://github.com/tetsuo/fortune) is a lightweight Go service that delivers random fortune cookies over HTTP.
+> [**fortune**](https://github.com/tetsuo/fortune) is a simple HTTP API that delivers random fortune cookies.
 
-It's built with minimal dependencies and reuses internals from [**pkgsite**](https://go.googlesource.com/pkgsite/) (the Go package index), adapted to work with MySQL. The service runs on a lean, GCP-native stack with full observability—logging, metrics, tracing, and profiling included. The goal is to show what a Go backend can look like when it's easy to understand, straightforward to deploy, and ready for real use.
+It's built with minimal dependencies and reuses internals from [**pkgsite**](https://go.googlesource.com/pkgsite/) (the Go package index), adapted to work with MySQL.
+
+Though simple, the service runs on a lean, GCP-native stack with full observability: logging, metrics, tracing, and profiling included. The goal is to show what a Go backend looks like when it's easy to understand, straightforward to deploy, and ready for real use.
 
 #### API
 
@@ -17,7 +19,7 @@ The API has two endpoints. `GET /` returns a random fortune from the database. `
 
 #### Third-party code
 
-I adapted the `internal/database` package to support MySQL. The other packages (`memory`, `middleware`, `wraperr`) are mostly unchanged apart from some cleanup. There's also a small CLI tool under `devtools/cmd/db` to help with database tasks, and a trimmed-down `all.bash` script for linting and tests.
+I adapted the `internal/database` package to support MySQL, as well as the CLI tool under `devtools/cmd/db`. The other packages I borrowed from pkgsite (`memory`, `middleware`, `wraperr`) are mostly unchanged apart from some cleanup.
 
 ## Code
 
