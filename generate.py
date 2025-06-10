@@ -426,6 +426,7 @@ def _extract_metadata_and_widgets(soup: BeautifulSoup) -> list[list[str]]:
         if "js-RoutableContent" in div.get("class", []):
             meta.append("route")
         if div.get("data-fullsize") is not None:
+            div.attrs.pop("data-fullsize", None)
             meta.append("full-size")
         metadata.append(meta)
 
