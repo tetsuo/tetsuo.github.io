@@ -223,11 +223,10 @@ def _embed_iframe_from_path(soup: BeautifulSoup, img, path: str) -> None:
     })
 
     container = soup.new_tag("div", attrs={"id": base})
-
     if "w" in flag_str:
-        container["data-routable"] = ""
+        container["class"] = container.get("class", []) + ["js-RoutableContent"]
     if "r" in flag_str:
-        container["class"] = "js-ResizableContent"
+        container["class"] = container.get("class", []) + ["js-ResizableContent"]
     if "f" in flag_str:
         container["data-fullsize"] = ""
         container["style"] = iframe["style"] = "width: 100%"
@@ -385,15 +384,33 @@ def _fix_anchors(soup: BeautifulSoup, domain: str, feed: bool):
             if not (href.startswith("#") or href.endswith(".html")):
                 a["rel"] = "noopener"
 
-        for h in soup.find_all(["h1", "h2"]):
+        seen_ids = set()
+
+        # Modify h1–h3 headings with unique IDs and add link
+        for h in soup.find_all(["h1", "h2", "h3"]):
             if h.get("id"):
-                h["id"] = f"/{h['id']}"
-                link = soup.new_tag("a", href="#" + h["id"], **{"class": "bookmark"})
+                original_id = h["id"]
+                new_id = f"/{original_id}"
+
+                counter = 1
+                unique_id = new_id
+                while unique_id in seen_ids:
+                    unique_id = f"{new_id}-{counter}"
+                    counter += 1
+
+                h["id"] = unique_id
+                seen_ids.add(unique_id)
+
+                link = soup.new_tag("a", href="#" + unique_id)
                 h.append(link)
 
-        for tag in ["h3", "h4", "h5"]:
-            for h in soup.find_all(tag):
-                h.attrs.pop("id", None)
+                classes = h.get("class", [])
+                classes.append("js-Bookmark")
+                h["class"] = classes
+
+        # Strip IDs from the rest of headers
+        for h in soup.find_all("h4", "h5"):
+            h.attrs.pop("id", None)
 
 
 def _extract_metadata_and_widgets(soup: BeautifulSoup) -> list[list[str]]:
@@ -406,7 +423,7 @@ def _extract_metadata_and_widgets(soup: BeautifulSoup) -> list[list[str]]:
             meta.append("resize")
             handle = soup.new_tag("div", **{"class": "js-ResizableContent__handle"})
             div.insert_after(handle)
-        if div.get("data-routable") is not None:
+        if "js-RoutableContent" in div.get("class", []):
             meta.append("route")
         if div.get("data-fullsize") is not None:
             meta.append("full-size")
