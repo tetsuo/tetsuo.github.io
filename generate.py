@@ -227,8 +227,7 @@ def _embed_iframe_from_path(soup: BeautifulSoup, img, path: str) -> None:
     if "w" in flag_str:
         container["data-routable"] = ""
     if "r" in flag_str:
-        container["data-resizable"] = ""
-        container["class"] = "ResizeableContent"
+        container["class"] = "js-ResizableContent"
     if "f" in flag_str:
         container["data-fullsize"] = ""
         container["style"] = iframe["style"] = "width: 100%"
@@ -403,9 +402,9 @@ def _extract_metadata_and_widgets(soup: BeautifulSoup) -> list[list[str]]:
         if not div.get("id"):
             continue
         meta = [div["id"]]
-        if div.get("data-resizable") is not None:
+        if "js-ResizableContent" in div.get("class", []):
             meta.append("resize")
-            handle = soup.new_tag("div", **{"class": "ResizeableContent__handle"})
+            handle = soup.new_tag("div", **{"class": "js-ResizableContent__handle"})
             div.insert_after(handle)
         if div.get("data-routable") is not None:
             meta.append("route")

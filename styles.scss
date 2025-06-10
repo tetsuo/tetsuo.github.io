@@ -1127,7 +1127,7 @@ blockquote.note {
   }
 }
 
-.ResizeableContent {
+.js-ResizableContent {
   box-sizing: border-box;
   width: 100%;
   height: 407px;
@@ -1144,7 +1144,7 @@ blockquote.note {
   }
 }
 
-.ResizeableContent__handle {
+.js-ResizableContent__handle {
   height: 5px;
   width: 50px;
   background-color: orange;
