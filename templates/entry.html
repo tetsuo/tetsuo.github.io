@@ -132,14 +132,26 @@
 
     {% for id in resizable_ids %}
     <script>
-      interact("{{ '#' + id }}").resizable(interactResizeOpts)
       {% if id+"-iframe" in router_ids %}
+      interact("{{ '#' + id }}").resizable(interactResizeOpts)
         .on('resizestart', () => {
-          document.getElementById("{{ id + "-iframe" }}").style.pointerEvents = 'none'
+          const iframe = document.getElementById("{{ id + '-iframe' }}")
+          iframe.style.pointerEvents = 'none'
+          iframe.style.userSelect = 'none'
+          iframe.style.webkitUserSelect = 'none'
         })
         .on('resizeend', () => {
-          document.getElementById("{{ id + "-iframe" }}").style.pointerEvents = 'initial'
+          const iframe = document.getElementById("{{ id + '-iframe' }}")
+          iframe.style.pointerEvents = 'initial'
+          iframe.style.userSelect = 'auto'
+          iframe.style.webkitUserSelect = 'auto'
+          const selection = window.getSelection();
+          if (selection && selection.containsNode(iframe, true)) {
+            selection.removeAllRanges();
+          }
         })
+      {% else %}
+      interact("{{ '#' + id }}").resizable(interactResizeOpts)
       {% end %}
     </script>
     {% end %}
