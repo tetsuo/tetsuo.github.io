@@ -1,31 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div class="single-col-grid content index">
-		<div class="col">
-			<div class="centered">
-				Posts tagged with <a href="/{{_tag}}.html"><b>{{ _tag }}</b></a>
-				<hr />
-			</div>
-		</div>
-		<div class="col">
-			{% for entry in entries %}
-			<div class="centered entry" id="e-{{ entry.slug }}">
-					<h1><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
-					<ul class="h-list meta">
-						<li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
-						{% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
-					</ul>
-			</div>
-			{% end %}
-		</div>
+<div class="og-Content tag-Content">
+	<div class="og-Logo"><a href="/"></a></div>
+	<div class="tag-Content__title">
+		Posts tagged with <a href="/{{_tag}}.html"><b>{{ _tag }}</b></a>
+		<hr class="tag-Content__divider" />
 	</div>
+	<div class="og-EntryList">
+		{% for entry in entries %}
+		<div class="og-Entry" id="e-{{ entry.slug }}">
+			<h1 class="og-Entry__title"><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
+			<ul class="h-list og-Entry__metadata">
+				<li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
+				{% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
+			</ul>
+		</div>
+		{% end %}
+	</div>
+</div>
 {% end %}
 
 {% block title %}{{ _tag }} - {{ settings.title }}{% end %}
 
-{% block head_alternate %}
-<link rel="alternate" href="/{{ _tag }}.xml" type="application/atom+xml" title="{{ _tag }} - {{ settings.title }}"/>
+{% block head_alternate %}<link rel="alternate" href="/{{ _tag }}.xml" type="application/atom+xml" title="{{ _tag }} - {{ settings.title }}"/>
 {% end %}
 
 {% block head_canonical %}

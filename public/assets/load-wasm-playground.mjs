@@ -7,7 +7,7 @@ export default function(runtime) {
     initPlaygrounds(input => {
       const result = runExampleCode(input);
       if (runtime.startsWith("restache") && result.output?.startsWith("export default function ($0) {return ")) {
-        result.output = result.output.slice(15)
+        result.output = result.output.slice(37, -2) // Show the relevant parts only
       }
       return result
     });

@@ -114,6 +114,11 @@
   position: relative;
 }
 
+.Playground-Details summary span {
+  width: calc(100% - 90px);
+  display: inline-block;
+}
+
 .Playground-Details:not([open]) summary {
   border-bottom: .0625rem solid #c8d1dab3;
   padding-bottom: .8rem;

@@ -89,7 +89,9 @@ def add_example_details(soup_root, title, button_label, button_title, body, open
     summary = soup_root.new_tag("summary", **{
         "class": "Playground-DetailsHeader"
     })
-    summary.append(title)
+    summary_span = soup_root.new_tag("span")
+    summary_span.append(title)
+    summary.append(summary_span)
 
     toolbar = soup_root.new_tag("div", **{"class": "Playground-DetailsToolbar"})
     buttons_container = soup_root.new_tag("div", **{"class": "Playground-ButtonsContainer"})
@@ -118,7 +120,6 @@ def add_example_details(soup_root, title, button_label, button_title, body, open
     textarea = soup_root.new_tag("textarea", **{
         "class": "Playground-Code code",
         "spellcheck": "false",
-        "style": "height: 15.875rem;"
     })
     textarea.string = body
     body_div.append(textarea)
@@ -227,7 +228,7 @@ def _embed_iframe_from_path(soup: BeautifulSoup, img, path: str) -> None:
         container["data-routable"] = ""
     if "r" in flag_str:
         container["data-resizable"] = ""
-        container["class"] = "resizeable-widget"
+        container["class"] = "ResizeableContent"
     if "f" in flag_str:
         container["data-fullsize"] = ""
         container["style"] = iframe["style"] = "width: 100%"
@@ -243,7 +244,7 @@ def _process_body_images(soup: BeautifulSoup, domain: str) -> None:
         dirname = os.path.dirname(src)
 
         if img.parent.name == "p":
-            img.parent["class"] = "ta-center"
+            img.parent["class"] = "text-center"
 
         # Handle image wrapped in a link to .html on own domain
         elif img.parent.name == "a" and img.parent.parent.name == "p":
@@ -252,8 +253,8 @@ def _process_body_images(soup: BeautifulSoup, domain: str) -> None:
 
             if dirname == "./images" and not parsed.hostname:
                 if match := re.search(r"-(\\d{1,3})$", os.path.splitext(src)[0]):
-                    img["class"] = f"i-{match.group(1)}"
-                img.parent.parent["class"] = "ta-center"
+                    img["class"] = f"w-{match.group(1)}"
+                img.parent.parent["class"] = "text-center"
 
             elif dirname == "." and parsed.hostname == domain:
                 _embed_iframe_from_path(soup, img, parsed.path)
@@ -404,7 +405,7 @@ def _extract_metadata_and_widgets(soup: BeautifulSoup) -> list[list[str]]:
         meta = [div["id"]]
         if div.get("data-resizable") is not None:
             meta.append("resize")
-            handle = soup.new_tag("div", **{"class": "resize-handle"})
+            handle = soup.new_tag("div", **{"class": "ResizeableContent__handle"})
             div.insert_after(handle)
         if div.get("data-routable") is not None:
             meta.append("route")
@@ -633,47 +634,47 @@ def main(args=None):
         config_file = args[0]
 
     with open(config_file) as f:
-        c = json.load(f)
+        cfg = json.load(f)
 
     styles_id = ""
-    if c['debug'] != True:
+    if cfg['debug'] != True:
         with open("styles.scss", "r") as f:
             data = f.read()
             styles_id = get_hex_digest_short(data)
 
     settings = Settings(
-        site_name=c["siteName"],
-        domain=c["domain"],
-        title=c["title"],
-        description=c["description"],
-        author="@" + c["twitterId"],
-        author_name=c["authorName"],
-        email=c["email"],
-        ga_id=c["analyticsId"],
-        comments=c["showComments"],
-        cover_images=c["coverImages"],
+        site_name=cfg["siteName"],
+        domain=cfg["domain"],
+        title=cfg["title"],
+        description=cfg["description"],
+        author="@" + cfg["twitterId"],
+        author_name=cfg["authorName"],
+        email=cfg["email"],
+        ga_id=cfg["analyticsId"],
+        comments=cfg["showComments"],
+        cover_images=cfg["coverImages"],
         styles_id=styles_id,
-        skip_feeds=c.get("skipFeeds", False),
-        skip_json=c.get("skipJSON", False),
-        skip_images=c.get("skipImages", False), # skip processing images for feeds
+        skip_feeds=cfg.get("skipFeeds", False),
+        skip_json=cfg.get("skipJSON", False),
+        skip_images=cfg.get("skipImages", False), # skip processing images for feeds
     )
 
-    files = glob.glob(c["contentPath"])
+    files = glob.glob(cfg["contentPath"])
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         entries = list(executor.map(
-            lambda f: entry_from_markdown(f, c["domain"], settings),
+            lambda f: entry_from_markdown(f, cfg["domain"], settings),
             files
         ))
 
     entries.sort(key=lambda e: e.published, reverse=True)
 
     Generator(
-        debug=c['debug'],
-        locale=locale.get(c['locale']),
-        entries_per_page=c['entriesPerPage'],
+        debug=cfg['debug'],
+        locale=locale.get(cfg['locale']),
+        entries_per_page=cfg['entriesPerPage'],
         entries=entries,
-        template_loader=template.Loader(c['templatePath'], autoescape=None),
+        template_loader=template.Loader(cfg['templatePath'], autoescape=None),
         settings=settings,
     ).run()
 

@@ -12,9 +12,7 @@
     "clean": "rm -f public/* public/assets/styles.css templates/manifest.webmanifest templates/favicons.html"
   },
   "dependencies": {
-    "bourbon-neat": "^4.0.0",
     "favicons": "^7.2.0",
-    "normalize-scss": "^7.0.1",
     "sass": "^1.77.8"
   }
 }

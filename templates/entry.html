@@ -1,14 +1,12 @@
-
 {% block body_class %}{% end %}
 
 {% extends "entries.html" %}
 
 {% block above_body %}
-    <div class="col">
-        <div class="above-body">
-            <a href="/">Home</a>
-        </div>
-    </div>
+	{# not used atm #}
+	<div class="above-body">
+			<a href="/">Home</a>
+	</div>
 {% end %}
 
 {% block above_content %}{% end %}
@@ -75,12 +73,10 @@
 {% end %}
 {% end %}
 {% block head_image %}
-{% if settings.cover_images == True %}
 <meta property="og:image" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
 <meta property="og:image:alt" content="{{ entries[0].short_description }}" />
 <meta name="twitter:image:src" content="https://{{ settings.domain }}/{{ entries[0].slug }}.png" />
 <meta name="twitter:image:alt" content="{{ entries[0].short_description }}" />
-{% end %}
 {% end %}
 {% block head_canonical %}
 <meta property="og:url" content="{{ entries[0].link }}">
