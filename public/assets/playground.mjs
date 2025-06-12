@@ -26,6 +26,9 @@ export class PlaygroundExampleController {
     if (exampleEl.hasAttribute('data-autorun')) {
       this.handleRunButtonClick();
     }
+    // This needs to be recalculated when the font size changes on breakpoint
+    const media = window.matchMedia('(min-width: 65rem)');
+    media.addEventListener('change', () => this.resize());
   }
 
   makeTextArea(el) {
@@ -41,6 +44,10 @@ export class PlaygroundExampleController {
     if (this.inputEl?.value) {
       const numLineBreaks = (this.inputEl.value.match(/\n/g) || []).length;
       this.inputEl.style.height = 'auto';
+      // Force reflow to fix iOS Safari bug where scrollHeight isn't updated after
+      // font-size changes (from Safari settings)
+      void this.inputEl.offsetHeight;
+
       if (numLineBreaks >= 1) {
         this.inputEl.style.height = this.inputEl.scrollHeight + 2 + 'px';
         this.inputEl.style.overflow = "auto";

@@ -9,8 +9,6 @@
   </div>
 {% end %}
 
-{% block above_content %}{% end %}
-{% block below_content %}{% end %}
 {% block head_pagination %}{% end %}
 
 {% if len(entries) > 0 %}
@@ -196,12 +194,13 @@
         }
       }
     </script>
+    {% end %}
+
     {% for id in router_ids %}
     <script>
       window.addEventListener('hashchange', getHashchangeEventHandler("{{ id }}"))
       window.addEventListener('message', getMessageEventHandler("{{ id }}"))
     </script>
-    {% end %}
     {% end %}
 
     {% if len(fullsize_ids) > 0 %}
@@ -238,6 +237,13 @@
         loadPlayground(runtime)
       </script>
       {% end %}
+    {% end %}
+
+    {% if has_navbar %}
+    <script type="module">
+      import initJumpLinks from '/assets/init-jump-links.mjs'
+      initJumpLinks()
+    </script>
     {% end %}
 
     {% if  settings.comments %}

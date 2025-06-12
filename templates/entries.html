@@ -3,48 +3,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="og-Content entry-Content">
-  <div class="og-Logo"><a href="/"></a></div>
-
-  {% for entry in entries %}
-    <div class="og-Entry" id="e-{{ entry.slug }}">
-      <h1 class="og-Entry__title"><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
-      <ul class="h-list og-Entry__metadata">
-        <li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
-        {% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
-      </ul>
-      <div class="og-Entry__body">
-        {{ entry.body }}
-      </div>
-      {% if settings.comments %}
-      <div class="discussion">
-        <div id="disqus_thread"></div>
-      </div>
-      {% end %}
+{% if has_navbar %}
+<div class="navbar-Wrapper">
+	<aside class="LeftNav-sidebar">
+    <div class="LeftNavHeader">
+      <div class="og-Logo noprint"><a href="/"></a></div>
     </div>
-  {% end %}
-
-  {% block below_content %}
-    {% if page > 1 or more %}
-      <div class="og-Entry pagination">
-        {% if page > 1 %}
-          <a href="/{{ (page-1)+'.html' if page!=2 else '' }}">← Newer</a>
-          {% end %}
-          {% if more %}
-          <a href="/{{ page+1 }}.html">Older →</a>
+		<nav class="LeftNav" data-hydrate="true"></nav>
+	</aside>
+{% else %}
+<div>
+{% end %}
+  <div class="og-Content entry-Content">
+    <div class="og-Logo"><a href="/"></a></div>
+    {% for entry in entries %}
+      <div class="og-Entry" id="e-{{ entry.slug }}">
+        <h1 class="og-Entry__title"><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
+        <ul class="h-list og-Entry__metadata">
+          <li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
+          {% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
+        </ul>
+        <div class="og-Entry__body">
+          {{ entry.body }}
+        </div>
+        {% if settings.comments %}
+        <div class="discussion">
+          <div id="disqus_thread"></div>
+        </div>
         {% end %}
       </div>
     {% end %}
-  {% end %}
-
+  </div>
 </div>
-{% end %}
-
-{% block head_pagination %}
-  {% if page > 1 %}
-  <link rel="prev" href="https://{{ settings.domain }}/{{ (page-1)+'.html' if page!=2 else '' }}" />
-  {% end %}
-  {% if more %}
-  <link rel="next" href="https://{{ settings.domain }}/{{ page + 1 }}.html" />
-  {% end %}
 {% end %}

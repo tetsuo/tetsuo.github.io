@@ -56,6 +56,7 @@ class Entry:
     has_playground: bool
     has_code: bool
     playground_runtime: str
+    navbar_disabled: bool
 
     metadata: list[list[str]]
 
@@ -320,6 +321,7 @@ def entry_from_markdown(filename: str, domain: str, settings: Settings) -> Entry
     published = datetime.datetime.fromisoformat(metadata["published"])
     updated = datetime.datetime.fromisoformat(metadata["updated"])
     tags = [tag.strip() for tag in metadata["tags"].split(",")]
+    navbar_disabled = metadata.get("navbar_disabled", "")
 
     # Required blockquote
     bq = soup.find("blockquote", recursive=False)
@@ -370,6 +372,7 @@ def entry_from_markdown(filename: str, domain: str, settings: Settings) -> Entry
         has_playground=has_pg,
         has_code=has_code,
         playground_runtime=runtime,
+        navbar_disabled=navbar_disabled=="true",
     )
 
 
@@ -544,6 +547,7 @@ class Generator:
                 "resizable_ids": resizable_ids,
                 "router_ids": router_ids,
                 "fullsize_ids": fullsize_ids,
+                "has_navbar": not entry.navbar_disabled,
             })
 
         t = templates["index"]
