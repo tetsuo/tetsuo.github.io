@@ -175,6 +175,8 @@ table {
   --focus-box-shadow: none;
   --gutter: 1.5rem;
   --gap: 1rem;
+  --subnav-link-color: #7a7a7a;
+  --subnav-link-hover-color: var(--text-color);
 }
 
 *:target {
@@ -980,7 +982,7 @@ a.btn {
   padding-bottom: 0.475rem;
   padding-top: 0.475rem;
   text-decoration: none;
-  color: var(--secondary-text-color);
+  color: var(--subnav-link-color);
 }
 
 .LeftNav a span {
@@ -996,7 +998,8 @@ a.btn {
 
 .LeftSubnav a {
   padding-left: 1rem;
-  color: var(--secondary-text-color);
+  color: var(--subnav-link-color);
+
 }
 
 .LeftNav a.active,
@@ -1010,7 +1013,7 @@ a.btn {
 .LeftNav a:hover span,
 .LeftNav a:active span,
 .LeftNav a:focus span {
-  color: var(--text-color);
+  color: var(--subnav-link-hover-color);
 }
 
 .LeftNav ul.LeftSubnav li a.active,
