@@ -1,21 +1,25 @@
 ---
-title: Cubic Limit reimplemented with Effect
-cover_title: Cubic Limit reimplemented with Effect
+title: Cubic Limit in Effect
+cover_title: Cubic Limit in Effect
 description: Recreating Manfred Mohr's Cubic Limit, P-161 with TypeScript and Effect using a fully functional rendering pipeline
 tags: typescript,tutorial
 published: 2025-02-08T14:55:00
-updated: 2025-06-02T13:37:00
+updated: 2025-06-12T13:37:00
 ---
 
-> This post walks through the process of recreating Manfred Mohr's **Cubic Limit, P-161** with **TypeScript** and [**Effect**](https://effect.website/).
+> This post walks through the process of reproducing Manfred Mohr's **Cubic Limit, P-161** using **TypeScript** and [**Effect**](https://effect.website/).
 
-Shown below is a replica of [**P-161**](http://www.emohr.com/mohr_cube1_161.html) (six edges), originally part of a 13-piece plotter drawing series from 1975, which is widely recognized as a pioneering work in algorithmic art.
+Shown below is a replica of [**P-161**](http://www.emohr.com/mohr_cube1_161.html) (six edges), originally part of a 13-piece series of plotter drawings from 1975 by Manfred Mohr.
 
 [![mohr-p161](./cubiclimit.jpg)](https://tetsuo.github.io/f/cubiclimit.html)
 
-### Clone the repository
+---
 
-The full source code that produces this image is available [here](https://github.com/tetsuo/cubic-limit). It is an Effect-based adaptation of [**graphics-ts**](https://github.com/gcanti/graphics-ts) with support for 3D rendering. Clone it with:
+##### Source code
+
+The full source code that produces this image is available in the repository [`tetsuo/cubic-limit`](https://github.com/tetsuo/cubic-limit).
+
+It is an Effect-based adaptation of [graphics-ts](https://github.com/gcanti/graphics-ts) with support for 3D rendering. Clone it with:
 
 ```sh
 git clone git@github.com:tetsuo/cubic-limit.git
@@ -25,7 +29,7 @@ The repository also includes a version of **P-197**, but this post will focus so
 
 ---
 
-# Cube vertices & edges
+## Cube vertices & edges
 
 We'll work with a type `Vec` to hold `[x, y, z]` coordinates.
 
@@ -61,7 +65,9 @@ const getEdges = (i: number): NonEmptyReadonlyArray<Vec> => [
 
 Combining all `i` values yields 12 edges. Each edge is a pair of indices into `cubePoints`.
 
-# Cube configurations
+---
+
+## Cube configurations
 
 Mohr's piece shows a 31×31 grid of partially drawn cubes. Each cube is unique and displayed with exactly six edges (`n = 6`). To represent this mathematically:
 
@@ -72,7 +78,7 @@ This means each valid cube configuration is a 12-bit number with exactly six bit
 
 How many such configurations exist? Exactly **924**, as determined by the formula `C(12, 6) = 924`.
 
-These numbers correspond to [**OEIS sequence A023688**](https://oeis.org/A023688), which lists integers with six `1`s in their binary representation. Within the 12-bit range, the sequence starts at 63 (binary `000000111111`) and ends just under 4095 (binary `111111111111`):
+These numbers correspond to [OEIS sequence A023688](https://oeis.org/A023688), which lists integers with six `1`s in their binary representation. Within the 12-bit range, the sequence starts at 63 (binary `000000111111`) and ends just under 4095 (binary `111111111111`):
 
 ```ts
 63    -- 000000111111
@@ -85,7 +91,7 @@ These numbers correspond to [**OEIS sequence A023688**](https://oeis.org/A023688
 
 ### Generating all 12-bit numbers with six 1s
 
-To iterate through all 12-bit integers that have exactly six bits set, I turned to a classic resource: [Bit Twiddling Hacks](https://graphics.stanford.edu/~seander/bithacks.html). At the bottom of that page is the code to compute the [**lexicographically next bit permutation**](https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation):
+To iterate through all 12-bit integers that have exactly six bits set, I turned to a classic resource: [Bit Twiddling Hacks](https://graphics.stanford.edu/~seander/bithacks.html). At the bottom of that page is the code to compute the [lexicographically next bit permutation](https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation):
 
 ```ts
 import { pipe } from 'effect/Function'
@@ -99,7 +105,7 @@ const nextNumber = (v: number) =>
 
 This function finds the next integer with the same number of bits set. For example, if `v` has exactly 6 bits set, it will produce the next integer that also has 6 bits set.
 
-With it, we can now accumulate **all valid edge combinations**:
+With it, we can now accumulate all valid edge combinations:
 
 ```ts
 import { unfold } from 'effect/Array'
@@ -114,9 +120,9 @@ Each integer in `seq` encodes a unique cube with exactly 6 edges, totaling 924 c
 
 ---
 
-# Representing geometry
+## Representing geometry
 
-## Shape
+### Shape
 
 The `Shape` type is originally defined in the [purescript-drawing](https://github.com/paf31/purescript-drawing/blob/master/src/Graphics/Drawing.purs#L34) library:
 
@@ -142,9 +148,9 @@ So a `Shape` is a **union** of `Path` and `Composite`, meaning it can represent 
 type Shape = Path | Composite
 ```
 
-## Path
+### Path
 
-A `Path` is a [chunk](https://effect.website/docs/data-types/chunk/) of points connected by lines, plus a `boolean` to indicate whether the path is closed (i.e., the last point connects back to the first):
+A `Path` is a [`Chunk`](https://effect.website/docs/data-types/chunk/) of points connected by lines, plus a `boolean` to indicate whether the path is closed (i.e., the last point connects back to the first):
 
 ```ts
 import { Chunk } from '@effect/data/Chunk'
@@ -156,7 +162,7 @@ interface Path {
 }
 ```
 
-We define two constructors, `path` and `closed`, which take a `Foldable`—an abstraction for collections that can be reduced to a single value (e.g., an `Array`). We also define a `Monoid` instance for `Path`, which combines two paths by concatenating their points and checking if either path is closed.
+We define two constructors, `path` and `closed`, which take a `Foldable`, an abstraction for collections that can be reduced to a single value (e.g., an `Array`). We also define a `Monoid` instance for `Path`, which combines two paths by concatenating their points and checking if either path is closed.
 
 ```ts
 import { MonoidSome } from '@effect/typeclass/data/Boolean'
@@ -198,7 +204,7 @@ const monoidPath: Monoid<Path> = struct({
 
 Here, the `monoidPath` combines two `Path` objects by merging their point arrays. The `MonoidSome` ensures that if any of the paths are closed, the result is also considered closed.
 
-## Composite
+### Composite
 
 The other variant of `Shape` is `Composite`, which basically serves as a container for multiple `Shape`s:
 
@@ -214,7 +220,9 @@ const composite = (shapes: ReadonlyArray<Shape>): Composite => ({
 })
 ```
 
-# Constructing a full cube
+---
+
+## Constructing a full cube
 
 Bringing it all together, here's how we can define a full cube (all 12 edges visible) as a `Composite` of 12 paths:
 
@@ -247,7 +255,7 @@ const cubeShape = S.composite(
 )
 ```
 
-### Cube as a composite of paths
+##### Cube as a composite of paths
 
 The `cubeShape` structure represents the cube's 12 edges as pairs of points in 3D space. Each point is a 3D vector` [x, y, z]`, and each edge is defined by two such points:
 
@@ -269,9 +277,11 @@ The `cubeShape` structure represents the cube's 12 edges as pairs of points in 3
 - Each array containing point tuples describes a `Path`, which corresponds to a single edge of the cube.
 - 12 paths are grouped together into a `Composite`.
 
-# Toggling edges to form partial cubes
+---
 
-Since Mohr's P-161 selectively displays only 6 edges of the cube, we need a way to **toggle** edges (paths) on/off. We can do that by passing in a _predicate_ that checks if an edge is active.
+## Toggling edges to form partial cubes
+
+Since Mohr's P-161 selectively displays only 6 edges of the cube, we need a way to toggle edges (paths) on/off. We can do that by passing in a _predicate_ that checks if an edge is active.
 
 ```ts
 import { Predicate } from 'effect/Predicate'
@@ -318,9 +328,11 @@ If `n` has bits 3, 5, 8, 10, etc., turned on, only those edges of the cube are v
 
 For example, calling `cubeFromNumber(63)` (binary `000000111111`) will omit edges 0 through 5 and include edges 6 through 11, producing a half-formed cube.
 
-# Generating all cube shapes
+---
 
-Finally, we can list all **924** cube shapes corresponding to `n = 6` by:
+## Generating all cube shapes
+
+Finally, we can list all 924 cube shapes corresponding to `n = 6` by:
 
 - Generating all 12-bit numbers with 6 bits set (using `unfold` and `nextNumber`).
 - Mapping each integer to a `Shape` with `cubeFromNumber`.
@@ -339,9 +351,9 @@ const cubes: Composite[] = pipe(
 
 ---
 
-# Representing styles & transformations
+## Representing styles & transformations
 
-# Drawing
+### Drawing
 
 Next, we define a new type that captures *what* we want to do with shapes, whether to fill them, outline them, apply transformations, or clip:
 
@@ -356,11 +368,11 @@ type Drawing =
   | { _tag: 'Outline'; shape: Shape; style: OutlineStyle }
 ```
 
-A `Drawing` acts like a _scene graph_, where transformations (`Scale`, `Rotate`, `Translate`) can be nested around shapes.
+> A `Drawing` acts like a _scene graph_, where transformations (`Scale`, `Rotate`, `Translate`) can be nested around shapes.
 
 To convert a `Shape` into a `Drawing`, we use one of three options: `Clipped`, `Fill`, or `Outline`.
 
-## Outline
+### Outline
 
 The `Outline` variant in `Drawing` represents shapes rendered with an outline. The function `outline` constructs an outlined shape with a given `OutlineStyle` (color, lineWidth, etc.):
 
@@ -387,7 +399,7 @@ const cubes = pipe(
 )
 ```
 
-## Fill
+### Fill
 
 Just like `Outline` defines shapes with an outline, the `Fill` variant in `Drawing` represents shapes rendered with a fill. The function `fill` creates a filled shape using a specified `FillStyle`.
 
@@ -421,7 +433,7 @@ const drawBackground = ({ width, height }: Size, bgColor: Color): D.Drawing =>
   )
 ```
 
-## Many
+### Many
 
 The `Many` variant allows combining multiple `Drawing` objects into a single composition, conceptually just a list.
 
@@ -469,7 +481,7 @@ const drawLines = (n: number, height: number, vertical: boolean): D.Drawing => {
 }
 ```
 
-## Translate/Scale/Rotate
+### Translate/Scale/Rotate
 
 The each of the following constructors wraps a `Drawing` and includes X, Y, Z parameters to translate, rotate, or scale whatever is inside.
 
@@ -537,9 +549,11 @@ const drawCubes = (numCells: number, cellSize: number): D.Drawing => {
 }
 ```
 
-# Drawing P-161
+---
 
-Finally, we end up with a `Drawing` that visually represents Cubic Limit, P-161 in its entirety 🎉
+## Drawing P-161
+
+Finally, we end up with a `Drawing` that visually represents Cubic Limit, P-161 in its entirety.
 
 ```ts
 const drawP161 = (size: Size, bgColor: Color): D.Drawing => {
@@ -561,17 +575,13 @@ const drawP161 = (size: Size, bgColor: Color): D.Drawing => {
 
 ---
 
-# The art of rendering cubes and generating side effects
-
-Today's technology lets us render 3D shapes with a few lines of code, but Mohr's process was far more hands-on. The Cubic Limit series was originally drawn using a **Benson 1284 flatbed plotter**.
-
 ![Manfred Mohr and Estarose Wolfson](./images/zkm-01-0134-02-0427.jpg)
 
 > Manfred Mohr and Estarose Wolfson look at the Benson plotter in the Centre de Calcul de la Météorologie Nationale, 1971 / © Manfred Mohr ([Source](https://zkm.de/en/manfred-mohr))
 
-Mohr developed his algorithms on a **CDC 6400** mainframe with **Fortran IV**, storing his code on punch cards. With these programs, he transformed and projected cubes onto a 2D plane, ultimately generating low-level instructions for the plotter.
+The Cubic Limit series was originally drawn using a **Benson 1284 flatbed plotter**. Mohr developed his algorithms on a **CDC 6400** mainframe with **Fortran IV**, storing his code on punch cards.
 
-While details about this plotter's proprietary language—likely called **Benson Graphic Language (BGL)**—are scarce, it probably shared similarities with Hewlett Packard's **HP-GL**. For example, drawing a rectangle in HP-GL might look like this:
+While details about this plotter's proprietary language are scarce, it probably shared similarities with Hewlett Packard's **HP-GL**. For example, drawing a rectangle in HP-GL might look like this:
 
 ```
 SP1          // Select pen 1
@@ -603,30 +613,27 @@ ctx.closePath();
 ctx.stroke();
 ```
 
-In essence, from Mohr's era to today's digital canvas, the process remains the same: first, you model your art in code, and then you generate the instructions that bring it to life.
+---
 
-Modern techniques, especially in **functional programming**, explicitly enforce this separation. You often end up with:
+The `Drawing` type we defined is essentially an algebraic data type (specifically, a sum type) that describes the semantics of a domain-specific language for vector graphics. It doesn't have its own syntax, nor does it need one.
 
-- A **declarative model** that specifies **what** to do
-- An **interpreter** that connects this model to **stateful, effectful APIs**
+All it requires is an **interpreter** to integrate with the Canvas API and, ultimately, generate canvas commands.
 
-The `Drawing` sum type describes the semantics of a **domain specific language (DSL)** for creating vector graphics, keeping the model separate from side effects. This separation allows the same underlying logic to be used for **rendering** to a canvas, **exporting** to PostScript, or even **controlling** a physical plotter. Our plan is to eventually integrate it with the Canvas API, and ultimately generate canvas commands as a side effect.
+---
 
-# Interpreting geometry
+## Interpreting geometry
 
-Before we proceed, we must address a key limitation: the Canvas API only supports 2D coordinates (i.e., **X** and **Y**), not 3D.
+That said, before we proceed, we must address a key limitation: the Canvas API only supports 2D coordinates, not 3D. To enable 3D functionality on `<canvas>`, we'll define `Path3D` (as an implementation of the [`CanvasPath`](https://html.spec.whatwg.org/multipage/canvas.html#building-paths) interface), much like [`Path2D`](https://developer.mozilla.org/en-US/docs/Web/API/Path2D) but with support for 3D coordinates.
 
-To work around this constraint, we'll begin by implementing a simplified version of the [`CanvasPath`](https://html.spec.whatwg.org/multipage/canvas.html#building-paths) API—similar to [`Path2D`](https://developer.mozilla.org/en-US/docs/Web/API/Path2D)—but tailored to handle 3D coordinates.
-
-## Path3D
+### Path3D
 
 ```ts
 type Path3D = ReadonlyArray<ReadonlyArray<Point>>
 ```
 
-`Path3D` is an intermediate representation that transforms our high-level `Shape` definitions into a format more suitable for applying transformations and rendering. Essentially, it _flattens_ a shape into an array of **subpaths**, where each subpath is a sequence of 3D points (`[x, y, z]`).
+`Path3D` is an intermediate representation that transforms high-level `Shape` definitions into a format more suitable for applying transformations and rendering. Essentially, it _flattens_ a shape into an array of **subpaths**, where each subpath is a sequence of 3D points (`[x, y, z]`).
 
-## Converting a Shape to Path3D
+#### Converting a Shape to Path3D
 
 The helper function `fromShape` performs this conversion:
 
@@ -655,17 +662,14 @@ const fromShape: (shape: Shape) => Path3D = shape => {
 }
 ```
 
-For a `Composite`, `fromShape` simply calls `fromShape` on each sub-shape and concatenates the resulting `Path3D` arrays.
+- For a `Composite`, `fromShape` simply calls `fromShape` on each sub-shape and concatenates the resulting `Path3D` arrays.
+- For a `Path`, `fromShape` breaks the `points` into line segments (via `moveTo` and `lineTo`). If `closed` is true, it calls `closePath`, making the last point connect to the first.
 
-For a `Path`, `fromShape` breaks the `points` into line segments (via `moveTo` and `lineTo`). If `closed` is true, it calls `closePath`, making the last point connect to the first.
-
-### Path3D combinators: moveTo, lineTo, closePath
+### Path3D combinators
 
 These functions implement the path-drawing algorithm:
 
-#### moveTo
-
-Begins a new subpath at the specified `point` (if the point is finite).
+`moveTo` begins a new subpath at the specified `point` (if the point is finite).
 
 ```ts
 const moveTo = (point: Point) => (path: Path3D): Path3D =>
@@ -675,9 +679,7 @@ const moveTo = (point: Point) => (path: Path3D): Path3D =>
     : path
 ```
 
-#### lineTo
-
-Extends the current subpath by connecting the last point to the new `point`.
+`lineTo` extends the current subpath by connecting the last point to the new `point`.
 
 ```ts
 const lineTo = (point: Point) => (path: Path3D): Path3D =>
@@ -690,9 +692,7 @@ const lineTo = (point: Point) => (path: Path3D): Path3D =>
     : path
 ```
 
-#### closePath
-
-Closes the current subpath by connecting its last point back to the first.
+`closePath` closes the current subpath by connecting its last point back to the first.
 
 ```ts
 const closePath = (path: Path3D): Path3D => {
@@ -722,13 +722,11 @@ const closePath = (path: Path3D): Path3D => {
 }
 ```
 
+---
+
 ## Transformation matrices
 
-Rendering a 3D scene onto a 2D canvas typically involves a series of steps—applying **model**, **view**, and **projection** matrices, performing perspective division, etc. In our case, however, we only require model transformations—positioning, scaling, and rotating each individual cube.
-
-## Mat
-
-These transformations are typically encoded in **4×4 matrices** when dealing with 3D points. We can define a matrix type `Mat` as follows:
+Transformations are typically encoded in **4×4 matrices** when dealing with 3D points. We can define a matrix type `Mat` as follows:
 
 ```typescript
 type Mat = NonEmptyReadonlyArray<Vec>
@@ -776,7 +774,7 @@ const rotateX = (angle: number): Mat => [
 
 ### Combining multiple transforms
 
-Often we need to **combine** several transformations (e.g. translate first, then rotate, then scale). In matrix math, combining transformations is done by **matrix multiplication**:
+Often we need to combine several transformations (e.g. translate first, then rotate, then scale). In matrix math, combining transformations is done by **matrix multiplication**:
 
 ```ts
 declare function mul(y: Mat): (x: Mat) => Mat
@@ -791,6 +789,8 @@ pipe(
 ```
 
 The final result is a single 4×4 matrix encoding all these operations in the correct order. When you apply that matrix to a point `[x, y, z, 1]`, it performs the entire sequence of transformations-translation, then rotation on X, then rotation on Y, then scaling.
+
+> 📄 **See the matrix multiplication implementation in [`Mat.ts`](https://github.com/tetsuo/cubic-limit/blob/master/src/Mat.ts#L17) file.**
 
 > **Reminder**: Matrix multiplication is **not** _commutative_. The order you multiply matters.
 
@@ -807,7 +807,7 @@ const semigroupMat: Semigroup<Mat> = make((x, y) => {
 })
 ```
 
-And from that Semigroup, we get a **Monoid** by adding the **identity** matrix (which leaves any vector unchanged):
+And from that Semigroup, we get a **Monoid** by adding the identity matrix (which leaves any vector unchanged):
 
 ```ts
 import { Monoid, fromSemigroup } from '@effect/typeclass/Monoid'
@@ -818,7 +818,7 @@ const monoidMat: Monoid<Mat> = fromSemigroup(
 )
 ```
 
-This way, we can compose an **array of transformations** neatly:
+This way, we can compose an array of transformations neatly:
 
 ```ts
 import { monoidMat } from './Mat'
@@ -829,34 +829,6 @@ const combined = monoidMat.combineAll([
   rotateZ(90),
 ])
 ```
-
-> **Dot products & matrix multiplication**
->
-> Under the hood, matrix multiplication boils down to computing **dot products** between **rows** of the first matrix and **columns** of the second:
->
-> ```ts
-> const dot =
->   (b: Vec) =>
->   (a: Vec) =>
->     pipe(zipWith(a, b, multiply), reduce(0, sum))
->
-> const col: (n: number) => (m: Mat) => Vec = n => map(unsafeGet(n))
->
-> const transpose = (m: Mat): Mat =>
->   pipe(
->     headNonEmpty(m),
->     map((_, i) => col(i)(m))
->   )
->
-> const mul = (x, y) =>
->   pipe(
->     map(transpose(y), dot),
->     // then for each row in x, apply the dotted function
->     fab => map(x, ar => map(fab, f => f(ar)))
->   )
-> ```
->
-> When multiplying `C=A×B`, each entry `(i,j)` in `C` is the **dot product** of row `i` from `A` with column `j` from `B`.
 
 ### Applying 3D transformations
 
@@ -878,7 +850,9 @@ const toCoords = (shape: Shape, transform: Mat): ReadonlyArray<ReadonlyArray<Poi
   )
 ```
 
-# Render service
+---
+
+## Render service
 
 Now that everything is in place, let's define the **Render** [service](https://effect.website/docs/requirements-management/services/) as a tagged interface that encapsulates methods mirroring those of the native `CanvasRenderingContext2D` (e.g. `lineTo`, `moveTo`, `fill`, `stroke`, etc.).
 
@@ -906,9 +880,9 @@ class Render extends Tag('Render')<
 >() {}
 ```
 
-# Producing render effect
+## Producing render effect
 
-The function `renderDrawing` is our core interpreter for the Drawing DSL. It takes a `Drawing` and recursively transforms it into a series of **canvas commands**, while internally maintaining a transformation matrix that accumulates and applies all transformations.
+The function `renderDrawing` is our core interpreter for the Drawing DSL. It takes a `Drawing` and recursively transforms it into a series of canvas commands, while internally maintaining a transformation matrix that accumulates and applies all transformations.
 
 ```ts
 const renderDrawing = (d: D.Drawing): Micro<void, never, Render> =>
@@ -1009,7 +983,9 @@ For instructions like `Outline` and `Fill`, the function saves the canvas state,
 
 The helper `renderSubPath` converts a sub-path (a list of 3D points) into the corresponding canvas calls (`moveTo` for the first point, followed by `lineTo` for subsequent points).
 
-# Wiring up the real canvas
+---
+
+## Wiring up the real canvas
 
 The final step is the `render` function, which "plugs in" a real `CanvasRenderingContext2D` implementation by providing a concrete instance of the **Render** service. This function builds the effect (from `renderDrawing`) and then supplies a real implementation that calls the actual Canvas API:
 
@@ -1075,7 +1051,9 @@ const render = (d: D.Drawing, ctx: CanvasRenderingContext2D): Micro<void, never,
   })
 ```
 
-# Putting it all together
+---
+
+## Putting it all together
 
 Finally, the `renderTo` function ties everything together. It retrieves the canvas element, adjusts its size for the device pixel ratio, gets the 2D context, and runs the rendering effect:
 
@@ -1108,7 +1086,7 @@ const renderTo = (f: (size: Size) => Drawing, canvasId: string): void =>
   ).pipe(runSync) // 5. Perform the side-effect on the canvas.
 ```
 
-## Rendering P-161
+##### Rendering P-161
 
 ```ts
 const renderP161 = (canvasId: string, bgColor: string) =>

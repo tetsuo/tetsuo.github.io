@@ -5,6 +5,7 @@ description: Simple Go service that delivers random fortune cookies over HTTP
 tags: go,starter
 published: 2025-03-31T00:00:00
 updated: 2025-06-09T13:37:00
+navbar_disabled: true
 ---
 
 > [**fortune**](https://github.com/tetsuo/fortune) is a simple HTTP API that delivers random fortune cookies.

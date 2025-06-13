@@ -4,14 +4,16 @@ cover_title: Multiplexed binary protocol in Go
 description: Message parsing for applications that require structured, channel-aware transmission over continuous byte input
 tags: go,tool
 published: 2023-01-07T21:25:00
-updated: 2025-05-30T13:37:00
+updated: 2025-06-12T13:37:00
 ---
 
 > [**binproto**](https://github.com/tetsuo/binproto) provides binary message framing using a length-prefixed format and supports multiplexed streams.
 
-Below is an example of a TCP server and client communicating with binproto.
+##### Example: hi–hello over TCP
 
-To start exchanging messages, simply wrap a `net.Conn` with a `binproto.Conn` instance. Once you''re connected, use the `ReadMessage()` and `Send()` methods on the `Conn` object to read incoming messages or send new ones over the network.
+To start exchanging messages with binproto, simply wrap a `net.Conn` with a `binproto.Conn` instance.
+
+Then, once connected, use `ReadMessage()` to read incoming messages and `Send()` to send new ones over the network.
 
 ## Server
 
@@ -51,7 +53,7 @@ func (s *server) handle(conn net.Conn) {
         }
         fmt.Printf("%d %d %s\n", msg.ID, msg.Channel, msg.Data)
 
-        _, err = c.Send(binproto.NewMessage(112, 5, []byte("hey")))
+        _, err = c.Send(binproto.NewMessage(112, 5, []byte("hello")))
         if err != nil {
             log.Fatal(err)
         }
@@ -130,9 +132,6 @@ func main() {
 }
 ```
 
->> **Note:** binproto itself doesn't provide encryption. However, you can easily add encryption by using Go libraries that act as drop-in replacements for `net`—for example, by wrapping your connections with an implementation of the [NOISE protocol](http://www.noiseprotocol.org/).
-
-
 ## Message structure
 
 Every message is encoded with a 64-bit header: a length prefix followed by a channel ID and type.
@@ -147,8 +146,12 @@ Every message is encoded with a 64-bit header: a length prefix followed by a cha
 * **Channel ID (first 60 bits)**: Identifies the specific channel for the message.
 * **Channel Type (last 4 bits)**: Specifies the type of data in the message.
 
-## Configurable buffer size
+## Encryption
 
-binproto operates with a default internal buffer size of 4096 bytes, meaning data is processed as long as it meets or exceeds this buffer size, which is an effective default for many applications. You can adjust this value to better suit protocols dealing with larger or smaller data chunks, optimizing performance as needed.
+binproto itself doesn't provide encryption. However, encryption can be added by using Go libraries that act as drop-in replacements for `net`, for example by wrapping your connections with an implementation of the [NOISE protocol](http://www.noiseprotocol.org/).
+
+## Configure buffer size
+
+binproto operates with a default internal buffer size of 4096 bytes, meaning data is processed as long as it meets or exceeds this buffer size, which is an effective default for many applications. This value can be adjusted to better suit protocols that use larger or smaller data chunks, optimizing performance as needed.
 
 > 📄 **For more details, see the API documentation at [pkg.go.dev](https://pkg.go.dev/github.com/tetsuo/binproto).**

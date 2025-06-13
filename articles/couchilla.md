@@ -4,20 +4,22 @@ cover_title: CouchDB design document bundler
 description: Couchilla is a bundler for packing design documents for CouchDB with CommonJS support
 tags: javascript,couchdb,tool
 published: 2023-01-02T14:55:00
-updated: 2025-06-02T13:37:00
+updated: 2025-06-12T13:37:00
 ---
 
 > [**couchilla**](https://github.com/tetsuo/couchilla) is a bundler for packing design documents for CouchDB with CommonJS support.
 
+## Overview
+
 In [CouchDB](https://couchdb.apache.org/), [design documents](https://docs.couchdb.org/en/stable/ddocs/ddocs.html) are special database entries that contain JavaScript functions, such as _view_ and _update_ functions. These functions, executed on demand, generate secondary indexes, often termed MapReduce views.
 
-JavaScript support in CouchDB is based on the Mozilla SpiderMonkey engine (and, starting with version 3.4.1, also QuickJS). However, because design functions are language-independent, CouchDB does not include a dedicated tool for creating design documents.
+JavaScript support in CouchDB is based on the Mozilla SpiderMonkey engine (and, starting with version 3.4.1, also QuickJS). However, because design functions are language-independent, CouchDB does not include a dedicated tool for creating them.
 
-[couchilla](https://github.com/tetsuo/couchilla) addresses this by providing an easy way to bundle design documents with CommonJS support. It aggregates view and filter functions from a JavaScript directory and generates a design document in JSON format as its output.
+[**couchilla**](https://github.com/tetsuo/couchilla) creates design documents with CommonJS support. It reads view and filter functions from JavaScript files in a directory and generates a design document in JSON.
 
 ## Directory structure
 
-Here's an example of a basic design document directory structure:
+Here's an example directory structure:
 
 ```
 .
@@ -33,7 +35,7 @@ Here's an example of a basic design document directory structure:
   * [Reduce functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#reduce-and-rereduce-functions) are defined in files with `.reduce.js` extensions.
 * [Filter functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#filter-functions) belong in the `filters` directory.
 
-## Examples
+## View functions
 
 ### Map functions
 
@@ -61,7 +63,19 @@ export default (keys, values, rereduce) => {
 }
 ```
 
-### Filter functions
+#### Builtin reduce functions
+
+You can opt to use [Erlang native functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#built-in-reduce-functions) using the `builtin` annotation. For example the `sum` function above can be rewritten using `_sum`.
+
+`views/foo.reduce.js`
+
+```js
+/* builtin _sum */
+```
+
+During compilation this will be replaced with a call to the builtin [`_sum`](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#sum) function.
+
+## Filter functions
 
 Filter by field:
 
@@ -76,7 +90,7 @@ export default (doc, req) => {
 }
 ```
 
-### Validate document update functions
+## Validate document update functions
 
 Log incoming requests and respond with forbidden:
 
@@ -90,19 +104,7 @@ export default (newDoc, oldDoc, userCtx, secObj) => {
 }
 ```
 
-### Builtin reduce functions
-
-You can opt to use [Erlang native functions](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#built-in-reduce-functions) using the `builtin` annotation. For example the `sum` function above can be rewritten using `_sum`.
-
-`views/foo.reduce.js`
-
-```js
-/* builtin _sum */
-```
-
-During compilation this will be replaced with a call to the builtin [`_sum`](https://docs.couchdb.org/en/stable/ddocs/ddocs.html#sum) function.
-
-### Requiring other modules
+## Requiring other modules
 
 All code, including `require()` statements, must be enclosed within the exported default function.
 

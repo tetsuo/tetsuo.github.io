@@ -4,12 +4,16 @@ description: The basics of denotational semantics and how it provides a mathemat
 cover_title: Thinking in Haskell
 tags: haskell,tutorial
 published: 2023-05-30T12:41:00
-updated: 2025-06-02T13:37:00
+updated: 2025-06-12T13:37:00
 ---
 
-> The basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell.
+> Understanding programs by what they are, not how they run.
 
-In Haskell, a function is a fixed mapping between inputs (arguments) and their corresponding values. Here is an example demonstrating the Fibonacci sequence.
+## What is a function?
+
+Functions in Haskell are **pure**, meaning they're fixed mappings from inputs to outputs with no side effects like performing I/O or throwing exceptions.
+
+Here is an example demonstrating the Fibonacci sequence:
 
 ```haskell
 fib :: Integer -> Integer
@@ -18,17 +22,27 @@ fib 1 = 1
 fib n = fib (n-1) + fib (n-2)
 ```
 
-This defines `fib` as a function that takes an integer `n` and returns the nth Fibonacci number. Each case acts as an equation, establishing the relationship between input and output. `fib n` runs recursively until the base case is reached and a sum is returned.
+This defines `fib` as a function that takes an integer `n` and returns the nth Fibonacci number. Each match corresponds to an equation defining the function's meaning in terms of input-output relationships.
+
+---
 
 This view of a function is called **denotational**. We define its "meaning" by describing the relationships between inputs and outputs, as opposed to **operational semantics**, where functions are seen as sequences of _operations_ executed over time.
 
-## Referential transparency
+---
 
-In this framework, every Haskell expression corresponds to a mathematical object. For example, both `fib 1` and `5 - 4` _denote_ the same value: 1. While it sounds simple, this is the cornerstone of **referential transparency**, meaning that any expression can be replaced by its corresponding value without altering the overall behavior of the program.
+The expression `fib n` evaluates recursively until it reaches a base case, at which point it returns a value from the function's semantic domain (in this case, the integers).
 
-To illustrate referential transparency, consider a simple addition function first.
+## Why is it important?
 
-It is fully referentially transparent because it always returns a value based solely on its inputs. Contrast this with a division function:
+**Denotational semantics** provides the mathematical foundation guaranteeing a precise meaning for every function in languages like Haskell.
+
+In return, Haskell's job is to provide language constructs that align with mathematical meaning, resulting in predictable, side-effect-free code.
+
+---
+
+For instance, when functions cannot always produce a simple result, Haskell encourages using types like [`Maybe`](https://wiki.haskell.org/Maybe) to explicitly model failures as part of a function's return value.
+
+**Example:** Division by zero causes an exception
 
 ```haskell
 > 10 `div` 2
@@ -37,11 +51,7 @@ It is fully referentially transparent because it always returns a value based so
 *** Exception: divide by zero
 ```
 
-Here, division by zero causes an exception. The function itself is referentially transparent only when it is **total**—that is, defined for every possible input. In the case of division, the operation is **partial** (it does not provide an output for every input), which is why we see an exception when the divisor is zero.
-
-### Maybe maybe maybe
-
-In such cases, Haskell offers the [`Maybe`](https://wiki.haskell.org/Maybe) data type for side-effect-free computation. This type can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`), ensuring that functions like division become total functions:
+`Maybe` can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`).
 
 ```haskell
 data Maybe a = Just a | Nothing
@@ -51,9 +61,11 @@ safeDiv _ 0 = Nothing
 safeDiv a b = Just (a `div` b)
 ```
 
-The point is, languages like Haskell guarantee that every function has a precise mathematical meaning, and for a good reason.
+The use of `Maybe` not only addresses issues like _undefined behavior_ but also provides a clear mathematical representation as an [algebraic data type](https://en.wikipedia.org/wiki/Algebraic_data_type) for _computations that may fail or lack a value_.
 
-# Denotational semantics
+## Domain-specific semantics
+
+Let's dig deeper to understand how Haskell blurs the line between mathematics and programming.
 
 Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
 
@@ -63,7 +75,7 @@ Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You pl
 
 this means that the **expression** `E` is assigned a **value** in the semantic domain `V` (which could be numbers, functions, etc.).
 
-### Example: Calculator in prefix notation
+### Example: Calculator
 
 Consider arithmetic expressions written in prefix notation:
 
@@ -90,13 +102,13 @@ Here, every expression evaluates to an integer, so the semantic domain is ℤ (t
 type ℤ = Integer
 
 -- | An expression representing a numeral structure.
-data Exp = Lit ℤ
-         | Neg Exp
-         | Add Exp Exp
-         | Mul Exp Exp
+data Exp = Lit ℤ         -- Literal integer
+         | Neg Exp       -- Negation of an expression
+         | Add Exp Exp   -- Addition of two expressions
+         | Mul Exp Exp   -- Multiplication of two expressions
 ```
 
-The evaluation function, or **valuation function**, assigns a mathematical meaning to each expression:
+A **valuation function**, assigns a mathematical meaning to each expression:
 
 ```
       ⟦Exp⟧ : ℤ
@@ -106,9 +118,19 @@ The evaluation function, or **valuation function**, assigns a mathematical meani
         ⟦n⟧ = n
 ```
 
-# Move language
+or, in Haskell:
 
-Having seen how denotational semantics formalizes the behavior of mathematical expressions, let's examine its application in another domain. Consider a simple DSL for controlling a robot, called **Move**.
+```haskell
+eval :: Exp -> ℤ
+eval (Lit n)     = n                   -- ⟦n⟧ = n
+eval (Neg e)     = - (eval e)          -- ⟦neg e⟧ = -⟦e⟧
+eval (Add e1 e2) = eval e1 + eval e2   -- ⟦add e1 e2⟧ = ⟦e1⟧ + ⟦e2⟧
+eval (Mul e1 e2) = eval e1 * eval e2   -- ⟦mul e1 e2⟧ = ⟦e1⟧ × ⟦e2⟧
+```
+
+## Move language
+
+Consider **Move**, a simple DSL designed for controlling a robot.
 
 The Move language specifies commands such as `go E 3`, which instruct a robot to move a given number of steps in a specified direction:
 
@@ -128,11 +150,11 @@ s ∈ Step ::= go d n
 m ∈ Move ::= ε | s ; m
 ```
 
-(Epsilon (ε) denotes an empty command sequence.)
+(ε denotes an empty command sequence.)
 
 We can explore two interpretations (semantic domains) for Move programs:
 
-## 1. Total distance calculation
+### 1. Total distance calculation
 
 In this interpretation, the semantic domain is ℕ (the natural numbers), representing the total distance traveled.
 
@@ -151,7 +173,7 @@ For Move expressions:
  M⟦s;m⟧ = S⟦s⟧ + M⟦m⟧
 ```
 
-## 2. Target position calculation
+### 2. Target position calculation
 
 Here, the semantic domain is the set of functions that map a starting position `(x, y)` to a final position. We denote this using lambda calculus (λ-calculus):
 
@@ -177,9 +199,9 @@ M⟦Move⟧ : Pos → Pos
  M⟦s;m⟧ = M⟦m⟧ ∘ S⟦s⟧
 ```
 
-# Implementing Move in Haskell
+## Implementing Move in Haskell
 
-The Move language can be implemented directly in Haskell by mirroring its BNF grammar with algebraic data types and defining its semantics as pure functions.
+The examples above are not just theoretical constructs; the Move language can be implemented directly in Haskell by mirroring its BNF grammar with algebraic data types and defining its semantics as pure functions.
 
 ```haskell
 -- Abstract syntax
@@ -242,8 +264,9 @@ movePos prog (10, -2)
 -- (13, 1)
 ```
 
-# Further reading
+## Further reading
 
 - [Haskell/Denotational semantics](https://en.wikibooks.org/wiki/Haskell/Denotational_semantics)
 - [Peyton Jones, S. The implementation of functional programming languages](https://simon.peytonjones.org/slpj-book-1987/)
+- [Paul Hudak, Building domain-specific embedded languages](https://dl.acm.org/doi/fullHtml/10.1145/242224.242477)
 - [Eric Walkingshaw's CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20)

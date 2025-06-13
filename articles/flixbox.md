@@ -4,22 +4,18 @@ description: Full-stack client/server web app interacting with the TheMovieDB AP
 cover_title: Building a full-stack web app with fp-ts
 tags: typescript,starter
 published: 2023-01-25T12:41:00
-updated: 2025-05-30T13:37:00
+updated: 2025-06-12T13:37:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://tetsuo.github.io/wr/flixbox.html)
 
-> This post outlines the architecture and key components of [**flixbox**](https://www.github.com/tetsuo/flixbox), a full-stack web app built exclusively with [fp-ts](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
+> Architecture and key components of [**flixbox**](https://www.github.com/tetsuo/flixbox), a client/server web app built exclusively with [**fp-ts**](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
 
-# Server
+## Server
 
 The flixbox server is powered by [**hyper-ts**](https://github.com/DenisFrezzato/hyper-ts), which is a partial porting of [Hyper](https://hyper.wickstrom.tech/).
 
-Internally, a set of middlewares are defined like `get`, `put`, `movie`, and `results` for interacting with the [TMDb](https://www.themoviedb.org/) API and managing caching.
-
-## Middleware architecture
-
-API endpoints are structured as middleware pipelines that can short-circuit on failure. Each middleware performs a specific task and is responsible for handling failures within that scope, including validation of user input, provider errors when TMDb returns bad data, not found for missing resources, and so on.
+Internally, a set of middlewares is defined like `get`, `put`, `movie`, and `results` for interacting with the [TMDb](https://www.themoviedb.org/) API and managing caching. These functions are arranged into pipelines that can short-circuit on failure, handling things like input validation, TMDb errors, or missing resources.
 
 ### Example: Movie middleware
 
@@ -76,7 +72,7 @@ function getMovieMiddleware(
 
 > 📄 **See the full implementation in [`server/Flixbox.ts`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/Flixbox.ts).**
 
-# Cross-stack shared modules
+## Shared modules
 
 On both client and server, flixbox utilizes a set of common modules including:
 
@@ -104,7 +100,7 @@ For instance, when using `logging-ts` with a custom effect type, you must provid
 
 To integrate `logging-ts` with the effects flixbox generates, a new HKT [`LoggerTaskEither`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/logging/TaskEither.ts) is defined and registered in `fp-ts`'s `URItoKind2`, thereby allowing type class instance support for logging within the `TaskEither` context, the most frequently used effect type in the project.
 
-# Client
+## Client
 
 The client uses [**elm-ts**](https://github.com/gcanti/elm-ts), which provides an fp-ts adaptation of [Elm](https://elm-lang.org/).
 
@@ -125,7 +121,7 @@ type Msg =
   | SetMovie
 ```
 
-### How it works:
+### Elm architecture in a nutshell
 
 * 📄 **Initial state**: You define an initial application state, the model.
 * 🖼️ **View function**: A view function renders visual elements based on the current state.
@@ -137,7 +133,7 @@ type Msg =
 
 > 📄 **See the full implementation in [`app/Effect.ts`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/app/Effect.ts).**
 
-## Optics for immutable state management
+### Optics for immutable state management
 
 The client also uses [**monocle-ts**](https://www.github.com/gcanti/monocle-ts), a port of [Monocle](https://www.optics.dev/Monocle/), allowing composable structures like [`Lens`](https://gcanti.github.io/monocle-ts/modules/Lens.ts.html) and [`Traversal`](https://gcanti.github.io/monocle-ts/modules/Traversal.ts.html) for state updates without mutations.
 
