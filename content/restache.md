@@ -191,7 +191,7 @@ However, some attributes are renamed globally, regardless of which element they'
 - Common HTML aliases and reserved keywords like `class` and `for`, which are renamed to `className` and `htmlFor`
 - Certain accessibility- and editing-related attributes, such as `spellcheck` and `tabindex`
 
-_See [`table.go`](table.go) for the full list._
+_See [`table.go`](https://github.com/tetsuo/restache/blob/v0.x/table.go) for the full list._
 
 ### Implicit key insertion in loops
 
@@ -278,7 +278,7 @@ Restache includes an ESBuild plugin that makes integration simple and easy in Go
 - Plugin uses Restache compiler to convert to `.jsx`
 - No runtime library needed; everything is transpiled ahead of time
 
-> The [`dashboard`](https://github.com/tetsuo/dashboard) project includes a working build script (`build.go`).
+> The [`dashboard`](https://github.com/tetsuo/dashboard) project includes a working build script ([`build.go`](https://github.com/tetsuo/dashboard/blob/master/build.go)).
 
 There's currently no support for Node.JS environment, but planned.
 
