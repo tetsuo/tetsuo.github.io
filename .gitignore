@@ -10,13 +10,15 @@ public/assets/*
 !public/*/
 !public/images
 !public/404.html
+!public/assets/dot.svg
 !public/assets/og-circle.svg
 !public/assets/tango.css
 !public/assets/playground.css
 !public/assets/playground.mjs
 !public/assets/load-*-playground.mjs
 !public/assets/wasm_exec.js
-!public/assets/restache-0.2.0.wasm
+!public/assets/restache-*.wasm
+!public/assets/init-navbar.mjs
 templates/manifest.webmanifest
 templates/favicons.html
 * copy.*
