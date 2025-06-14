@@ -1,0 +1,39 @@
+:root {
+  --color-scheme: light;
+  --text-color: #1f2328;
+  --secondary-text-color: #59636e;
+  --background-color: #ffffff;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-family-heading: "IBM Plex Sans", sans-serif;
+  --font-family-code: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace,
+    Liberation Mono, monospace;
+  --line-height: 1.56;
+  --link-color: #1a0dab;
+  --border-color: #d1d9e0b3;
+  --highlight-background: #fff8c5;
+  --highlight-text-color: var(--text-color);
+  --placeholder-color: var(--secondary-text-color);
+  --pre-background-color: #f6f8fa;
+  --pre-color: var(--text-color);
+  --kbd-background-color: var(--pre-background-color);
+  --kbd-border-color: var(--border-color);
+  --hr-color: #d1d9e0;
+  --blockquote-border-color: #d1d9e0;
+  --table-border-color: #e9ebef;
+  --table-head-border-color: #dadfe4;
+  --table-row-background: #ffffff;
+  --table-row-alt-background: #ffffff;
+  --code-background-color: #818b981f;
+  --code-border-radius: 6px;
+  --focus-outline: #1a0dab;
+  --focus-box-shadow: none;
+  --gutter: 1.5rem;
+  --gap: 1rem;
+  --subnav-link-color: #7a7a7a;
+  --subnav-link-hover-color: var(--text-color);
+  /* playground */
+  --blue: #1a0dab;
+  --pink: #e35b8f;
+  --color-text-subtle: #59636e;
+}

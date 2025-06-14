@@ -1,0 +1,115 @@
+/* the navbar on the left */
+
+.navbar-Wrapper {
+  display: grid;
+  gap: var(--gap);
+  grid-template-areas: "content";
+  margin: 0 auto 0;
+  padding: 0 var(--gutter);
+  max-width: 110rem;
+}
+
+.LeftNav-columns {
+  display: flex;
+}
+
+.LeftNav-sidebar {
+  display: none;
+  grid-area: LeftNav-sidebar;
+  height: 100vh;
+  overflow: auto;
+  padding: 0;
+  position: sticky;
+  top: 0;
+}
+
+.LeftNav {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5rem;
+}
+
+.LeftNav a {
+  align-items: center;
+  display: flex;
+  padding-bottom: 0.475rem;
+  padding-top: 0.475rem;
+  text-decoration: none;
+  color: var(--subnav-link-color);
+}
+
+.LeftNav a span {
+  flex: 30;
+  line-height: 1.5;
+  margin: 0 0.75rem;
+}
+
+.LeftNav .LeftSubnav a span {
+  font-size: 0.875em;
+  font-weight: 400;
+}
+
+.LeftSubnav a {
+  padding-left: 1rem;
+  color: var(--subnav-link-color);
+
+}
+
+/* .LeftNav a.active,
+.LeftNav a:hover,
+.LeftNav a:active,
+.LeftNav a:focus {
+  background: var(--kbd-background-color);
+} */
+
+.LeftNav a.active span,
+.LeftNav a:hover span,
+.LeftNav a:active span,
+.LeftNav a:focus span {
+  color: var(--subnav-link-hover-color);
+}
+
+/* .LeftNav ul.LeftSubnav li a.active,
+.LeftNav ul.LeftSubnav li a:hover,
+.LeftNav ul.LeftSubnav li a:active,
+.LeftNav ul.LeftSubnav li a:focus {
+  background: var(--kbd-background-color);
+} */
+
+.LeftNavHeader {
+  overflow: hidden;
+  width: 100%;
+  padding: 1.5rem 0;
+  margin: 0;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  background-color: transparent;
+}
+
+.LeftSubnav {
+  list-style: none;
+  margin-bottom: unset;
+  margin-top: unset;
+  padding: unset;
+}
+
+.LeftSubnav img {
+  flex: 1;
+  visibility: hidden;
+}
+
+.LeftSubnav a.active img,
+.LeftSubnav a:hover img,
+.LeftSubnav a:focus img,
+.LeftSubnav a:active img {
+  visibility: visible;
+}
+
+ul.LeftSubnav {
+  padding-left: unset;
+}
+
+.LeftSubnav li {
+  list-style: none;
+  margin: unset;
+}

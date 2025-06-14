@@ -1,0 +1,11 @@
+/* index page specific */
+
+.og-WelcomeBanner {
+  font-size: 120%;
+  hr {
+    margin: 3.175rem 0 0 0;
+  }
+  h1 {
+    border-bottom: 0;
+  }
+}

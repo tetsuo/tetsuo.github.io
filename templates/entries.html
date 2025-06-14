@@ -7,7 +7,7 @@
 <div class="navbar-Wrapper">
 	<aside class="LeftNav-sidebar">
     <div class="LeftNavHeader">
-      <div class="og-Logo noprint"><a href="/"></a></div>
+      <div class="og-Avatar noprint"><a href="/"></a></div>
     </div>
 		<nav class="LeftNav" data-hydrate="true"></nav>
 	</aside>
@@ -15,11 +15,11 @@
 <div>
 {% end %}
   <div class="og-Content entry-Content">
-    <div class="og-Logo"><a href="/"></a></div>
+    <div class="og-Avatar"><a href="/"></a></div>
     {% for entry in entries %}
       <div class="og-Entry" id="e-{{ entry.slug }}">
         <h1 class="og-Entry__title"><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>
-        <ul class="h-list og-Entry__metadata">
+        <ul class="og-Entry__metadata horizontal-list">
           <li>{{ locale.format_date(entry.published, full_format=True, shorter=True) }}</li>
           {% if entry.tags %}<li>{{ locale.list(['<a href="/%(tag)s.html">%(escaped_tag)s</a>' % {"tag": url_escape(tag), "escaped_tag": escape(tag)} for tag in sorted(entry.tags)]) }}</li>{% end %}
         </ul>

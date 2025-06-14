@@ -1,0 +1,78 @@
+/* code highlighting theme */
+
+.codehilite .hll { background-color: #ffffcc }
+.codehilite .c { color: #8f5902; font-style: italic }
+.codehilite .err { color: #a40000; border: 1px solid #ef2929 }
+.codehilite .g { color: #000000 }
+.codehilite .k { color: #013f9d; }
+.codehilite .l { color: #000000 }
+.codehilite .n { color: #000000 }
+.codehilite .o { color: #d44003; }
+.codehilite .x { color: #000000 }
+.codehilite .p { color: #000000; }
+.codehilite .ch { color: #8f5902; font-style: italic }
+.codehilite .cm { color: #8f5902; font-style: italic }
+.codehilite .cp { color: #8f5902; font-style: italic }
+.codehilite .cpf { color: #8f5902; font-style: italic }
+.codehilite .c1 { color: #7c7c7c; font-style: italic }
+.codehilite .cs { color: #8f5902; font-style: italic }
+.codehilite .gd { color: #a40000 }
+.codehilite .ge { color: #000000; font-style: italic }
+.codehilite .gr { color: #ef2929 }
+.codehilite .gh { color: #000080; }
+.codehilite .gi { color: #00A000 }
+.codehilite .go { color: #000000; font-style: italic }
+.codehilite .gp { color: #8f5902 }
+.codehilite .gs { color: #000000; }
+.codehilite .gu { color: #800080; }
+.codehilite .gt { color: #a40000; }
+.codehilite .kc { color: #013f9d; }
+.codehilite .kd { color: #013f9d; }
+.codehilite .kn { color: #013f9d; }
+.codehilite .kp { color: #013f9d; }
+.codehilite .kr { color: #013f9d; }
+.codehilite .kt { color: #013f9d; }
+.codehilite .ld { color: #000000 }
+.codehilite .m { color: #0000cf; }
+.codehilite .s { color: #1f883d }
+.codehilite .na { color: #c4a000 }
+.codehilite .nb { color: #013f9d }
+.codehilite .nc { color: #000000 }
+.codehilite .no { color: #000000 }
+.codehilite .nd { color: #5c35cc; }
+.codehilite .ni { color: #d44003 }
+.codehilite .ne { color: #cc0000; }
+.codehilite .nf { color: #000000 }
+.codehilite .nl { color: #f57900 }
+.codehilite .nn { color: #000000 }
+.codehilite .nx { color: #000000 }
+.codehilite .py { color: #000000 }
+.codehilite .nt { color: #013f9d; }
+.codehilite .nv { color: #000000 }
+.codehilite .ow { color: #013f9d; }
+.codehilite .w { color: transparent; text-decoration: underline }
+.codehilite .mb { color: #0000cf; }
+.codehilite .mf { color: #0000cf; }
+.codehilite .mh { color: #0000cf; }
+.codehilite .mi { color: #0000cf; }
+.codehilite .mo { color: #0000cf; }
+.codehilite .sa { color: #1f883d }
+.codehilite .sb { color: #1f883d }
+.codehilite .sc { color: #1f883d }
+.codehilite .dl { color: #1f883d }
+.codehilite .sd { color: #8f5902; font-style: italic }
+.codehilite .s2 { color: #1f883d }
+.codehilite .se { color: #1f883d }
+.codehilite .sh { color: #1f883d }
+.codehilite .si { color: #1f883d }
+.codehilite .sx { color: #1f883d }
+.codehilite .sr { color: #1f883d }
+.codehilite .s1 { color: #1f883d }
+.codehilite .ss { color: #1f883d }
+.codehilite .bp { color: #3465a4 }
+.codehilite .fm { color: #000000 }
+.codehilite .vc { color: #000000 }
+.codehilite .vg { color: #000000 }
+.codehilite .vi { color: #000000 }
+.codehilite .vm { color: #000000 }
+.codehilite .il { color: #0000cf; }
