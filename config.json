@@ -3,7 +3,7 @@
   "locale": "en_US",
   "entriesPerPage": 100,
   "templatePath": "templates",
-  "contentPath": "articles/*.md",
+  "contentPath": "content/*.md",
   "siteName": "Onur Gündüz",
   "title": "Onur Gündüz",
   "authorName": "Onur Gündüz",
