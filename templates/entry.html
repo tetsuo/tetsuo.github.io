@@ -60,14 +60,10 @@
 {% if len(resizable_ids) > 0 %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.27/interact.min.js" integrity="sha512-U7pxMz47PpFp2XkN2CrzPoILVGEwb6dN0o0/gcz6wserNSwnprr4YoVd5QHHWHVVSA+5gCxeh0yZDVy28T91nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% end %}
-{% if entries[0].has_code %}
-<link href="/assets/tango.css" type="text/css" rel="stylesheet">
-{% end %}
 {% if entries[0].has_playground %}
-{% if entries[0].playground_runtime.endswith(".wasm") %}
-<script src="/assets/wasm_exec.js"></script>
-{% end %}
-<link href="/assets/playground.css" type="text/css" rel="stylesheet">
+  {% if entries[0].playground_runtime.endswith(".wasm") %}
+    <script src="/assets/wasm_exec.js"></script>
+  {% end %}
 {% end %}
 {% end %}
 {% block head_image %}
