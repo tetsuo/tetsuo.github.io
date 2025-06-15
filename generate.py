@@ -659,9 +659,22 @@ def main(args=None):
 
     styles_id = ""
     if cfg['debug'] != True:
-        with open("styles.scss", "r") as f:
-            data = f.read()
-            styles_id = get_hex_digest_short(data)
+        all_files = []
+        all_files.append("styles.scss")
+
+        # Add all .scss then all .css files in sorted order;
+        # must match the ordering in get-styles-suffix.sh
+        scss_files = sorted(glob.glob('scss/**/*.scss', recursive=True))
+        css_files = sorted(glob.glob('scss/**/*.css', recursive=True))
+        all_files.extend(scss_files)
+        all_files.extend(css_files)
+
+        all_data = ""
+        for path in all_files:
+            with open(path, "r", encoding="utf-8") as f:
+                all_data += f.read()
+
+        styles_id = hashlib.sha1(all_data.encode('utf-8')).hexdigest()[:4]
 
     settings = Settings(
         site_name=cfg["siteName"],
