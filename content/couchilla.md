@@ -17,6 +17,8 @@ JavaScript support in CouchDB is based on the Mozilla SpiderMonkey engine (and, 
 
 [**couchilla**](https://github.com/tetsuo/couchilla) creates design documents with CommonJS support. It reads view and filter functions from JavaScript files in a directory and generates a design document in JSON.
 
+---
+
 ## Directory structure
 
 Here's an example directory structure:
@@ -103,6 +105,8 @@ export default (newDoc, oldDoc, userCtx, secObj) => {
   throw { forbidden: 'not able now!' }
 }
 ```
+
+---
 
 ## Requiring other modules
 

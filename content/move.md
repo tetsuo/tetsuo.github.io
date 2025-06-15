@@ -63,6 +63,8 @@ safeDiv a b = Just (a `div` b)
 
 The use of `Maybe` not only addresses issues like _undefined behavior_ but also provides a clear mathematical representation as an [algebraic data type](https://en.wikipedia.org/wiki/Algebraic_data_type) for _computations that may fail or lack a value_.
 
+---
+
 ## Domain-specific semantics
 
 Let's dig deeper to understand how Haskell blurs the line between mathematics and programming.
@@ -127,6 +129,8 @@ eval (Neg e)     = - (eval e)          -- ⟦neg e⟧ = -⟦e⟧
 eval (Add e1 e2) = eval e1 + eval e2   -- ⟦add e1 e2⟧ = ⟦e1⟧ + ⟦e2⟧
 eval (Mul e1 e2) = eval e1 * eval e2   -- ⟦mul e1 e2⟧ = ⟦e1⟧ × ⟦e2⟧
 ```
+
+---
 
 ## Move language
 
@@ -263,6 +267,8 @@ Final position from an arbitrary point:
 movePos prog (10, -2)
 -- (13, 1)
 ```
+
+---
 
 ## Further reading
 

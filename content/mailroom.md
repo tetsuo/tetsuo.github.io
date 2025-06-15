@@ -859,8 +859,6 @@ Building on this foundation, you can extend your triggers to support more comple
 
 Before we conclude, let's explore some potential improvements, starting with support for multiple worker setups.
 
----
-
 ### 1. Multiple workers
 
 When you update `last_seq`, PostgreSQL locks the `jobs` row being updated, preventing other processes from modifying it until the transaction is complete. However, PostgreSQL **does not prevent multiple processes from attempting to read the same cursor** before one updates it. This can lead to duplicate processing if you're not careful.
@@ -888,19 +886,13 @@ If there's any chance of concurrent execution, using `FOR UPDATE` is essential:
    - Consumer A updates `last_seq` to, say, `150` and releases the lock.
    - Consumer B then reads the updated `last_seq = 150`, processing the next set of tokens.
 
----
-
 Alternatively, to efficiently handle **multiple consumers**, you might consider **eliminating the `jobs` table altogether**. Instead, add a new field, such as `processed_at`, to the `tokens` table. This field will indicate when a token has been processed. By updating `processed_at` during token retrieval, you can use `FOR UPDATE SKIP LOCKED` to support a multi-consumer setup in a safe fashion.
 
 However, if you're certain that only a single consumer runs this query at any given time, I recommend sticking with the `jobs` table as a single point of reference. This approach avoids the need for complex locking mechanisms, and you can further enhance the `jobs` table to keep a history of job executions, parameters, and statuses, which can be valuable for auditing purposes.
 
----
-
 ### 2. Priority queues
 
 The current queueing mechanism processes tokens without distinguishing between their types and lacks the ability to prioritize critical ones, such as password recovery, over less urgent emails like account activations. At present, '10 emails per second' could mean 10 emails of the same type or a mix, depending on the batch. While effective, this design leaves room for improvement, such as introducing prioritization or smarter batching strategies.
-
----
 
 ### 3. Adaptive batching
 
@@ -910,4 +902,4 @@ User activity is rarely consistent—there are bursts of high traffic that may f
 
 ## What's next?
 
-⏭ While not covered in this post, a **Rust-based** SES email sender is available in the `sender` folder of the [repository](https://github.com/tetsuo/mailroom/tree/master/sender). It consumes the collector's output to send bulk emails.
+⏭ While not covered in this post, a **Rust-based** AWS SES email sender is available in the `sender` folder of the [repository](https://github.com/tetsuo/mailroom/tree/master/sender). It consumes the collector's output to send bulk emails.

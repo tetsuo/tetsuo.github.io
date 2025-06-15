@@ -72,6 +72,8 @@ function getMovieMiddleware(
 
 > 📄 **See the full implementation in [`server/Flixbox.ts`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/server/Flixbox.ts).**
 
+---
+
 ## Shared modules
 
 On both client and server, flixbox utilizes a set of common modules including:
@@ -99,6 +101,8 @@ While these modules integrate smoothly within the fp-ts v2 ecosystem, certain sc
 For instance, when using `logging-ts` with a custom effect type, you must provide an instance of the `Logger` algebra that conforms to that effect. `logging-ts` facilitates this by exposing `getLoggerM`, which abstracts over any monad.
 
 To integrate `logging-ts` with the effects flixbox generates, a new HKT [`LoggerTaskEither`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/logging/TaskEither.ts) is defined and registered in `fp-ts`'s `URItoKind2`, thereby allowing type class instance support for logging within the `TaskEither` context, the most frequently used effect type in the project.
+
+---
 
 ## Client
 

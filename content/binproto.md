@@ -132,6 +132,8 @@ func main() {
 }
 ```
 
+---
+
 ## Message structure
 
 Every message is encoded with a 64-bit header: a length prefix followed by a channel ID and type.
