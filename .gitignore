@@ -13,8 +13,6 @@ public/assets/*
 !public/assets/dot.svg
 !public/assets/og-circle.svg
 !public/assets/50026.jpeg
-!public/assets/tango.css
-!public/assets/playground.css
 !public/assets/playground.mjs
 !public/assets/load-*-playground.mjs
 !public/assets/wasm_exec.js
