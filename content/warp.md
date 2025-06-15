@@ -4,7 +4,7 @@ cover_title: Faking monads in Go
 description: Experimenting with Go's generics and their practicality in modeling FP patterns
 tags: go,tutorial
 published: 2024-08-30T00:00:00
-updated: 2025-06-12T13:37:00
+updated: 2025-06-15T13:37:00
 ---
 
 > This post explores how Go's new generics provide a safer environment for function composition.
@@ -460,8 +460,8 @@ func main() {
 
 ## Conclusion
 
-Implementing monads in Haskell is naturally concise because the language was built for these abstractions. Go has its own idioms, syntax, and conventions to sequence computations safely. Comparing the two languages in that regard isn't entirely fair, as they approach these problems from fundamentally different perspectives.
+Implementing monads in Haskell is naturally concise because the language was built for such abstractions. Go, on the other hand, has its own idioms, syntax, and conventions for sequencing computations safely. Comparing the two isn't entirely fair, as each approaches the problem from a fundamentally different perspective.
 
-Since Go 1.18 and the introduction of generics, the language has evolved significantly. Go 1.23 (released August 2024) introduced [range-over-func types](https://go.dev/blog/range-functions), and there's an active [proposal](https://github.com/golang/go/issues/61898) for `golang.org/x/exp/xiter` that would bring functional-style iteration to the standard library.
+Since Go 1.18 and the introduction of generics, the language has evolved significantly. Go 1.23 (released August 2024) added [range-over-func types](https://go.dev/blog/range-functions), and there's an active [proposal](https://github.com/golang/go/issues/61898) for `golang.org/x/exp/xiter` that would bring functional-style iteration to the standard library.
 
-These developments show Go is evolving to support more functional patterns while staying true to its core simplicity. And who knows, today's experimental patterns might become tomorrow's idiomatic Go.
+These changes show that Go is evolving to support more functional patterns while maintaining its core simplicity. And perhaps, what seems experimental today may become idiomatic Go tomorrow.
