@@ -25,6 +25,9 @@
     margin-bottom: 1.6rem;
     p {
       font-size: 1.2em;
+      a {
+        white-space: nowrap;
+      }
     }
   }
 }
