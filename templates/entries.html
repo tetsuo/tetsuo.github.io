@@ -7,7 +7,7 @@
 <div class="navbar-Wrapper">
 	<aside class="LeftNav-sidebar">
     <div class="LeftNavHeader">
-      <div class="og-Avatar noprint"><a href="/"></a></div>
+      <div class="og-HomeLink noprint">◀️ <a href="/">All posts</a></div>
     </div>
 		<nav class="LeftNav" data-hydrate="true"></nav>
 	</aside>
@@ -15,7 +15,7 @@
 <div>
 {% end %}
   <div class="og-Content entry-Content">
-    <div class="og-Avatar"><a href="/"></a></div>
+    <div class="og-HomeLink noprint">◀️ <a href="/">All posts</a></div>
     {% for entry in entries %}
       <div class="og-Entry" id="e-{{ entry.slug }}">
         <h1 class="og-Entry__title"><a href="/{{ entry.slug }}.html">{{ entry.title }}</a></h1>

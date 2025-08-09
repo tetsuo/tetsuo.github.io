@@ -10,6 +10,7 @@
     Liberation Mono, monospace;
   --line-height: 1.56;
   --link-color: #1a0dab;
+  --link-hover-color: #a30041;
   --border-color: #d1d9e0b3;
   --highlight-background: #fff8c5;
   --highlight-text-color: var(--text-color);
@@ -19,7 +20,7 @@
   --kbd-background-color: var(--pre-background-color);
   --kbd-border-color: var(--border-color);
   --hr-color: #d1d9e0;
-  --blockquote-border-color: #d1d9e0;
+  --blockquote-border-color: #0bc501; /* #d1d9e0; */
   --table-border-color: #e9ebef;
   --table-head-border-color: #dadfe4;
   --table-row-background: #ffffff;

@@ -41,6 +41,9 @@
 .LeftNav a span {
   flex: 30;
   line-height: 1.5;
+}
+
+.LeftNav ul li a span {
   margin: 0 0.75rem;
 }
 
