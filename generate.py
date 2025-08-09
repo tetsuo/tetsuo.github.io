@@ -494,7 +494,6 @@ class Generator:
             "sitemap": self.template_loader.load("sitemap.xml"),
             "opensearch": self.template_loader.load("opensearch.xml"),
             "manifest": self.template_loader.load("manifest.webmanifest"),
-            "resume": self.template_loader.load("resume.html"),
         }
 
         entries_by_tag: dict[str, list[Entry]] = {}
@@ -626,14 +625,6 @@ class Generator:
 
         with open("public/robots.txt", "w") as f:
             f.write("User-agent: *\nAllow: /\n")
-
-        t = templates["resume"]
-
-        b = t.generate(**dict({"keywords": keywords},
-                       **self._get_template_args()))
-
-        with open("public/resume.html", "wb") as f:
-            f.write(b)
 
         # TODO: create cover images here if settings.cover_images == True
 
