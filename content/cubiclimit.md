@@ -2,14 +2,14 @@
 title: Cubic Limit in Effect
 cover_title: Cubic Limit in Effect
 description: Recreating Manfred Mohr's Cubic Limit, P-161 with TypeScript and Effect using a fully functional rendering pipeline
-tags: typescript,tutorial
+tags: typescript
 published: 2025-02-08T14:55:00
-updated: 2025-06-12T13:37:00
+updated: 2025-08-09T13:37:00
 ---
 
-> This post walks through the process of reproducing Manfred Mohr's **Cubic Limit, P-161** using **TypeScript** and [**Effect**](https://effect.website/).
+> This post covers the process of recreating Manfred Mohr's _Cubic Limit_ in TypeScript and [**Effect**](https://effect.website/), implementing a functional DSL for basic 3D graphics along the way.
 
-Shown below is a replica of [**P-161**](http://www.emohr.com/mohr_cube1_161.html) (six edges), originally part of a 13-piece series of plotter drawings from 1975 by Manfred Mohr.
+Here's _Cubic Limit, P-161_ rendered on `<canvas>`, inspired by [**Mohr**](https://www.emohr.com/)'s [original plotter drawings](https://www.emohr.com/mohr_cube1_161.html) from 1975.
 
 [![mohr-p161](./cubiclimit.jpg)](https://tetsuo.github.io/f/cubiclimit.html)
 

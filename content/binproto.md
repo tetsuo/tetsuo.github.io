@@ -1,10 +1,10 @@
 ---
-title: Multiplexed binary protocol in Go
-cover_title: Multiplexed binary protocol in Go
+title: Generic wire protocol in Go
+cover_title: Generic wire protocol in Go
 description: Message parsing for applications that require structured, channel-aware transmission over continuous byte input
-tags: go,tool
+tags: go
 published: 2023-01-07T21:25:00
-updated: 2025-06-12T13:37:00
+updated: 2025-08-09T13:37:00
 ---
 
 > [**binproto**](https://github.com/tetsuo/binproto) provides binary message framing using a length-prefixed format and supports multiplexed streams.

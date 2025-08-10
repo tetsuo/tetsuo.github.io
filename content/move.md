@@ -1,17 +1,17 @@
 ---
-title: Thinking in Haskell
+title: Making sense of Haskell
 description: The basics of denotational semantics and how it provides a mathematical framework for reasoning about program correctness in Haskell
-cover_title: Thinking in Haskell
-tags: haskell,tutorial
+cover_title: Making sense of Haskell
+tags: haskell
 published: 2023-05-30T12:41:00
-updated: 2025-06-12T13:37:00
+updated: 2025-08-09T13:37:00
 ---
 
-> Understanding programs by what they are, not how they run.
+> Here's my take on explaining denotational semantics 😬
 
 ## What is a function?
 
-Functions in Haskell are **pure**, meaning they're fixed mappings from inputs to outputs with no side effects like performing I/O or throwing exceptions.
+Functions in Haskell are _pure_, meaning they're fixed mappings from inputs to outputs with no side effects like performing I/O or throwing exceptions.
 
 Here is an example demonstrating the Fibonacci sequence:
 
@@ -22,60 +22,21 @@ fib 1 = 1
 fib n = fib (n-1) + fib (n-2)
 ```
 
-This defines `fib` as a function that takes an integer `n` and returns the nth Fibonacci number. Each match corresponds to an equation defining the function's meaning in terms of input-output relationships.
+This defines `fib` as a function that takes an integer `n` and returns the nth Fibonacci number. Each match corresponds to an equation defining the function's _meaning_ in terms of input-output relationships.
 
----
+This view of a function is called **denotational**, in contrast to **operational semantics**, where functions are sequences of *operations* executed over time, like in imperative languages.
 
-This view of a function is called **denotational**. We define its "meaning" by describing the relationships between inputs and outputs, as opposed to **operational semantics**, where functions are seen as sequences of _operations_ executed over time.
+## Denotational semantics
 
----
+Denotational semantics is powerful because it turns programs into _mathematical objects_ in some **semantic domain**, be it numbers, functions, sets, or even stranger things.
 
-The expression `fib n` evaluates recursively until it reaches a base case, at which point it returns a value from the function's semantic domain (in this case, the integers).
-
-## Why is it important?
-
-**Denotational semantics** provides the mathematical foundation guaranteeing a precise meaning for every function in languages like Haskell.
-
-In return, Haskell's job is to provide language constructs that align with mathematical meaning, resulting in predictable, side-effect-free code.
-
----
-
-For instance, when functions cannot always produce a simple result, Haskell encourages using types like [`Maybe`](https://wiki.haskell.org/Maybe) to explicitly model failures as part of a function's return value.
-
-**Example:** Division by zero causes an exception
-
-```haskell
-> 10 `div` 2
-5
-> 10 `div` 0
-*** Exception: divide by zero
-```
-
-`Maybe` can encapsulate a valid result (`Just a`) or indicate the absence of a value (`Nothing`).
-
-```haskell
-data Maybe a = Just a | Nothing
-
-safeDiv :: Integral a => a -> a -> Maybe a
-safeDiv _ 0 = Nothing
-safeDiv a b = Just (a `div` b)
-```
-
-The use of `Maybe` not only addresses issues like _undefined behavior_ but also provides a clear mathematical representation as an [algebraic data type](https://en.wikipedia.org/wiki/Algebraic_data_type) for _computations that may fail or lack a value_.
-
----
-
-## Domain-specific semantics
-
-Let's dig deeper to understand how Haskell blurs the line between mathematics and programming.
-
-Imagine a box `⟦⟧` that evaluates programs into mathematical objects. You place any syntactic expression inside, and the box gives you its corresponding value. For example, if we write:
+Formally, a language's meaning is defined by its **semantic function**, which maps program syntax to a chosen semantic domain. Think of it as a box `⟦⟧` where you place a syntactic expression inside and get back its value in that domain. For example:
 
 ```
 ⟦E⟧ : V
 ```
 
-this means that the **expression** `E` is assigned a **value** in the semantic domain `V` (which could be numbers, functions, etc.).
+means the **expression** `E` is assigned a **value** in the semantic domain `V` (which could be numbers, functions, etc.).
 
 ### Example: Calculator
 
@@ -110,7 +71,7 @@ data Exp = Lit ℤ         -- Literal integer
          | Mul Exp Exp   -- Multiplication of two expressions
 ```
 
-A **valuation function**, assigns a mathematical meaning to each expression:
+The _valuation function_ then assigns a mathematical meaning to each expression:
 
 ```
       ⟦Exp⟧ : ℤ
@@ -134,7 +95,7 @@ eval (Mul e1 e2) = eval e1 * eval e2   -- ⟦mul e1 e2⟧ = ⟦e1⟧ × ⟦e2⟧
 
 ## Move language
 
-Consider **Move**, a simple DSL designed for controlling a robot.
+Consider _Move_, a made-up DSL for controlling a robot.
 
 The Move language specifies commands such as `go E 3`, which instruct a robot to move a given number of steps in a specified direction:
 
@@ -142,10 +103,10 @@ The Move language specifies commands such as `go E 3`, which instruct a robot to
 go E 3; go N 4; go S 1;
 ```
 
-- Each `go` command constructs a **Step**, representing an n-unit movement in one of the cardinal directions.
-- A **Move** is a sequence of steps separated by semicolons.
+- Each `go` command constructs a `Step`, representing an n-unit movement in one of the cardinal directions.
+- A `Move` is a sequence of steps separated by semicolons.
 
-The abstract syntax for Move might be defined as:
+The abstract syntax for the Move language might be defined as:
 
 ```
 n ∈ Nat  ::= 0 | 1 | 2 | ...
@@ -154,22 +115,20 @@ s ∈ Step ::= go d n
 m ∈ Move ::= ε | s ; m
 ```
 
-(ε denotes an empty command sequence.)
-
 We can explore two interpretations (semantic domains) for Move programs:
 
 ### 1. Total distance calculation
 
 In this interpretation, the semantic domain is ℕ (the natural numbers), representing the total distance traveled.
 
-For Step expressions:
+For `Step` expressions:
 
 ```
   S⟦Step⟧ : Nat
 S⟦go d k⟧ = k
 ```
 
-For Move expressions:
+For `Move` expressions:
 
 ```
   M⟦Move⟧ : Nat
@@ -185,7 +144,7 @@ Here, the semantic domain is the set of functions that map a starting position `
 ⟦Expr⟧ : Pos → Pos
 ```
 
-For each Step:
+For each `Step`:
 
 ```
   S⟦Step⟧ : Pos → Pos
@@ -195,7 +154,7 @@ S⟦go E k⟧ = λ(x,y).(x+k,y)
 S⟦go W k⟧ = λ(x,y).(x−k,y)
 ```
 
-A Move expression composes these functions in sequence. For an empty Move, the function simply returns the starting position:
+A `Move` expression composes these functions in sequence. For an empty `Move`, the function simply returns the starting position:
 
 ```
 M⟦Move⟧ : Pos → Pos
@@ -205,7 +164,7 @@ M⟦Move⟧ : Pos → Pos
 
 ## Implementing Move in Haskell
 
-The examples above are not just theoretical constructs; the Move language can be implemented directly in Haskell by mirroring its BNF grammar with algebraic data types and defining its semantics as pure functions.
+Here's the thing, the Move DSL can be implemented directly in Haskell by mirroring its BNF grammar with algebraic data types and defining its semantics as pure functions.
 
 ```haskell
 -- Abstract syntax
@@ -267,12 +226,3 @@ Final position from an arbitrary point:
 movePos prog (10, -2)
 -- (13, 1)
 ```
-
----
-
-## Further reading
-
-- [Haskell/Denotational semantics](https://en.wikibooks.org/wiki/Haskell/Denotational_semantics)
-- [Peyton Jones, S. The implementation of functional programming languages](https://simon.peytonjones.org/slpj-book-1987/)
-- [Paul Hudak, Building domain-specific embedded languages](https://dl.acm.org/doi/fullHtml/10.1145/242224.242477)
-- [Eric Walkingshaw's CS581 lecture notes](https://web.engr.oregonstate.edu/~walkiner/teaching/cs581-fa20)

@@ -2,20 +2,20 @@
 title: Building a full-stack web app with fp-ts
 description: Full-stack client/server web app interacting with the TheMovieDB API
 cover_title: Building a full-stack web app with fp-ts
-tags: typescript,starter
+tags: typescript
 published: 2023-01-25T12:41:00
-updated: 2025-06-12T13:37:00
+updated: 2025-08-09T13:37:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://tetsuo.github.io/wr/flixbox.html)
 
-> Architecture and key components of [**flixbox**](https://www.github.com/tetsuo/flixbox), a client/server web app built exclusively with [**fp-ts**](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
+> In this post, we take a quick tour of the key components of [**flixbox**](https://www.github.com/tetsuo/flixbox), a movie trailer search app built entirely with [**fp-ts**](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
 
 ## Server
 
 The flixbox server is powered by [**hyper-ts**](https://github.com/DenisFrezzato/hyper-ts), which is a partial porting of [Hyper](https://hyper.wickstrom.tech/).
 
-Internally, a set of middlewares is defined like `get`, `put`, `movie`, and `results` for interacting with the [TMDb](https://www.themoviedb.org/) API and managing caching. These functions are arranged into pipelines that can short-circuit on failure, handling things like input validation, TMDb errors, or missing resources.
+Internally, a set of middlewares is defined like `get`, `put`, `movie`, and `results` for interacting with the [**TMDb**](https://www.themoviedb.org/) API and managing caching. These functions are arranged into pipelines that can short-circuit on failure, handling things like input validation, TMDb errors, or missing resources.
 
 ### Example: Movie middleware
 
@@ -137,7 +137,7 @@ type Msg =
 
 > 📄 **See the full implementation in [`app/Effect.ts`](https://github.com/tetsuo/flixbox/blob/0.0.7/src/app/Effect.ts).**
 
-### Optics for immutable state management
+### Optics for state updates
 
 The client also uses [**monocle-ts**](https://www.github.com/gcanti/monocle-ts), a port of [Monocle](https://www.optics.dev/Monocle/), allowing composable structures like [`Lens`](https://gcanti.github.io/monocle-ts/modules/Lens.ts.html) and [`Traversal`](https://gcanti.github.io/monocle-ts/modules/Traversal.ts.html) for state updates without mutations.
 

@@ -1,15 +1,15 @@
 ---
-title: Transforming HTML to JSX
-cover_title: Transforming HTML to JSX
-description: Transforming HTML to JSX
-tags: jsx,react,go,tool
+title: Transpiling HTML to JSX in Go
+cover_title: Transpiling HTML to JSX in Go
+description: Transpiling HTML to JSX in Go
+tags: go
 published: 2025-06-05T00:00:00
-updated: 2025-06-03T13:37:00
+updated: 2025-08-09T13:37:00
 ---
 
-> [**restache**](https://github.com/tetsuo/restache) extends HTML with curly braces, letting you write React components in HTML that compile to JSX.
+> [**restache**](https://github.com/tetsuo/restache) extends HTML with curly braces so you can write React components like it's 2013.
 
-## Overview
+## Intro
 
 The project aims to offer a simpler alternative to JSX with built-in support for React hooks planned in the roadmap.
 
@@ -19,9 +19,7 @@ The project aims to offer a simpler alternative to JSX with built-in support for
 
 ### Example: Dashboard app
 
-The [`tetsuo/dashboard`](https://github.com/tetsuo/dashboard) repository includes an example setup with [ESBuild](https://esbuild.github.io/) and a small set of components built with Restache that demonstrate the current state of the art.
-
-> > 👉 **[See it online](https://tetsuo.github.io/dashboard/) – the design's actually pretty sleek.**
+The [`tetsuo/dashboard`](https://github.com/tetsuo/dashboard) repository contains an example setup with [ESBuild](https://esbuild.github.io/) and a set of HTML-based components demonstrating the current capabilities 👉 **[view it online](https://tetsuo.github.io/dashboard/)**.
 
 ---
 
@@ -37,9 +35,9 @@ The [`tetsuo/dashboard`](https://github.com/tetsuo/dashboard) repository include
 </ul>
 ```
 
-## Restache v0 draft
+## restache v0 draft
 
-Restache extends HTML5 with Mustache-like syntax to support variables, conditionals, and loops.
+restache extends HTML5 with Mustache-like syntax to support variables, conditionals, and loops.
 
 ### Variables
 
@@ -126,13 +124,13 @@ They can only appear within text nodes or as full attribute values inside a tag.
 
 Standard HTML comments are removed from the generated output.
 
-Restache comments compile into JSX comments.
+restache comments compile into JSX comments.
 
 ---
 
 ## Generating JSX
 
-Restache transpiler generates a React JSX component from each input and handles JSX-specific quirks where necessary.
+restache transpiler generates a React JSX component from each input and handles JSX-specific quirks where necessary.
 
 ### Fragment wrapping
 
@@ -150,7 +148,7 @@ Restache transpiler generates a React JSX component from each input and handles 
 
 React requires component names to start with a capital letter and prop names to use camelCase. In contrast, HTML tags and attribute names are not case-sensitive.
 
-To ensure compatibility, Restache applies the following transformations:
+To ensure compatibility, restache applies the following transformations:
 
 - Elements written in kebab-case (e.g. `<my-button>`) are automatically converted to PascalCase (`MyButton`) in the output.
 - Similarly, kebab-case attributes (like `disable-padding`) are converted to camelCase (`disablePadding`).
@@ -195,7 +193,7 @@ _See [`table.go`](https://github.com/tetsuo/restache/blob/v0.x/table.go) for the
 
 ### Implicit key insertion in loops
 
-When rendering lists, Restache inserts a `key` prop automatically, assigning it to the top-level element or to a wrapping Fragment if there are multiple root elements.
+When rendering lists, restache inserts a `key` prop automatically, assigning it to the top-level element or to a wrapping Fragment if there are multiple root elements.
 
 > playground: title=Key is passed to the root element inside a loop; button=Run; title_attr=Ctrl/Cmd + Enter; autorun=True; runtime=restache-0.3-dev.wasm
 
@@ -226,7 +224,7 @@ When rendering lists, Restache inserts a `key` prop automatically, assigning it 
 
 ## Importing other components
 
-> **Restache supports an implicit module system where custom elements (i.e., tags that are not part of the HTML spec) are automatically resolved to file-based components without requiring explicit imports.**
+> **restache supports an implicit module system where custom elements (i.e., tags that are not part of the HTML spec) are automatically resolved to file-based components.**
 
 Component imports are inferred from the tag names. The following examples show how different components are resolved:
 
@@ -245,13 +243,13 @@ When the parser encounters such a tag, it follows these steps:
 
 #### 1. Check for namespace
 
-Restache first determines whether the tag uses a namespace. Namespaced tags contain a prefix and a component name (e.g., `<ui:button>`).
+restache first determines whether the tag uses a namespace. Namespaced tags contain a prefix and a component name (e.g., `<ui:button>`).
 
 #### 2. Standard custom tags
 
 If the tag **does not** contain a namespace (e.g., `<my-button>`):
 
-- Restache first looks for an exact match in the build configuration's `tagMappings`.
+- restache first looks for an exact match in the build configuration's `tagMappings`.
 - If no mapping is found, it falls back to searching in the current directory.
   For example, `<my-button>` could resolve to either `./my-button` or `./MyButton`.
 
@@ -259,7 +257,7 @@ If the tag **does not** contain a namespace (e.g., `<my-button>`):
 
 If the tag **does** contain a namespace (e.g., `<ui:button>`):
 
-- Restache first checks the `tagPrefixes` configuration. If a prefix (e.g., `ui`) is defined, it uses the mapped path.
+- restache first checks the `tagPrefixes` configuration. If a prefix (e.g., `ui`) is defined, it uses the mapped path.
   For example, if `mui` is mapped to `@mui/material`, then `<mui:app-bar>` resolves to `@mui/material/AppBar`.
 
 - If no mapping is found, it attempts to resolve the component from a subdirectory:
@@ -272,10 +270,10 @@ However, **namespacing can override this behavior**. For example, `<ui:div>` wil
 
 ## ESBuild integration
 
-Restache includes an ESBuild plugin that makes integration simple and easy in Go:
+restache includes an ESBuild plugin that makes integration simple and easy in Go:
 
 - Register `.html` loader and pass it to the plugin
-- Plugin uses Restache compiler to convert to `.jsx`
+- Plugin uses restache compiler to convert to `.jsx`
 - No runtime library needed; everything is transpiled ahead of time
 
 > The [`dashboard`](https://github.com/tetsuo/dashboard) project includes a working build script ([`build.go`](https://github.com/tetsuo/dashboard/blob/master/build.go)).
@@ -312,7 +310,7 @@ This could be compiled as a filter, and potentially mapped to things like backen
 
 Before adding expressions, there's still a lot that can be optimized with the syntax that's already in place.
 
-Consider pattern matching. Since Restache doesn't support expressions beyond dot notation, patterns have to be represented structurally. For example, using an object with a mutually exclusive key set:
+Consider pattern matching. Since restache doesn't support expressions beyond dot notation, patterns have to be represented structurally. For example, using an object with a mutually exclusive key set:
 
 ```js
 {
@@ -339,7 +337,7 @@ if (props.settings) <Settings />
 
 This results in an `O(n)` operation instead of an `O(1)` equality check like `switch(route)`, but the difference is negligible unless you're dealing with many conditions.
 
-Future versions of Restache will generate `if/else` or `switch` statements when keyed unions are used, along with other optimizations such as merging adjacent `{?x}` and `{^x}` blocks into a single conditional.
+Future versions of restache will generate `if/else` or `switch` statements when keyed unions are used, along with other optimizations such as merging adjacent `{?x}` and `{^x}` blocks into a single conditional.
 
 ---
 

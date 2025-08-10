@@ -1,17 +1,17 @@
 ---
-title: Account workflow automation with PostgreSQL and C
-cover_title: Account workflow automation with PostgreSQL and C
+title: Batch processing with PostgreSQL triggers and notifications
+cover_title: Batch processing with PostgreSQL triggers and notifications
 description: How PostgreSQL alone can automate your account activation and password reset workflows without needing a message broker
-tags: sql,c,rust,tutorial
+tags: sql,c,rust
 published: 2024-11-17T00:00:00
-updated: 2025-06-15T13:37:00
+updated: 2025-08-09T13:37:00
 ---
 
-> How PostgreSQL alone can automate your account activation and password reset workflows without needing a message broker.
+> A detailed look at how PostgreSQL can act as a lightweight message broker that enables batch processing of background jobs in a real-world account onboarding workflow.
 
-[**mailroom**](https://github.com/tetsuo/mailroom/) uses PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect account status changes and send relevant email notifications to users.
+[**mailroom**](https://github.com/tetsuo/mailroom/) uses PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect account status changes and send relevant email notifications.
 
-In this tutorial, we'll walk through the mailroom architecture by building a real-world onboarding workflow step by step. We'll start by setting up the schema and triggers to track account updates using a PostgreSQL-backed queue. Then, we'll implement a collector in C using the `libpq` library to consume the events triggered by those account changes and process action tokens in batches.
+In this post, we'll explore the architecture in detail, starting with the schema and triggers for tracking account updates in a PostgreSQL-backed queue, then building a collector in C with `libpq` to consume those events and batch-process action tokens.
 
 ---
 

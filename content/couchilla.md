@@ -2,9 +2,9 @@
 title: CouchDB design document bundler
 cover_title: CouchDB design document bundler
 description: Couchilla is a bundler for packing design documents for CouchDB with CommonJS support
-tags: javascript,couchdb,tool
+tags: js
 published: 2023-01-02T14:55:00
-updated: 2025-06-12T13:37:00
+updated: 2025-08-09T13:37:00
 ---
 
 > [**couchilla**](https://github.com/tetsuo/couchilla) is a bundler for packing design documents for CouchDB with CommonJS support.
@@ -15,7 +15,7 @@ In [CouchDB](https://couchdb.apache.org/), [design documents](https://docs.couch
 
 JavaScript support in CouchDB is based on the Mozilla SpiderMonkey engine (and, starting with version 3.4.1, also QuickJS). However, because design functions are language-independent, CouchDB does not include a dedicated tool for creating them.
 
-[**couchilla**](https://github.com/tetsuo/couchilla) creates design documents with CommonJS support. It reads view and filter functions from JavaScript files in a directory and generates a design document in JSON.
+That's where `couchilla` comes in. It reads _view_ and _filter functions_ from JavaScript files in a directory and generates a JSON design document ready for deployment.
 
 ---
 
