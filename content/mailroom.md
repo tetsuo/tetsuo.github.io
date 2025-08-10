@@ -1,13 +1,13 @@
 ---
-title: Batch processing with PostgreSQL triggers and notifications
-cover_title: Batch processing with PostgreSQL triggers and notifications
-description: How PostgreSQL alone can automate your account activation and password reset workflows without needing a message broker
+title: Triggers and notifications in PostgreSQL
+cover_title: Triggers and notifications in PostgreSQL
+description: Building a pub/sub application with libpq to batch-process account onboarding jobs on a self-managed PostgreSQL-backed job queue
 tags: sql,c,rust
 published: 2024-11-17T00:00:00
-updated: 2025-08-09T13:37:00
+updated: 2025-08-10T07:14:00
 ---
 
-> A detailed look at how PostgreSQL can act as a lightweight message broker that enables batch processing of background jobs in a real-world account onboarding workflow.
+> Building a pub/sub application with libpq to batch-process account onboarding jobs on a self-managed PostgreSQL-backed job queue.
 
 [**mailroom**](https://github.com/tetsuo/mailroom/) uses PostgreSQL [triggers](https://www.postgresql.org/docs/current/sql-createtrigger.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) to detect account status changes and send relevant email notifications.
 
@@ -17,12 +17,12 @@ In this post, we'll explore the architecture in detail, starting with the schema
 
 ## Overview
 
-The system comprises two main actors:
+The system comprises these actors:
 
 - **User**: Responsible for creating and activating accounts.
-- **Admin**: Can suspend accounts.
+- **Admin**: Can suspend accounts (not the main focus though).
 
-Key components include:
+Components include:
 
 - **Accounts**: A table for storing users and their lifecycle states.
 - **Tokens**: A table for managing activation and recovery tokens.

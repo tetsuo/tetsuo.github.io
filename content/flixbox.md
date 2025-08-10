@@ -9,7 +9,7 @@ updated: 2025-08-09T13:37:00
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://tetsuo.github.io/wr/flixbox.html)
 
-> In this post, we take a quick tour of the key components of [**flixbox**](https://www.github.com/tetsuo/flixbox), a movie trailer search app built entirely with [**fp-ts**](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
+> In this post, we take a quick tour of [**flixbox**](https://www.github.com/tetsuo/flixbox), a movie trailer search app built entirely with [**fp-ts**](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
 
 ## Server
 
