@@ -10,6 +10,7 @@ public/assets/*
 !public/*/
 !public/images
 !public/404.html
+!public/assets/frog.gif
 !public/assets/dot.svg
 !public/assets/og-circle.svg
 !public/assets/50026.jpeg
