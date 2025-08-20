@@ -4,10 +4,10 @@ description: The basics of denotational semantics and how it provides a mathemat
 cover_title: Making sense of Haskell
 tags: haskell
 published: 2023-05-30T12:41:00
-updated: 2025-08-09T13:37:00
+updated: 2025-08-19T13:37:00
 ---
 
-> Here's my take on explaining denotational semantics 😬
+> An attempt at a beginner-friendly explanation of denotational semantics and how it maps to Haskell code 😬
 
 ## What is a function?
 

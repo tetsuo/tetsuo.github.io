@@ -1,25 +1,17 @@
 ---
-title: Transpiling HTML to JSX in Go
-cover_title: Transpiling HTML to JSX in Go
-description: Transpiling HTML to JSX in Go
+title: Retro JSX syntax
+cover_title: Retro JSX syntax
+description: Retro JSX syntax
 tags: go
 published: 2025-06-05T00:00:00
-updated: 2025-08-09T13:37:00
+updated: 2025-08-19T13:37:00
 ---
 
-> [**restache**](https://github.com/tetsuo/restache) extends HTML with curly braces so you can write React components like it's 2013.
+> restache extends plain HTML with curly braces and compiles to modern JSX, letting you write React components like it's 2013.
 
-## Intro
+## Example: Dashboard
 
-The project aims to offer a simpler alternative to JSX with built-in support for React hooks planned in the roadmap.
-
-##### Status
-
-🚨 This is early-alpha. It is intended for Go or React devs who are into DSLs and code generation, people building UI builders, or anyone who wants to cut down on JSX boilerplate and help shape the project through feedback.
-
-### Example: Dashboard app
-
-The [`tetsuo/dashboard`](https://github.com/tetsuo/dashboard) repository contains an example setup with [ESBuild](https://esbuild.github.io/) and a set of HTML-based components demonstrating the current capabilities 👉 **[view it online](https://tetsuo.github.io/dashboard/)**.
+The [`tetsuo/dashboard`](https://github.com/tetsuo/dashboard) repository provides an example setup with [ESBuild](https://esbuild.github.io/) and a set of basic UI components demonstrating the current capabilities 👉 **[view it online](https://tetsuo.github.io/dashboard/)**.
 
 ---
 

@@ -4,12 +4,12 @@ description: Full-stack client/server web app interacting with the TheMovieDB AP
 cover_title: Building a full-stack web app with fp-ts
 tags: typescript
 published: 2023-01-25T12:41:00
-updated: 2025-08-09T13:37:00
+updated: 2025-08-19T13:37:00
 ---
 
 [![flixbox - Search movie trailers](./flixbox.jpg)](https://tetsuo.github.io/wr/flixbox.html)
 
-> In this post, we take a quick tour of [**flixbox**](https://www.github.com/tetsuo/flixbox), a movie trailer search app built entirely with [**fp-ts**](https://gcanti.github.io/fp-ts/) and its [ecosystem](https://gcanti.github.io/fp-ts/ecosystem/) of composable modules.
+> In this post, we take a quick tour of [**flixbox**](https://www.github.com/tetsuo/flixbox), a movie trailer search app built entirely with [**fp-ts**](https://github.com/gcanti/fp-ts) and [libraries](https://gcanti.github.io/fp-ts/ecosystem/) from the fp-ts community.
 
 ## Server
 

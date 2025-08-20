@@ -4,12 +4,12 @@ cover_title: Cubic Limit in Effect
 description: Recreating Manfred Mohr's Cubic Limit, P-161 with TypeScript and Effect using a fully functional rendering pipeline
 tags: typescript
 published: 2025-02-08T14:55:00
-updated: 2025-08-09T13:37:00
+updated: 2025-08-19T13:37:00
 ---
 
-> This post covers the process of recreating Manfred Mohr's _Cubic Limit_ in TypeScript and [**Effect**](https://effect.website/), implementing a functional DSL for basic 3D graphics along the way.
+> Recreating the iconic artwork of [Manfred Mohr](https://www.emohr.com/) the hard way, by rolling my own 3D graphics DSL in TypeScript with [Effect](https://effect.website/).
 
-Here's _Cubic Limit, P-161_ rendered on `<canvas>`, inspired by [**Mohr**](https://www.emohr.com/)'s [original plotter drawings](https://www.emohr.com/mohr_cube1_161.html) from 1975.
+Shown below is *Cubic Limit, P-161* rendered on `<canvas>`, inspired by Mohr's [1975 plotter drawings](https://www.emohr.com/mohr_cube1_161.html).
 
 [![mohr-p161](./cubiclimit.jpg)](https://tetsuo.github.io/f/cubiclimit.html)
 
@@ -19,15 +19,17 @@ Here's _Cubic Limit, P-161_ rendered on `<canvas>`, inspired by [**Mohr**](https
 
 The full source code that produces this image is available in the repository [`tetsuo/cubic-limit`](https://github.com/tetsuo/cubic-limit).
 
-It is an Effect-based adaptation of [graphics-ts](https://github.com/gcanti/graphics-ts) with support for 3D rendering. Clone it with:
+Under the hood it uses an [Effect](https://effect.website/)-based adaptation of [graphics-ts](https://github.com/gcanti/graphics-ts) (originally [fp-ts](https://github.com/gcanti/fp-ts)) with added support for 3D rendering. You can clone it with:
 
 ```sh
 git clone git@github.com:tetsuo/cubic-limit.git
 ```
 
-The repository also includes a version of **P-197**, but this post will focus solely on P-161.
+The repository also includes a version of _P-197_, but this post will focus solely on _P-161_.
 
 ---
+
+In this post, we'll use this artwork as a starting point and build a functional interface around it for drawing 3D shapes and applying transformations to them.
 
 ## Cube vertices & edges
 
@@ -38,7 +40,7 @@ type Vec = NonEmptyReadonlyArray<number>
 // e.g. [x, y, z]
 ```
 
-A unit cube (scaled from -1 to +1) has 8 **vertices**:
+A unit cube (scaled from -1 to +1) has 8 vertices:
 
 ```typescript
 const cubePoints: NonEmptyReadonlyArray<Vec> = [
@@ -53,7 +55,7 @@ const cubePoints: NonEmptyReadonlyArray<Vec> = [
 ]
 ```
 
-It has 12 **edges**. We can index them by grouping bottom edges, top edges, and vertical edges. For each `i` in `0..3`, we build three edges:
+It has 12 edges. We can index them by grouping bottom edges, top edges, and vertical edges. For each `i` in `0..3`, we build three edges:
 
 ```ts
 const getEdges = (i: number): NonEmptyReadonlyArray<Vec> => [
@@ -774,7 +776,7 @@ const rotateX = (angle: number): Mat => [
 
 ### Combining multiple transforms
 
-Often we need to combine several transformations (e.g. translate first, then rotate, then scale). In matrix math, combining transformations is done by **matrix multiplication**:
+Often we need to combine several transformations (e.g. translate first, then rotate, then scale). In matrix math, combining transformations is done by _matrix multiplication_:
 
 ```ts
 declare function mul(y: Mat): (x: Mat) => Mat
@@ -790,7 +792,7 @@ pipe(
 
 The final result is a single 4×4 matrix encoding all these operations in the correct order. When you apply that matrix to a point `[x, y, z, 1]`, it performs the entire sequence of transformations-translation, then rotation on X, then rotation on Y, then scaling.
 
-> 📄 **See the matrix multiplication implementation in [`Mat.ts`](https://github.com/tetsuo/cubic-limit/blob/master/src/Mat.ts#L17) file.**
+> 📄 **See the full implementation in [`Mat.ts`](https://github.com/tetsuo/cubic-limit/blob/master/src/Mat.ts#L17) file.**
 
 > **Reminder**: Matrix multiplication is **not** _commutative_. The order you multiply matters.
 
@@ -854,7 +856,7 @@ const toCoords = (shape: Shape, transform: Mat): ReadonlyArray<ReadonlyArray<Poi
 
 ## Render service
 
-Now that everything is in place, let's define the **Render** [service](https://effect.website/docs/requirements-management/services/) as a tagged interface that encapsulates methods mirroring those of the native `CanvasRenderingContext2D` (e.g. `lineTo`, `moveTo`, `fill`, `stroke`, etc.).
+Now that everything is in place, let's define the `Render` [service](https://effect.website/docs/requirements-management/services/) as a tagged interface that encapsulates methods mirroring those of the native `CanvasRenderingContext2D` (e.g. `lineTo`, `moveTo`, `fill`, `stroke`, etc.).
 
 Here's the full definition:
 

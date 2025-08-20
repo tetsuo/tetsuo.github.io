@@ -4,11 +4,11 @@ cover_title: Fortune as a Service
 description: Simple Go service that delivers random fortune cookies over HTTP
 tags: go
 published: 2025-03-31T00:00:00
-updated: 2025-08-09T13:37:00
+updated: 2025-08-19T13:37:00
 navbar_disabled: true
 ---
 
-> [**fortune**](https://github.com/tetsuo/fortune) is a simple HTTP API that delivers random fortune cookies, built as a working reference for setting up observability on GCP and to refresh my memory.
+> [**fortune**](https://github.com/tetsuo/fortune) is a simple HTTP API that delivers random fortune cookies, built as a ready-to-deploy reference for setting up observability and telemetry on GCP.
 
 #### API
 
