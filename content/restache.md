@@ -1,13 +1,13 @@
 ---
-title: Retro JSX syntax
-cover_title: Retro JSX syntax
-description: Retro JSX syntax
+title: Old-school JSX syntax
+cover_title: Old-school JSX syntax
+description: Old-school JSX syntax
 tags: go
 published: 2025-06-05T00:00:00
-updated: 2025-08-19T13:37:00
+updated: 2025-08-20T13:37:00
 ---
 
-> restache extends plain HTML with curly braces and compiles to modern JSX, letting you write React components like it's 2013.
+> [**restache**](https://github.com/tetsuo/restache) extends plain HTML with curly braces and compiles to modern JSX, so you can write React components like it's 2013 again.
 
 ## Example: Dashboard
 
@@ -29,7 +29,9 @@ The [`tetsuo/dashboard`](https://github.com/tetsuo/dashboard) repository provide
 
 ## restache v0 draft
 
-restache extends HTML5 with Mustache-like syntax to support variables, conditionals, and loops.
+restache is an HTML syntax extension that lets you write JSX-style templating directly inside HTML.
+
+It extends HTML5 with [Mustache](https://mustache.github.io/)-like primitives to support variables, conditionals, and loops.
 
 ### Variables
 
