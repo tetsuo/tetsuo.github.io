@@ -17,12 +17,12 @@ updated: 2025-08-19T13:37:00
 go install github.com/tetsuo/burp
 ```
 
-This installs a `burp-server` executable to your `$GOPATH/bin`.
+This installs a `burp` executable to your `$GOPATH/bin`.
 
 ##### Start the server
 
 ```bash
-burp-server
+burp
 ```
 
 By default it binds to `localhost:9042`. You can change this with the `-addr` argument.
