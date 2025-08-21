@@ -102,7 +102,7 @@ They can only appear within text nodes or as full attribute values inside a tag.
 
 ---
 
-⚠️ Control structures must wrap [well-formed elements](https://en.wikipedia.org/wiki/Well-formed_element) (or other well-formed control constructs), and cannot appear inside tags.
+⚠️ Control structures must wrap well-formed elements (or other well-formed control constructs), and cannot appear inside tags.
 
 ---
 
